@@ -362,6 +362,175 @@ svg{display:block; flex-shrink:0;}
 .mono{font-variant-numeric:tabular-nums;}
 .divider{height:1px; background:var(--border); margin:14px 0;}
 .empty-hint{text-align:center; padding:34px 14px; color:var(--ink-faint); font-size:11.5px; font-weight:700;}
+
+/* ============ AUTH SCREENS ============ */
+.auth-screen{
+  position:absolute; inset:0; display:none; flex-direction:column;
+  background:var(--bg); padding:24px 20px; overflow-y:auto;
+}
+.auth-screen.active{display:flex;}
+.auth-screen::-webkit-scrollbar{display:none;}
+
+.auth-header{display:flex; align-items:center; gap:10px; margin-bottom:22px;}
+.auth-back{width:34px; height:34px; border-radius:10px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; color:var(--ink-soft); flex:none;}
+.auth-brand{display:flex; align-items:center; gap:8px; flex:1;}
+.auth-brand .mark{width:30px; height:30px; border-radius:9px; background:var(--primary-tint); color:var(--primary-strong); display:flex; align-items:center; justify-content:center;}
+.auth-brand b{font-size:14px; font-weight:800;}
+
+.auth-hero{text-align:center; margin-bottom:24px;}
+.auth-hero .ah-icon{
+  width:64px; height:64px; border-radius:50%; background:var(--primary-tint);
+  color:var(--primary); display:flex; align-items:center; justify-content:center;
+  margin:0 auto 14px;
+}
+.auth-hero h2{font-size:17px; font-weight:800; margin-bottom:5px;}
+.auth-hero p{font-size:11.5px; color:var(--ink-faint); font-weight:600; line-height:1.6;}
+
+.auth-field{margin-bottom:13px;}
+.auth-field label{display:block; font-size:11.5px; font-weight:700; color:var(--ink-soft); margin-bottom:5px;}
+.auth-field input, .auth-field select{
+  width:100%; padding:12px 13px; border:1.5px solid var(--border); border-radius:11px;
+  background:var(--surface-2); color:var(--ink); font-size:13px; outline:none;
+  transition:border-color .15s;
+}
+.auth-field input:focus, .auth-field select:focus{border-color:var(--primary);}
+.auth-field input::placeholder{color:var(--ink-faint);}
+.auth-field .field-error{font-size:10px; color:var(--danger); font-weight:700; margin-top:4px; display:none;}
+.auth-field.has-error input{border-color:var(--danger);}
+.auth-field.has-error .field-error{display:block;}
+
+.auth-field select{
+  -webkit-appearance:none; appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A9C9A' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:12px center;
+  padding-left:32px;
+}
+
+.auth-pwd-wrap{position:relative;}
+.auth-pwd-wrap .pwd-toggle{
+  position:absolute; inset-inline-end:10px; top:50%; transform:translateY(-50%);
+  width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+  color:var(--ink-faint); font-size:13px;
+}
+
+.auth-btn{
+  width:100%; padding:13px; border-radius:12px; font-size:13.5px; font-weight:800;
+  display:flex; align-items:center; justify-content:center; gap:8px; margin-top:4px;
+}
+.auth-btn-primary{background:var(--primary); color:#fff; box-shadow:0 8px 20px -6px color-mix(in srgb, var(--primary) 50%, transparent);}
+.auth-btn-primary:active{transform:scale(.98);}
+.auth-btn-ghost{background:var(--surface-2); color:var(--ink); border:1.5px solid var(--border); margin-top:10px;}
+
+.auth-footer{text-align:center; margin-top:18px;}
+.auth-footer span{font-size:12px; color:var(--ink-faint); font-weight:600;}
+.auth-footer a{font-size:12px; color:var(--primary); font-weight:800; cursor:pointer;}
+
+.auth-divider{display:flex; align-items:center; gap:10px; margin:16px 0;}
+.auth-divider::before, .auth-divider::after{content:''; flex:1; height:1px; background:var(--border);}
+.auth-divider span{font-size:10.5px; color:var(--ink-faint); font-weight:700; white-space:nowrap;}
+
+.auth-card-type{display:flex; gap:10px; margin-bottom:22px;}
+.auth-card-type button{
+  flex:1; padding:14px 10px; border-radius:14px; background:var(--surface);
+  border:2px solid var(--border); display:flex; flex-direction:column;
+  align-items:center; gap:8px; transition:all .15s;
+}
+.auth-card-type button.active{border-color:var(--primary); background:var(--primary-tint);}
+.auth-card-type button .act-icon{
+  width:42px; height:42px; border-radius:12px; background:var(--surface-2);
+  display:flex; align-items:center; justify-content:center; color:var(--ink-soft);
+}
+.auth-card-type button.active .act-icon{background:var(--primary); color:#fff;}
+.auth-card-type button b{font-size:12px; font-weight:800;}
+.auth-card-type button span{font-size:10px; color:var(--ink-faint); font-weight:600;}
+
+/* -- Upload zones -- */
+.upload-row{display:flex; gap:10px; margin-bottom:13px;}
+.upload-zone{
+  flex:1; border:2px dashed var(--border); border-radius:13px; padding:18px 10px;
+  display:flex; flex-direction:column; align-items:center; gap:7px;
+  cursor:pointer; transition:all .15s; text-align:center; min-height:100px;
+  justify-content:center;
+}
+.upload-zone:hover, .upload-zone.dragover{border-color:var(--primary); background:var(--primary-tint);}
+.upload-zone .uz-icon{
+  width:38px; height:38px; border-radius:50%; background:var(--surface-2);
+  display:flex; align-items:center; justify-content:center; color:var(--ink-faint);
+}
+.upload-zone .uz-label{font-size:10px; font-weight:700; color:var(--ink-faint); line-height:1.4;}
+.upload-zone.has-file{border-style:solid; border-color:var(--success); background:var(--success-tint);}
+.upload-zone.has-file .uz-icon{background:var(--success); color:#fff;}
+.upload-zone.has-file .uz-label{color:var(--success);}
+
+.upload-preview{position:relative; display:inline-block;}
+.upload-preview img{width:100%; height:100px; object-fit:cover; border-radius:10px;}
+.upload-preview .up-remove{
+  position:absolute; top:-6px; inset-inline-end:-6px;
+  width:22px; height:22px; border-radius:50%; background:var(--danger);
+  color:#fff; display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:800; border:2px solid var(--surface);
+}
+
+/* -- OTP screen -- */
+.otp-hero{display:flex; flex-direction:column; align-items:center; text-align:center; margin-bottom:24px;}
+.otp-hero .otp-icon{
+  width:72px; height:72px; border-radius:50%; background:var(--primary-tint);
+  color:var(--primary); display:flex; align-items:center; justify-content:center;
+  margin-bottom:14px; position:relative;
+}
+.otp-hero .otp-icon::after{
+  content:''; position:absolute; inset:-5px; border-radius:50%;
+  border:2px solid var(--primary); opacity:.25; animation:pulseRing 2s ease-out infinite;
+}
+.otp-hero h2{font-size:17px; font-weight:800; margin-bottom:5px;}
+.otp-hero p{font-size:11.5px; color:var(--ink-faint); font-weight:600; line-height:1.6;}
+.otp-hero .otp-phone{font-size:13px; font-weight:800; color:var(--primary); margin-top:4px;}
+
+.otp-inputs{display:flex; gap:8px; justify-content:center; margin-bottom:22px;}
+.otp-inputs input{
+  width:46px; height:52px; border-radius:12px; border:1.5px solid var(--border);
+  background:var(--surface-2); text-align:center; font-size:20px; font-weight:800;
+  color:var(--ink); outline:none; transition:border-color .15s;
+  font-variant-numeric:tabular-nums;
+}
+.otp-inputs input:focus{border-color:var(--primary); background:var(--surface);}
+.otp-inputs input.filled{border-color:var(--primary); background:var(--primary-tint);}
+
+.otp-resend{text-align:center; margin-top:14px;}
+.otp-resend span{font-size:11px; color:var(--ink-faint); font-weight:600;}
+.otp-resend a{font-size:11px; color:var(--primary); font-weight:800; cursor:pointer;}
+.otp-resend a.disabled{color:var(--ink-faint); pointer-events:none;}
+
+/* -- Review pending -- */
+.review-hero{display:flex; flex-direction:column; align-items:center; text-align:center; padding:40px 10px;}
+.review-hero .rv-icon{
+  width:80px; height:80px; border-radius:50%; background:var(--success-tint);
+  color:var(--success); display:flex; align-items:center; justify-content:center;
+  margin-bottom:18px;
+}
+.review-hero h2{font-size:17px; font-weight:800; margin-bottom:8px; line-height:1.5;}
+.review-hero p{font-size:12px; color:var(--ink-faint); font-weight:600; line-height:1.7; max-width:260px;}
+.review-hero .rv-badge{
+  display:inline-flex; align-items:center; gap:6px; padding:8px 16px;
+  border-radius:20px; background:var(--success-tint); color:var(--success);
+  font-size:11px; font-weight:800; margin-top:16px;
+}
+
+/* -- Account type cards -- */
+.acct-actions{display:flex; flex-direction:column; gap:12px; margin-bottom:18px;}
+.acct-action-btn{
+  display:flex; align-items:center; gap:14px; padding:16px;
+  border-radius:16px; background:var(--surface); border:1.5px solid var(--border);
+  transition:all .15s;
+}
+.acct-action-btn:active{transform:scale(.98);}
+.acct-action-btn .aab-icon{
+  width:46px; height:46px; border-radius:13px;
+  display:flex; align-items:center; justify-content:center; flex:none;
+}
+.acct-action-btn b{font-size:13.5px; font-weight:800; display:block; margin-bottom:2px;}
+.acct-action-btn span{font-size:11px; color:var(--ink-faint); font-weight:600;}
+.acct-action-btn svg:last-child{margin-inline-start:auto; color:var(--ink-faint);}
 </style>
 </head>
 <body>
@@ -482,9 +651,6 @@ svg{display:block; flex-shrink:0;}
         </div>
 
         <div class="start-hero">
-          <h1 data-i18n="startTitle">اختر تطبيقك</h1>
-          <p data-i18n="startSub">نفس حساب شركتك على مسار، بواجهة مخصّصة لدورك.</p>
-        </div>
       </div>
 
       <div>
@@ -508,6 +674,277 @@ svg{display:block; flex-shrink:0;}
         </div>
       </div>
     </section>
+
+    <!-- ============ ACCOUNT TYPE (LOGIN FORM DIRECTLY) ============ -->
+    <div class="auth-screen" id="screenAccountType">
+      <div class="auth-header">
+        <button class="auth-back" id="authBackStart">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <div class="auth-brand">
+          <div class="mark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></div>
+          <b>مسار</b>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="start-toggles" style="border:1px solid var(--border); border-radius:8px; overflow:hidden;">
+            <button class="pill-btn js-lang-ar active" style="background:var(--surface-2); color:var(--ink-soft);">AR</button>
+            <button class="pill-btn js-lang-en" style="background:var(--surface-2); color:var(--ink-soft);">EN</button>
+          </div>
+          <button class="tb-icon-btn js-theme-toggle">
+            <svg class="js-theme-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="auth-hero">
+        <div class="ah-icon" id="loginRoleIcon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        </div>
+        <div style="display:inline-flex; align-items:center; gap:6px; padding:5px 14px; border-radius:20px; background:var(--primary-tint); margin-bottom:8px;">
+          <span id="loginRoleLabel" style="font-size:11px; font-weight:800; color:var(--primary-strong);">تطبيق التاجر</span>
+        </div>
+        <h2 data-i18n="loginTitle">تسجيل الدخول</h2>
+        <p data-i18n="loginSub">أدخل بياناتك للدخول إلى حسابك</p>
+      </div>
+      <div class="auth-field">
+        <label data-i18n="loginUsername">اسم المستخدم</label>
+        <input type="text" id="acctLoginUser" placeholder="أدخل اسم المستخدم">
+        <div class="field-error" data-i18n="loginUserError">أدخل اسم المستخدم</div>
+      </div>
+      <div class="auth-field">
+        <label data-i18n="loginPassword">كلمة المرور</label>
+        <div class="auth-pwd-wrap">
+          <input type="password" id="acctLoginPass" placeholder="أدخل كلمة المرور">
+          <button class="pwd-toggle" id="acctLoginPwdToggle">👁</button>
+        </div>
+        <div class="field-error" data-i18n="loginPassError">أدخل كلمة المرور</div>
+      </div>
+      <button class="auth-btn auth-btn-primary" id="btnAcctLogin">
+        <span data-i18n="loginBtn">تسجيل الدخول</span>
+      </button>
+      <div class="auth-footer">
+        <span data-i18n="loginNoAccount">ليس لديك حساب؟</span>
+        <a id="acctGoRegister" data-i18n="registerBtn">إنشاء حساب جديد</a>
+      </div>
+    </div>
+      </div>
+    </div>
+
+    <!-- ============ REGISTER MERCHANT ============ -->
+    <div class="auth-screen" id="screenRegisterMerchant">
+      <div class="auth-header">
+        <button class="auth-back" id="authBackFromRegM">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <div class="auth-brand">
+          <div class="mark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></div>
+          <b>مسار</b>
+        </div>
+      </div>
+      <div class="auth-hero">
+        <div class="ah-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9a2.4 2.4 0 0 0 4.6 1.1A2.4 2.4 0 0 0 12 9a2.4 2.4 0 0 0 4.4 1.1A2.4 2.4 0 0 0 21 9"/><path d="M5 9v10h14V9"/></svg>
+        </div>
+        <div style="display:inline-flex; align-items:center; gap:6px; padding:5px 14px; border-radius:20px; background:var(--primary-tint); margin-bottom:8px;">
+          <span style="font-size:11px; font-weight:800; color:var(--primary-strong);" data-i18n="merchantApp">تطبيق التاجر</span>
+        </div>
+        <h2 data-i18n="regMerchantTitle">حساب التاجر</h2>
+        <p data-i18n="regMerchantSub">أدخل بيانات متجرك لإنشاء الحساب</p>
+      </div>
+      <div class="auth-field">
+        <label data-i18n="regMerchantName">اسم التاجر</label>
+        <input type="text" id="regMName" placeholder="الاسم الكامل">
+      </div>
+      <div class="auth-field">
+        <label data-i18n="regShopName">اسم المحل / الشركة</label>
+        <input type="text" id="regMShop" placeholder="مثال: متجر النور">
+      </div>
+      <div class="auth-field">
+        <label data-i18n="regAddress">العنوان</label>
+        <input type="text" id="regMAddress" placeholder="المدينة — المنطقة">
+      </div>
+      <div class="auth-field">
+        <label data-i18n="regPhone">رقم الهاتف</label>
+        <input type="tel" id="regMPhone" placeholder="07xx xxx xxxx" dir="ltr">
+      </div>
+      <div class="auth-field">
+        <label data-i18n="regPassword">كلمة المرور</label>
+        <div class="auth-pwd-wrap">
+          <input type="password" id="regMPass" placeholder="6 أحرف على الأقل">
+        </div>
+      </div>
+      <div class="auth-field">
+        <label data-i18n="regPasswordConfirm">تأكيد كلمة المرور</label>
+        <div class="auth-pwd-wrap">
+          <input type="password" id="regMPass2" placeholder="أعد إدخال كلمة المرور">
+        </div>
+        <div class="field-error" data-i18n="regPassMismatch">كلمتا المرور غير متطابقتين</div>
+      </div>
+      <button class="auth-btn auth-btn-primary" id="btnRegMerchant">
+        <span data-i18n="regSubmit">إنشاء الحساب</span>
+      </button>
+      <div class="auth-footer">
+        <span data-i18n="loginHaveAccount">لدي حساب موجود؟</span>
+        <a id="regMGoLogin" data-i18n="loginBtn">تسجيل الدخول</a>
+      </div>
+    </div>
+
+    <!-- ============ REGISTER COURIER ============ -->
+    <div class="auth-screen" id="screenRegisterCourier">
+      <div class="auth-header">
+        <button class="auth-back" id="authBackFromRegC">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <div class="auth-brand">
+          <div class="mark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></div>
+          <b>مسار</b>
+        </div>
+      </div>
+      <div class="auth-hero">
+        <div class="ah-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17" r="3.3"/><circle cx="18" cy="17" r="3.3"/><path d="M6 17l4-8h4l3 8"/><path d="M10 9h4"/><circle cx="15" cy="6" r="1.6"/></svg>
+        </div>
+        <div style="display:inline-flex; align-items:center; gap:6px; padding:5px 14px; border-radius:20px; background:var(--accent-tint); margin-bottom:8px;">
+          <span style="font-size:11px; font-weight:800; color:var(--accent);" data-i18n="courierApp">تطبيق المندوب</span>
+        </div>
+        <h2 data-i18n="regCourierTitle">حساب المندوب</h2>
+        <p data-i18n="regCourierSub">أدخل بياناتك الشخصية ووسيلة التوصيل</p>
+      </div>
+      <div class="auth-field">
+        <label data-i18n="regCourierName">اسم المندوب</label>
+        <input type="text" id="regCName" placeholder="الاسم الكامل">
+      </div>
+      <div class="auth-field">
+        <label data-i18n="regAddress">العنوان</label>
+        <input type="text" id="regCAddress" placeholder="المدينة — المنطقة">
+      </div>
+      <div class="auth-field">
+        <label data-i18n="regPhone">رقم الهاتف</label>
+        <input type="tel" id="regCPhone" placeholder="07xx xxx xxxx" dir="ltr">
+      </div>
+      <div class="auth-field">
+        <label data-i18n="regPassword">كلمة المرور</label>
+        <div class="auth-pwd-wrap">
+          <input type="password" id="regCPass" placeholder="6 أحرف على الأقل">
+        </div>
+      </div>
+      <div class="auth-field">
+        <label data-i18n="regPasswordConfirm">تأكيد كلمة المرور</label>
+        <div class="auth-pwd-wrap">
+          <input type="password" id="regCPass2" placeholder="أعد إدخال كلمة المرور">
+        </div>
+        <div class="field-error" data-i18n="regPassMismatch">كلمتا المرور غير متطابقتين</div>
+      </div>
+      <div class="auth-field">
+        <label data-i18n="regVehicle">وسيلة التوصيل</label>
+        <select id="regCVehicle">
+          <option value="">— اختر وسيلة التوصيل —</option>
+          <option value="sedan">🚗 سيارة صالون</option>
+          <option value="suv">🚙 سيارة كبيرة</option>
+          <option value="truck">🚛 سيارة نقل</option>
+          <option value="bike">🛵 دراجة</option>
+        </select>
+      </div>
+      <div class="auth-field">
+        <label data-i18n="regResidenceCard">بطاقة السكن</label>
+        <div class="upload-row">
+          <div class="upload-zone" id="uploadResidence" data-key="residence">
+            <div class="uz-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+            <span class="uz-label" data-i18n="regUploadResidence">اضغط لرفع صورةبطاقة السكن</span>
+            <input type="file" accept="image/*" style="display:none;">
+          </div>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label data-i18n="regNationalID">البطاقة الوطنية</label>
+        <div class="upload-row">
+          <div class="upload-zone" id="uploadIDFront" data-key="idFront">
+            <div class="uz-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            </div>
+            <span class="uz-label" data-i18n="regUploadFront">الأمام</span>
+            <input type="file" accept="image/*" style="display:none;">
+          </div>
+          <div class="upload-zone" id="uploadIDBack" data-key="idBack">
+            <div class="uz-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="12" y1="14" x2="12" y2="14.01"/></svg>
+            </div>
+            <span class="uz-label" data-i18n="regUploadBack">الخلف</span>
+            <input type="file" accept="image/*" style="display:none;">
+          </div>
+        </div>
+      </div>
+      <button class="auth-btn auth-btn-primary" id="btnRegCourier">
+        <span data-i18n="regSubmit">إنشاء الحساب</span>
+      </button>
+      <div class="auth-footer">
+        <span data-i18n="loginHaveAccount">لدي حساب موجود؟</span>
+        <a id="regCGoLogin" data-i18n="loginBtn">تسجيل الدخول</a>
+      </div>
+    </div>
+
+    <!-- ============ OTP VERIFICATION ============ -->
+    <div class="auth-screen" id="screenOTP">
+      <div class="auth-header">
+        <button class="auth-back" id="authBackFromOTP">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <div class="auth-brand">
+          <div class="mark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></div>
+          <b>مسار</b>
+        </div>
+      </div>
+      <div class="otp-hero">
+        <div class="otp-icon">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h2 data-i18n="otpTitle">تأكيد رقم الهاتف</h2>
+        <p data-i18n="otpSub">أدخل الرمز المكون من 6 أرقام المرسل إلى</p>
+        <div class="otp-phone" id="otpPhoneDisplay">07xx xxx xxxx</div>
+      </div>
+      <div class="otp-inputs" id="otpInputs">
+        <input type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]" class="otp-digit" data-idx="0">
+        <input type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]" class="otp-digit" data-idx="1">
+        <input type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]" class="otp-digit" data-idx="2">
+        <input type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]" class="otp-digit" data-idx="3">
+        <input type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]" class="otp-digit" data-idx="4">
+        <input type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]" class="otp-digit" data-idx="5">
+      </div>
+      <div class="field-error" id="otpError" style="text-align:center; margin-bottom:10px; display:none;" data-i18n="otpWrong">الرمز غير صحيح، حاول مرة أخرى</div>
+      <button class="auth-btn auth-btn-primary" id="btnVerifyOTP">
+        <span data-i18n="otpVerify">تأكيد الرمز</span>
+      </button>
+      <div class="otp-resend">
+        <span data-i18n="otpResend">لم تتلقَّ الرمز؟</span>
+        <a id="otpResendLink" data-i18n="otpResendBtn">إعادة الإرسال</a>
+      </div>
+    </div>
+
+    <!-- ============ REVIEW PENDING (Courier) ============ -->
+    <div class="auth-screen" id="screenReviewPending">
+      <div class="auth-header">
+        <div class="auth-brand" style="margin:0 auto;">
+          <div class="mark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></div>
+          <b>مسار</b>
+        </div>
+      </div>
+      <div class="review-hero">
+        <div class="rv-icon">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <h2 id="reviewTitle" data-i18n="reviewTitle">تم استلام طلبك بنجاح</h2>
+        <p id="reviewSub" data-i18n="reviewSub">سيتم مراجعة بياناتك من قبل فريق العمليات وستتلقى إشعاراً فور اكتمال المراجعة يمكنك بعدها الدخول لحسابك.</p>
+        <div class="rv-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <span data-i18n="reviewBadge">قيد المراجعة</span>
+        </div>
+      </div>
+      <button class="auth-btn auth-btn-ghost" id="btnBackReview" style="margin-top:auto; margin-bottom:20px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span data-i18n="reviewBack">العودة للرئيسية</span>
+      </button>
+    </div>
 
     <!-- ============ APP SHELL ============ -->
     <section class="screen" id="screenApp">
@@ -794,6 +1231,32 @@ const T = {
     allStatuses:'كل الحالات', inProgressStatuses:'قيد التنفيذ', finalStatuses:'حالات نهائية',
     reportsTitle:'التقارير', provinceReport:'الطلبات حسب المحافظة', ordersByProvince:'توزيع الطلبات على المحافظات',
     totalOrdersLabel:'إجمالي الطلبات', viewFullReport:'عرض التقرير الكامل', ordersUnit:'طلب',
+    acctTitle:'اختر طريقة الدخول', acctSub:'سجّل حساب جديد أوادخل بحسابك الحالي',
+    loginBtn:'تسجيل دخول', loginBtnSub:'لدي حساب موجود',
+    registerBtn:'إنشاء حساب جديد', registerBtnSub:'أول مرة على مسار؟',
+    loginTitle:'تسجيل الدخول', loginSub:'أدخل بياناتك للدخول إلى حسابك',
+    loginUsername:'اسم المستخدم', loginPassword:'كلمة المرور',
+    loginUserError:'أدخل اسم المستخدم', loginPassError:'أدخل كلمة المرور',
+    loginNoAccount:'ليس لديك حساب؟', loginHaveAccount:'لدي حساب موجود؟',
+    loginPassWrong:'اسم المستخدم أو كلمة المرور غير صحيحة',
+    regMerchantTitle:'حساب التاجر', regMerchantSub:'أدخل بيانات متجرك لإنشاء الحساب',
+    regMerchantName:'اسم التاجر', regShopName:'اسم المحل / الشركة',
+    regAddress:'العنوان', regPhone:'رقم الهاتف',
+    regPassword:'كلمة المرور', regPasswordConfirm:'تأكيد كلمة المرور',
+    regPassMismatch:'كلمتا المرور غير متطابقتين', regPassShort:'كلمة المرور قصيرة (6 أحرف على الأقل)',
+    regSubmit:'إنشاء الحساب', regPhoneExists:'هذا الرقم مسجل مسبقاً',
+    regCourierTitle:'حساب المندوب', regCourierSub:'أدخل بياناتك الشخصية ووسيلة التوصيل',
+    regCourierName:'اسم المندوب', regVehicle:'وسيلة التوصيل',
+    regResidenceCard:'بطاقة السكن', regNationalID:'البطاقة الوطنية',
+    regUploadResidence:'اضغط لرفع صورةبطاقة السكن',
+    regUploadFront:'الأمام', regUploadBack:'الخلف',
+    regUploadTap:'اضغط للرفع', regUploaded:'تم الرفع ✓',
+    otpTitle:'تأكيد رقم الهاتف', otpSub:'أدخل الرمز المكون من 6 أرقام المرسل إلى',
+    otpVerify:'تأكيد الرمز', otpWrong:'الرمز غير صحيح، حاول مرة أخرى',
+    otpResend:'لم تتلقَّ الرمز؟', otpResendBtn:'إعادة الإرسال',
+    reviewTitle:'جاري مراجعة بياناتك',
+    reviewSub:'تم استلام طلب التسجيل الخاص بك بنجاح. ستتم مراجعة بياناتك من قبل فريق العمليات وستتلقى إشعاراً فور اكتمال المراجعة.',
+    reviewBadge:'قيد المراجعة', reviewBack:'العودة للرئيسية',
   },
   en:{
     startTitle:'Choose your app', startSub:'Same company account on Masar, with an interface built for your role.',
@@ -822,10 +1285,36 @@ const T = {
     allStatuses:'All Statuses', inProgressStatuses:'In Progress', finalStatuses:'Final Statuses',
     reportsTitle:'Reports', provinceReport:'Orders by Governorate', ordersByProvince:'Order Distribution by Governorate',
     totalOrdersLabel:'Total Orders', viewFullReport:'View Full Report', ordersUnit:'orders',
+    acctTitle:'Choose how to sign in', acctSub:'Create a new account or sign in with an existing one',
+    loginBtn:'Sign In', loginBtnSub:'I have an existing account',
+    registerBtn:'Create New Account', registerBtnSub:'First time on Masar?',
+    loginTitle:'Sign In', loginSub:'Enter your credentials to access your account',
+    loginUsername:'Username', loginPassword:'Password',
+    loginUserError:'Enter your username', loginPassError:'Enter your password',
+    loginNoAccount:"Don't have an account?", loginHaveAccount:'Already have an account?',
+    loginPassWrong:'Invalid username or password',
+    regMerchantTitle:'Merchant Account', regMerchantSub:'Enter your store details to create an account',
+    regMerchantName:'Merchant Name', regShopName:'Store / Company Name',
+    regAddress:'Address', regPhone:'Phone Number',
+    regPassword:'Password', regPasswordConfirm:'Confirm Password',
+    regPassMismatch:'Passwords do not match', regPassShort:'Password too short (min 6 characters)',
+    regSubmit:'Create Account', regPhoneExists:'This number is already registered',
+    regCourierTitle:'Courier Account', regCourierSub:'Enter your personal details and vehicle type',
+    regCourierName:'Courier Name', regVehicle:'Vehicle Type',
+    regResidenceCard:'Residence Card', regNationalID:'National ID Card',
+    regUploadResidence:'Tap to upload residence card',
+    regUploadFront:'Front', regUploadBack:'Back',
+    regUploadTap:'Tap to upload', regUploaded:'Uploaded ✓',
+    otpTitle:'Phone Verification', otpSub:'Enter the 6-digit code sent to',
+    otpVerify:'Verify Code', otpWrong:'Invalid code, please try again',
+    otpResend:"Didn't receive the code?", otpResendBtn:'Resend',
+    reviewTitle:'Your application is under review',
+    reviewSub:'Your registration has been received successfully. Our team will review your details and you will be notified once the review is complete.',
+    reviewBadge:'Under Review', reviewBack:'Back to Home',
   }
 };
 
-let LANG='ar', THEME='light', ROLE='merchant', TAB='home', activeChat=null;
+let LANG='ar', THEME='light', ROLE='merchant', TAB='home', activeChat=null, AUTH_STATE='logged_out', currentUser=null;
 
 function t(k){ return T[LANG][k] || k; }
 function nm(o){ return o[LANG] || o.ar; }
@@ -914,13 +1403,273 @@ document.getElementById('btnSkipOnboard').addEventListener('click', finishOnboar
 function enterApp(role){
   ROLE = role; TAB = 'home'; activeChat = null; subPage = null;
   document.getElementById('screenStart').classList.remove('active');
-  document.getElementById('screenApp').classList.add('active');
-  renderTabs();
-  renderTab();
+  clearAuthErrors('screenAccountType');
+  const u = document.getElementById('acctLoginUser');
+  const p = document.getElementById('acctLoginPass');
+  if(u) u.value = '';
+  if(p){ p.value = ''; p.type = 'password'; }
+  const roleLabel = document.getElementById('loginRoleLabel');
+  const roleIcon = document.getElementById('loginRoleIcon');
+  if(roleLabel){
+    roleLabel.textContent = role==='merchant' ? (LANG==='ar'?'تطبيق التاجر':'Merchant App') : (LANG==='ar'?'تطبيق المندوب':'Courier App');
+  }
+  if(roleIcon){
+    if(role==='merchant'){
+      roleIcon.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9a2.4 2.4 0 0 0 4.6 1.1A2.4 2.4 0 0 0 12 9a2.4 2.4 0 0 0 4.4 1.1A2.4 2.4 0 0 0 21 9"/><path d="M5 9v10h14V9"/></svg>';
+    } else {
+      roleIcon.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17" r="3.3"/><circle cx="18" cy="17" r="3.3"/><path d="M6 17l4-8h4l3 8"/><path d="M10 9h4"/><circle cx="15" cy="6" r="1.6"/></svg>';
+    }
+  }
+  showAuthScreen('screenAccountType');
 }
 function backToStart(){
   document.getElementById('screenApp').classList.remove('active');
+  hideAllAuthScreens();
   document.getElementById('screenStart').classList.add('active');
+  AUTH_STATE = 'logged_out';
+  currentUser = null;
+}
+
+/* ================= AUTH SYSTEM ================= */
+let AUTH_ROLE = null;
+let pendingRegistration = {};
+let registeredUsers = [
+  {username:'تاجر', password:'123456', role:'merchant', name:'متجر النور للإلكترونيات', shop:'متجر النور', address:'بغداد — الكرادة', phone:'07701234567'},
+  {username:'مندوب', password:'123456', role:'courier', name:'أحمد كريم', address:'بغداد — الجادرية', phone:'07709876543', vehicle:'sedan'},
+];
+
+function hideAllAuthScreens(){
+  document.querySelectorAll('.auth-screen').forEach(s=> s.classList.remove('active'));
+}
+function showAuthScreen(id){
+  hideAllAuthScreens();
+  const el = document.getElementById(id);
+  if(el) el.classList.add('active');
+}
+function authBackToStart(){
+  hideAllAuthScreens();
+  document.getElementById('screenStart').classList.add('active');
+}
+
+/* -- Account Type (now the login form directly) -- */
+document.getElementById('authBackStart').addEventListener('click', authBackToStart);
+document.getElementById('btnAcctLogin').addEventListener('click', handleAcctLogin);
+document.getElementById('acctGoRegister').addEventListener('click', ()=>{
+  if(ROLE==='merchant') showAuthScreen('screenRegisterMerchant');
+  else showAuthScreen('screenRegisterCourier');
+  clearAuthErrors('screenRegisterMerchant');
+  clearAuthErrors('screenRegisterCourier');
+});
+document.getElementById('acctLoginPwdToggle').addEventListener('click', ()=>{
+  const inp = document.getElementById('acctLoginPass');
+  inp.type = inp.type==='password' ? 'text' : 'password';
+});
+
+function handleAcctLogin(){
+  const username = document.getElementById('acctLoginUser').value.trim();
+  const password = document.getElementById('acctLoginPass').value.trim();
+  let hasError = false;
+  clearAuthErrors('screenAccountType');
+  if(!username){ setFieldError('acctLoginUser'); hasError=true; }
+  if(!password){ setFieldError('acctLoginPass'); hasError=true; }
+  if(hasError) return;
+  const user = registeredUsers.find(u=> u.username===username && u.password===password && u.role===ROLE);
+  if(!user){
+    setAuthToast(t('loginPassWrong'));
+    return;
+  }
+  currentUser = user;
+  AUTH_STATE = 'logged_in';
+  hideAllAuthScreens();
+  renderApp();
+}
+
+/* -- Register Merchant -- */
+document.getElementById('authBackFromRegM').addEventListener('click', ()=> showAuthScreen('screenAccountType'));
+document.getElementById('regMGoLogin').addEventListener('click', ()=> showAuthScreen('screenAccountType'));
+document.getElementById('btnRegMerchant').addEventListener('click', handleRegisterMerchant);
+
+function handleRegisterMerchant(){
+  const name = document.getElementById('regMName').value.trim();
+  const shop = document.getElementById('regMShop').value.trim();
+  const address = document.getElementById('regMAddress').value.trim();
+  const phone = document.getElementById('regMPhone').value.trim();
+  const pass = document.getElementById('regMPass').value;
+  const pass2 = document.getElementById('regMPass2').value;
+  clearAuthErrors('screenRegisterMerchant');
+  let hasError = false;
+  if(!name){ setFieldError('regMName'); hasError=true; }
+  if(!shop){ setFieldError('regMShop'); hasError=true; }
+  if(!address){ setFieldError('regMAddress'); hasError=true; }
+  if(!phone){ setFieldError('regMPhone'); hasError=true; }
+  if(!pass || pass.length<6){ setFieldError('regMPass'); hasError=true; }
+  if(pass !== pass2){ document.getElementById('regMPass2').closest('.auth-field').classList.add('has-error'); hasError=true; }
+  if(hasError) return;
+  if(registeredUsers.find(u=> u.phone===phone && u.role==='merchant')){
+    setAuthToast(t('regPhoneExists'));
+    return;
+  }
+  pendingRegistration = {name, shop, address, phone, password:pass, role:'merchant'};
+  document.getElementById('otpPhoneDisplay').textContent = phone;
+  showAuthScreen('screenOTP');
+  resetOTPInputs();
+}
+
+/* -- Register Courier -- */
+document.getElementById('authBackFromRegC').addEventListener('click', ()=> showAuthScreen('screenAccountType'));
+document.getElementById('regCGoLogin').addEventListener('click', ()=> showAuthScreen('screenAccountType'));
+document.getElementById('btnRegCourier').addEventListener('click', handleRegisterCourier);
+
+function handleRegisterCourier(){
+  const name = document.getElementById('regCName').value.trim();
+  const address = document.getElementById('regCAddress').value.trim();
+  const phone = document.getElementById('regCPhone').value.trim();
+  const pass = document.getElementById('regCPass').value;
+  const pass2 = document.getElementById('regCPass2').value;
+  const vehicle = document.getElementById('regCVehicle').value;
+  clearAuthErrors('screenRegisterCourier');
+  let hasError = false;
+  if(!name){ setFieldError('regCName'); hasError=true; }
+  if(!address){ setFieldError('regCAddress'); hasError=true; }
+  if(!phone){ setFieldError('regCPhone'); hasError=true; }
+  if(!pass || pass.length<6){ setFieldError('regCPass'); hasError=true; }
+  if(pass !== pass2){ document.getElementById('regCPass2').closest('.auth-field').classList.add('has-error'); hasError=true; }
+  if(!vehicle){ setFieldError('regCVehicle'); hasError=true; }
+  if(hasError) return;
+  if(registeredUsers.find(u=> u.phone===phone && u.role==='courier')){
+    setAuthToast(t('regPhoneExists'));
+    return;
+  }
+  pendingRegistration = {name, address, phone, password:pass, role:'courier', vehicle};
+  document.getElementById('otpPhoneDisplay').textContent = phone;
+  showAuthScreen('screenOTP');
+  resetOTPInputs();
+}
+
+/* -- OTP -- */
+document.getElementById('authBackFromOTP').addEventListener('click', ()=>{
+  if(pendingRegistration.role==='merchant') showAuthScreen('screenRegisterMerchant');
+  else showAuthScreen('screenRegisterCourier');
+});
+document.getElementById('btnVerifyOTP').addEventListener('click', handleVerifyOTP);
+document.getElementById('otpResendLink').addEventListener('click', ()=>{
+  resetOTPInputs();
+  setAuthToast(LANG==='ar'?'تم إعادة إرسال الرمز':'Code resent');
+});
+
+function resetOTPInputs(){
+  const digits = document.querySelectorAll('.otp-digit');
+  digits.forEach(d=>{ d.value=''; d.classList.remove('filled'); });
+  document.getElementById('otpError').style.display='none';
+  digits[0].focus();
+}
+function handleVerifyOTP(){
+  const digits = document.querySelectorAll('.otp-digit');
+  const code = Array.from(digits).map(d=>d.value).join('');
+  if(code.length<6){ document.getElementById('otpError').style.display='block'; return; }
+  if(code !== '123456'){ document.getElementById('otpError').style.display='block'; resetOTPInputs(); return; }
+  document.getElementById('otpError').style.display='none';
+  const user = {
+    username: pendingRegistration.phone,
+    password: pendingRegistration.password,
+    role: pendingRegistration.role,
+    name: pendingRegistration.name,
+    address: pendingRegistration.address,
+    phone: pendingRegistration.phone,
+  };
+  if(pendingRegistration.role==='merchant'){
+    user.shop = pendingRegistration.shop;
+  } else {
+    user.vehicle = pendingRegistration.vehicle;
+  }
+  registeredUsers.push(user);
+  currentUser = user;
+  AUTH_STATE = 'pending_review';
+  hideAllAuthScreens();
+  const rvTitle = document.getElementById('reviewTitle');
+  const rvSub = document.getElementById('reviewSub');
+  if(pendingRegistration.role==='merchant'){
+    if(rvTitle) rvTitle.textContent = LANG==='ar'?'تم استلام طلبك بنجاح':'Your request has been received';
+    if(rvSub) rvSub.textContent = LANG==='ar'?'تم تسجيل حسابك كتاجر وسيتم مراجعة بياناتك من قبل فريقنا. ستتلقى إشعاراً فور اكتمال المراجعة يمكنك بعدها الدخول لحسابك.':'Your merchant account has been registered. Our team will review your details and you will be notified once complete.';
+  } else {
+    if(rvTitle) rvTitle.textContent = LANG==='ar'?'تم استلام طلبك بنجاح':'Your request has been received';
+    if(rvSub) rvSub.textContent = LANG==='ar'?'تم تسجيل حسابك كمندوب وسيتم مراجعة بياناتك وصور البطاقة الوطنية من قبل فريقنا. ستتلقى إشعاراً فور اكتمال المراجعة يمكنك بعدها الدخول لحسابك.':'Your courier account has been registered. Our team will review your details and ID card images. You will be notified once complete.';
+  }
+  showAuthScreen('screenReviewPending');
+  pendingRegistration = {};
+}
+
+/* OTP digit auto-advance */
+document.querySelectorAll('.otp-digit').forEach((inp, idx, all)=>{
+  inp.addEventListener('input', ()=>{
+    inp.value = inp.value.replace(/[^0-9]/g,'');
+    if(inp.value){ inp.classList.add('filled'); if(idx<5) all[idx+1].focus(); }
+    else inp.classList.remove('filled');
+  });
+  inp.addEventListener('keydown', (e)=>{
+    if(e.key==='Backspace' && !inp.value && idx>0){ all[idx-1].focus(); all[idx-1].value=''; all[idx-1].classList.remove('filled'); }
+  });
+  inp.addEventListener('paste', (e)=>{
+    e.preventDefault();
+    const pasted = (e.clipboardData||window.clipboardData).getData('text').replace(/[^0-9]/g,'').slice(0,6);
+    pasted.split('').forEach((ch,i)=>{ if(all[i]){ all[i].value=ch; all[i].classList.add('filled'); }});
+    if(pasted.length>0) all[Math.min(pasted.length,5)].focus();
+  });
+});
+
+/* -- Review Back -- */
+document.getElementById('btnBackReview').addEventListener('click', authBackToStart);
+
+/* -- Upload zones -- */
+document.querySelectorAll('.upload-zone').forEach(zone=>{
+  const fileInput = zone.querySelector('input[type="file"]');
+  zone.addEventListener('click', ()=> fileInput.click());
+  zone.addEventListener('dragover', (e)=>{ e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', ()=> zone.classList.remove('dragover'));
+  zone.addEventListener('drop', (e)=>{ e.preventDefault(); zone.classList.remove('dragover'); if(e.dataTransfer.files.length) handleUpload(zone, e.dataTransfer.files[0]); });
+  fileInput.addEventListener('change', ()=>{ if(fileInput.files.length) handleUpload(zone, fileInput.files[0]); });
+});
+function handleUpload(zone, file){
+  if(!file.type.startsWith('image/')) return;
+  zone.classList.add('has-file');
+  zone.querySelector('.uz-label').textContent = t('regUploaded');
+  const icon = zone.querySelector('.uz-icon');
+  icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+}
+
+/* -- Clear errors helper -- */
+function clearAuthErrors(screenId){
+  const screen = document.getElementById(screenId);
+  if(!screen) return;
+  screen.querySelectorAll('.auth-field').forEach(f=> f.classList.remove('has-error'));
+  const otpErr = document.getElementById('otpError');
+  if(otpErr) otpErr.style.display='none';
+}
+function setFieldError(inputId, errorKey){
+  const inp = document.getElementById(inputId);
+  if(inp){
+    const field = inp.closest('.auth-field');
+    if(field) field.classList.add('has-error');
+  }
+}
+function setAuthToast(msg){
+  const existing = document.querySelector('.auth-toast');
+  if(existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.className = 'auth-toast';
+  toast.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:var(--ink); color:#fff; padding:14px 22px; border-radius:14px; font-size:12.5px; font-weight:700; z-index:200; text-align:center; max-width:280px; box-shadow:0 10px 30px rgba(0,0,0,.3);';
+  toast.textContent = msg;
+  document.querySelector('.phone').appendChild(toast);
+  setTimeout(()=> toast.remove(), 2500);
+}
+
+/* -- Render app after auth -- */
+function renderApp(){
+  hideAllAuthScreens();
+  document.getElementById('screenStart').classList.remove('active');
+  document.getElementById('screenApp').classList.add('active');
+  renderTabs();
+  renderTab();
 }
 
 function renderTabs(){
@@ -972,7 +1721,7 @@ function openReports(){ subPage='reports'; renderTab(); }
 
 /* ---- Merchant Home ---- */
 function renderMerchantHome(){
-  setTopbar(t('greeting'), t('merchantSubName'), false);
+  setTopbar(t('greeting'), currentUser ? currentUser.name : t('merchantSubName'), false);
   const el = document.getElementById('appContent');
   el.innerHTML = `
     <div class="hero-slider-wrap" id="merchantHeroSlider"></div>
@@ -1154,7 +1903,7 @@ function renderMerchantOrders(){
 /* ---- Courier Home ---- */
 let onDuty = true;
 function renderCourierHome(){
-  setTopbar(t('greeting'), t('courierSubName'), false);
+  setTopbar(t('greeting'), currentUser ? currentUser.name : t('courierSubName'), false);
   const el = document.getElementById('appContent');
   el.innerHTML = `
     <div class="hero-slider-wrap" id="courierHeroSlider"></div>
@@ -1386,8 +2135,8 @@ function renderReportsPage(){
 function renderProfile(){
   setTopbar(t('profileTitle'), '', false);
   const el = document.getElementById('appContent');
-  const name = ROLE==='merchant' ? 'متجر النور للإلكترونيات' : 'أحمد كريم';
-  const sub = ROLE==='merchant' ? t('merchantAppSub') : t('courierSubName');
+  const name = currentUser ? currentUser.name : (ROLE==='merchant' ? 'متجر النور للإلكترونيات' : 'أحمد كريم');
+  const sub = currentUser ? (currentUser.phone || '') : (ROLE==='merchant' ? t('merchantAppSub') : t('courierSubName'));
   el.innerHTML = `
     <div class="profile-head">
       <div class="profile-avatar">${name.charAt(0)}</div>
