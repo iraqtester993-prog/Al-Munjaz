@@ -1,0 +1,1512 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+<title>مسار — تطبيق التاجر والمندوب</title>
+<meta name="theme-color" content="#0B6E68">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href='data:application/manifest+json,{"name":"%D9%85%D8%B3%D8%A7%D8%B1","short_name":"%D9%85%D8%B3%D8%A7%D8%B1","start_url":".","display":"standalone","background_color":"%23F4F6F5","theme_color":"%230B6E68"}'>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS (same system as the admin dashboard) ============ */
+:root{
+  --bg:#F4F6F5; --surface:#FFFFFF; --surface-2:#EDF1EF; --surface-3:#E4E9E7;
+  --ink:#0F1B1A; --ink-soft:#5B706E; --ink-faint:#8A9C9A;
+  --primary:#0B6E68; --primary-strong:#075450; --primary-tint:#E3F1EF;
+  --accent:#DE8A2E; --accent-tint:#FBEBD6;
+  --border:#DFE6E3;
+  --success:#1E8E5A; --success-tint:#E4F5EC;
+  --danger:#C4432E; --danger-tint:#FBE8E3;
+  --warning:#B9821C; --warning-tint:#FBF0DA;
+  --shadow: 0 1px 2px rgba(15,27,26,.04), 0 8px 24px -12px rgba(15,27,26,.12);
+  --radius-s:8px; --radius-m:14px; --radius-l:20px;
+  --font:'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#0A1211; --surface:#101B1A; --surface-2:#162321; --surface-3:#1D2C29;
+  --ink:#EAF2F0; --ink-soft:#8FA6A3; --ink-faint:#5E7573;
+  --primary:#39B3AA; --primary-strong:#5CC9C0; --primary-tint:#123230;
+  --accent:#F2A748; --accent-tint:#332411;
+  --border:#223330;
+  --success:#3CBE83; --success-tint:#0F2A20;
+  --danger:#E2705A; --danger-tint:#331815;
+  --warning:#E0AC4C; --warning-tint:#332510;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{font-family:var(--font); background:var(--surface-3); color:var(--ink); font-size:14.5px; line-height:1.6; -webkit-font-smoothing:antialiased;}
+button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit;}
+input,textarea{font-family:inherit;}
+a{color:inherit; text-decoration:none;}
+ul{list-style:none;}
+svg{display:block; flex-shrink:0;}
+
+/* ============ OUTER STAGE (centers the phone on desktop) ============ */
+.stage{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:26px; background:var(--surface-3);}
+.phone{
+  width:100%; max-width:412px; height:874px; max-height:92vh;
+  background:var(--bg); border-radius:38px; overflow:hidden; position:relative;
+  box-shadow:0 2px 4px rgba(0,0,0,.08), 0 30px 60px -20px rgba(0,0,0,.35);
+  border:9px solid var(--ink); display:flex; flex-direction:column;
+}
+[data-theme="dark"] .phone{border-color:#000;}
+.notch{position:absolute; top:0; inset-inline-start:50%; transform:translateX(-50%); width:130px; height:22px; background:var(--ink); border-radius:0 0 16px 16px; z-index:50;}
+[dir="rtl"] .notch{transform:translateX(50%);}
+@media(max-width:460px){
+  .stage{padding:0;}
+  .phone{max-width:100%; height:100vh; max-height:100vh; border-radius:0; border:none;}
+  .notch{display:none;}
+}
+
+/* ============ SCREENS ============ */
+.screen{position:absolute; inset:0; display:none; flex-direction:column; background:var(--bg);}
+.screen.active{display:flex;}
+
+/* ---- Start / role picker ---- */
+#screenStart{
+  background:linear-gradient(175deg, var(--primary-strong), var(--primary) 60%, var(--accent));
+  color:#fff; padding:26px 22px; justify-content:space-between;
+}
+[data-theme="dark"] #screenStart{background:linear-gradient(175deg, #08312e, #0f5450 60%, #7a4a17);}
+.start-top{display:flex; align-items:center; justify-content:space-between;}
+.start-brand{display:flex; align-items:center; gap:9px;}
+.start-brand .mark{width:34px; height:34px; border-radius:10px; background:rgba(255,255,255,.16); display:flex; align-items:center; justify-content:center;}
+.start-brand b{font-size:16px; font-weight:800;}
+.start-toggles{display:flex; gap:6px;}
+.pill-btn{padding:6px 10px; border-radius:8px; background:rgba(255,255,255,.16); font-size:11px; font-weight:800; color:#fff;}
+.pill-btn.active{background:#fff; color:var(--primary-strong);}
+.icon-round{width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.16); display:flex; align-items:center; justify-content:center; color:#fff;}
+
+.start-hero{padding:20px 4px;}
+.start-hero h1{font-size:24px; font-weight:800; line-height:1.5; margin-bottom:8px;}
+.start-hero p{font-size:12.5px; opacity:.85; font-weight:600; line-height:1.8;}
+
+.role-cards{display:flex; flex-direction:column; gap:12px; margin-bottom:6px;}
+.role-card{
+  background:rgba(255,255,255,.14); backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.25); border-radius:18px; padding:16px;
+  display:flex; align-items:center; gap:13px; text-align:start;
+}
+.role-card:active{background:rgba(255,255,255,.22);}
+.role-card .ri{width:44px; height:44px; border-radius:13px; background:rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; flex:none;}
+.role-card b{font-size:14px; font-weight:800; display:block; margin-bottom:2px;}
+.role-card span{font-size:11.5px; opacity:.8; font-weight:600;}
+.role-card svg:last-child{margin-inline-start:auto; opacity:.7;}
+
+.install-banner{
+  display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.25); border-radius:14px; padding:11px 13px; margin-top:14px;
+}
+.install-banner .ii{width:32px; height:32px; border-radius:9px; background:rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; flex:none;}
+.install-banner p{font-size:11px; font-weight:700; opacity:.9; line-height:1.5;}
+.install-banner button{font-size:11px; font-weight:800; background:#fff; color:var(--primary-strong); padding:6px 11px; border-radius:8px; flex:none;}
+
+/* ---- Onboarding slider ---- */
+#screenOnboard{background:var(--bg);}
+.onboard-top{display:flex; align-items:center; justify-content:space-between; padding:20px 22px 4px;}
+.onboard-brand{display:flex; align-items:center; gap:8px;}
+.onboard-brand .mark{width:30px; height:30px; border-radius:9px; background:var(--primary-tint); color:var(--primary-strong); display:flex; align-items:center; justify-content:center;}
+.onboard-brand b{font-size:14.5px; font-weight:800;}
+.onboard-slides{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; flex:1; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+.onboard-slides::-webkit-scrollbar{display:none;}
+.onboard-slide{flex:0 0 100%; scroll-snap-align:start; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 30px; text-align:center;}
+.onboard-illustration{width:100%; max-width:250px; height:200px; margin-bottom:22px;}
+.onboard-slide h2{font-size:18.5px; font-weight:800; margin-bottom:9px; line-height:1.5;}
+.onboard-slide p{font-size:12px; color:var(--ink-faint); font-weight:600; line-height:1.85; max-width:270px;}
+.onboard-footer{padding:14px 26px 24px; flex:none;}
+.onboard-dots{display:flex; justify-content:center; gap:7px; margin-bottom:20px;}
+.onboard-dot{width:7px; height:7px; border-radius:50%; background:var(--surface-3); transition:all .25s ease;}
+.onboard-dot.active{width:22px; background:var(--primary); border-radius:20px;}
+.onboard-actions{display:flex; align-items:center; justify-content:space-between;}
+.onboard-skip{font-size:12px; font-weight:700; color:var(--ink-faint); padding:10px;}
+.onboard-next{width:50px; height:50px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; flex:none; box-shadow:0 10px 22px -8px color-mix(in srgb, var(--primary) 55%, transparent);}
+.onboard-next.final{width:auto; padding:0 22px; border-radius:26px; gap:8px; font-size:12.5px; font-weight:800;}
+
+.svg-anim{transform-box:fill-box; transform-origin:center;}
+@keyframes floatY{0%,100%{transform:translateY(0);} 50%{transform:translateY(-9px);}}
+@keyframes floatY2{0%,100%{transform:translateY(0);} 50%{transform:translateY(-13px);}}
+@keyframes pulseRing{0%{transform:scale(.8); opacity:.85;} 75%{transform:scale(1.7); opacity:0;} 100%{opacity:0;}}
+@keyframes dashFlow{to{stroke-dashoffset:-46;}}
+@keyframes barPulse{0%,100%{transform:scaleY(1);} 50%{transform:scaleY(1.3);}}
+@keyframes coinRise{0%{transform:translateY(6px); opacity:0;} 30%{opacity:1;} 100%{transform:translateY(-42px); opacity:0;}}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0);} 30%{transform:translateY(-4px);}}
+@keyframes badgePulse{0%,100%{transform:scale(1) rotate(0deg);} 50%{transform:scale(1.08) rotate(-4deg);}}
+.anim-float{animation:floatY 3s ease-in-out infinite;}
+.anim-float2{animation:floatY2 3.6s ease-in-out infinite;}
+.anim-ring{animation:pulseRing 2.2s ease-out infinite;}
+.anim-dash{stroke-dasharray:6 8; animation:dashFlow 1.4s linear infinite;}
+.anim-bar1{animation:barPulse 1.6s ease-in-out infinite;}
+.anim-bar2{animation:barPulse 1.6s ease-in-out infinite .2s;}
+.anim-bar3{animation:barPulse 1.6s ease-in-out infinite .4s;}
+.anim-coin1{animation:coinRise 2.6s ease-in infinite;}
+.anim-coin2{animation:coinRise 2.6s ease-in infinite .8s;}
+.anim-coin3{animation:coinRise 2.6s ease-in infinite 1.6s;}
+.anim-dot1{animation:typingBounce 1.2s ease-in-out infinite;}
+.anim-dot2{animation:typingBounce 1.2s ease-in-out infinite .15s;}
+.anim-dot3{animation:typingBounce 1.2s ease-in-out infinite .3s;}
+.anim-badge{animation:badgePulse 2.4s ease-in-out infinite;}
+
+/* ---- Status chart cards ---- */
+.chart-card{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:15px; margin-bottom:14px;}
+.chart-card-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+.chart-card-head h4{font-size:12.5px; font-weight:800;}
+.donut-row{display:flex; align-items:center; gap:18px;}
+.donut{width:96px; height:96px; border-radius:50%; flex:none; position:relative;}
+.donut-hole{position:absolute; inset:14px; border-radius:50%; background:var(--surface); display:flex; flex-direction:column; align-items:center; justify-content:center;}
+.donut-hole b{font-size:15px; font-weight:800;}
+.donut-hole span{font-size:8.5px; color:var(--ink-faint); font-weight:700;}
+.legend-col{display:flex; flex-direction:column; gap:8px; flex:1;}
+.legend-item{display:flex; align-items:center; gap:7px; font-size:11px; font-weight:700; color:var(--ink-soft);}
+.legend-item .ldot{width:8px; height:8px; border-radius:3px; flex:none;}
+.legend-item b{color:var(--ink); font-weight:800; margin-inline-start:auto;}
+.week-chart{display:flex; align-items:flex-end; gap:7px; height:84px; padding-top:6px;}
+.week-col{flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end;}
+.week-bar{width:100%; max-width:20px; border-radius:5px 5px 2px 2px; background:linear-gradient(180deg, var(--primary), var(--primary-strong));}
+.week-label{font-size:8.5px; color:var(--ink-faint); font-weight:700;}
+
+/* ---- App shell ---- */
+#screenApp{flex-direction:column;}
+.app-topbar{
+  display:flex; align-items:center; gap:10px; padding:16px 16px 12px;
+  border-bottom:1px solid var(--border); background:var(--surface); flex:none;
+}
+.tb-icon-btn{width:34px; height:34px; border-radius:10px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; color:var(--ink-soft); flex:none;}
+.tb-title{font-size:15.5px; font-weight:800; flex:1;}
+.tb-sub{font-size:10.5px; color:var(--ink-faint); font-weight:700;}
+
+.app-content{flex:1; overflow-y:auto; padding:16px 16px 90px;}
+.app-content::-webkit-scrollbar{display:none;}
+
+.bottom-tabs{
+  position:absolute; bottom:0; inset-inline:0; height:70px;
+  background:color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter:blur(10px);
+  border-top:1px solid var(--border); display:flex; align-items:center; z-index:40;
+  padding-bottom:env(safe-area-inset-bottom, 0);
+}
+.tab-btn{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--ink-faint); position:relative;}
+.tab-btn.active{color:var(--primary);}
+.tab-btn .tlabel{font-size:9.5px; font-weight:700;}
+.tab-btn .tdot{position:absolute; top:-2px; inset-inline-end:24%; width:7px; height:7px; border-radius:50%; background:var(--accent); border:1.5px solid var(--surface);}
+
+/* ---- Common bits ---- */
+.hero-card{
+  background:linear-gradient(150deg, var(--primary-strong), var(--primary)); color:#fff;
+  border-radius:20px; padding:18px; margin-bottom:16px; position:relative; overflow:hidden;
+}
+.hero-card .hc-label{font-size:11px; opacity:.85; font-weight:700; margin-bottom:4px;}
+.hero-card .hc-value{font-size:26px; font-weight:800; letter-spacing:.2px;}
+.hero-card .hc-row{display:flex; align-items:center; justify-content:space-between; margin-top:14px;}
+.hero-card .hc-chip{background:rgba(255,255,255,.18); border-radius:10px; padding:8px 10px; font-size:10.5px; font-weight:700; display:flex; align-items:center; gap:6px;}
+
+.stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;}
+.stat-card{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:13px;}
+.stat-card .sv{font-size:19px; font-weight:800;}
+.stat-card .sl{font-size:10.5px; color:var(--ink-faint); font-weight:700; margin-top:2px;}
+.stat-card .si{width:28px; height:28px; border-radius:9px; display:flex; align-items:center; justify-content:center; margin-bottom:8px;}
+
+.section-title{display:flex; align-items:center; justify-content:space-between; margin:18px 0 10px;}
+.section-title h3{font-size:13.5px; font-weight:800;}
+.section-title a{font-size:11px; font-weight:700; color:var(--primary);}
+
+.list-card{background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden;}
+.order-row{display:flex; align-items:center; gap:11px; padding:12px 14px; border-bottom:1px solid var(--border);}
+.order-row:last-child{border-bottom:none;}
+.order-ic{width:38px; height:38px; border-radius:11px; background:var(--primary-tint); color:var(--primary-strong); display:flex; align-items:center; justify-content:center; flex:none;}
+.order-mid{flex:1; min-width:0;}
+.order-mid b{font-size:12.5px; font-weight:800; display:block;}
+.order-mid span{font-size:10.5px; color:var(--ink-faint); font-weight:600;}
+.order-end{text-align:end; flex:none;}
+.order-end b{font-size:12.5px; font-weight:800; display:block; font-variant-numeric:tabular-nums;}
+
+.badge{display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px; font-size:10px; font-weight:800;}
+.badge-dot{width:5px; height:5px; border-radius:50%;}
+.b-neutral{background:var(--surface-3); color:var(--ink-soft);}
+.b-primary{background:var(--primary-tint); color:var(--primary-strong);}
+.b-success{background:var(--success-tint); color:var(--success);}
+.b-warning{background:var(--warning-tint); color:var(--warning);}
+.b-danger{background:var(--danger-tint); color:var(--danger);}
+
+.status-scroll{display:flex; gap:10px; overflow-x:auto; padding:3px 2px 8px; margin-bottom:6px; scrollbar-width:none;}
+.status-scroll::-webkit-scrollbar{display:none;}
+.status-chip-pill{display:flex; align-items:center; gap:6px; padding:9px 13px; border-radius:12px; background:var(--surface); border:1px solid var(--border); font-size:11.5px; font-weight:800; color:var(--ink-soft); flex:none;}
+.status-chip-pill b{font-variant-numeric:tabular-nums; background:var(--surface-2); padding:1px 6px; border-radius:20px; font-size:10px;}
+.status-chip-pill.active{background:var(--primary); border-color:var(--primary); color:#fff;}
+.status-chip-pill.active b{background:rgba(255,255,255,.22); color:#fff;}
+.status-more-btn{display:flex; align-items:center; gap:6px; padding:9px 13px; border-radius:12px; background:var(--surface-2); border:1px dashed var(--border); font-size:11px; font-weight:800; color:var(--ink-soft); flex:1; justify-content:center; min-width:0;}
+.status-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:4px;}
+.status-card.sm{padding:9px; gap:6px;}
+.status-card.sm .sc-count{font-size:14px;}
+.status-card.sm .sc-label{font-size:9px; line-height:1.3;}
+.status-card{flex:0 0 auto; min-width:88px; padding:12px 13px; border-radius:16px; background:var(--surface); border:1px solid var(--border); display:flex; flex-direction:column; gap:9px; transition:background .15s, border-color .15s, transform .1s;}
+.status-card:active{transform:scale(.97);}
+.status-card .sc-top{display:flex; align-items:center; justify-content:space-between;}
+.status-card .sc-icon{width:28px; height:28px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex:none;}
+.status-card .sc-count{font-size:17px; font-weight:800; font-variant-numeric:tabular-nums;}
+.status-card .sc-label{font-size:10px; font-weight:700; color:var(--ink-faint); white-space:nowrap;}
+.status-card.active{background:var(--primary); border-color:var(--primary);}
+.status-card.active .sc-count, .status-card.active .sc-label{color:#fff;}
+.status-card.active .sc-icon{background:rgba(255,255,255,.22); color:#fff;}
+
+/* ---- Hero promo slider ---- */
+.hero-slider-wrap{margin-bottom:14px;}
+.hero-slider{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; border-radius:20px; scrollbar-width:none;}
+.hero-slider::-webkit-scrollbar{display:none;}
+.hero-slide{flex:0 0 100%; scroll-snap-align:start; border-radius:20px; padding:17px 18px; min-height:104px; display:flex; align-items:center; gap:14px; position:relative; overflow:hidden; color:#fff;}
+.hero-slide-illo{width:58px; height:58px; flex:none;}
+.hero-slide-text h4{font-size:12.5px; font-weight:800; margin-bottom:4px; line-height:1.45;}
+.hero-slide-text p{font-size:10px; font-weight:600; line-height:1.65; opacity:.85; max-width:190px;}
+.hero-slider-dots{display:flex; justify-content:center; gap:5px; margin-top:9px;}
+.hero-slider-dots .hd{width:5px; height:5px; border-radius:50%; background:var(--surface-3); transition:all .2s;}
+.hero-slider-dots .hd.active{width:15px; border-radius:20px; background:var(--primary);}
+
+.deliv-card{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:13px; margin-bottom:11px;}
+.deliv-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:9px;}
+.deliv-actions{display:flex; gap:6px; margin-top:11px; flex-wrap:wrap;}
+.mini-btn{flex:1; padding:8px 6px; border-radius:10px; font-size:10.5px; font-weight:800; text-align:center; background:var(--surface-2); color:var(--ink-soft); border:1px solid var(--border);}
+.mini-btn.primary{background:var(--primary); color:#fff; border-color:var(--primary);}
+
+.fab{
+  position:absolute; bottom:86px; inset-inline-end:18px; width:52px; height:52px; border-radius:50%;
+  background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 10px 22px -6px color-mix(in srgb, var(--primary) 60%, transparent); z-index:35;
+}
+
+/* ---- Wallet ---- */
+.wallet-card{
+  background:linear-gradient(135deg, var(--ink) 0%, #253634 100%); color:#fff;
+  border-radius:20px; padding:20px; margin-bottom:16px; position:relative; overflow:hidden;
+}
+[data-theme="dark"] .wallet-card{background:linear-gradient(135deg, #1c2b29, #0c1615);}
+.wallet-card .wc-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
+.wallet-card .wc-badge{background:rgba(255,255,255,.14); border-radius:8px; padding:5px 9px; font-size:10px; font-weight:800;}
+.wallet-card .wc-value{font-size:28px; font-weight:800; letter-spacing:.3px; margin-bottom:4px;}
+.wallet-card .wc-label{font-size:11px; opacity:.75; font-weight:700;}
+.wallet-actions{display:flex; gap:9px; margin-top:16px;}
+.wallet-actions button{flex:1; background:rgba(255,255,255,.14); border-radius:12px; padding:11px; display:flex; flex-direction:column; align-items:center; gap:5px; font-size:10.5px; font-weight:700;}
+.wallet-actions button.solid{background:#fff; color:var(--ink);}
+
+.tx-row{display:flex; align-items:center; gap:11px; padding:12px 14px; border-bottom:1px solid var(--border);}
+.tx-row:last-child{border-bottom:none;}
+.tx-ic{width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex:none;}
+.tx-mid{flex:1; min-width:0;}
+.tx-mid b{font-size:12px; font-weight:700; display:block;}
+.tx-mid span{font-size:10px; color:var(--ink-faint); font-weight:600;}
+.tx-amt{font-size:12.5px; font-weight:800; font-variant-numeric:tabular-nums; flex:none;}
+
+/* ---- Chat ---- */
+.chat-row{display:flex; align-items:center; gap:11px; padding:13px 14px; border-bottom:1px solid var(--border);}
+.chat-row:last-child{border-bottom:none;}
+.chat-avatar{width:42px; height:42px; border-radius:50%; background:var(--primary-tint); color:var(--primary-strong); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; flex:none;}
+.chat-mid{flex:1; min-width:0;}
+.chat-mid b{font-size:12.5px; font-weight:800; display:block;}
+.chat-mid span{font-size:11px; color:var(--ink-faint); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; max-width:200px;}
+.chat-end{text-align:end; flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:5px;}
+.chat-end time{font-size:9.5px; color:var(--ink-faint); font-weight:700;}
+.unread-badge{background:var(--primary); color:#fff; font-size:9.5px; font-weight:800; min-width:17px; height:17px; border-radius:20px; display:flex; align-items:center; justify-content:center; padding:0 4px;}
+
+.thread{display:flex; flex-direction:column; gap:10px;}
+.bubble{max-width:76%; padding:9px 13px; border-radius:16px; font-size:12.5px; font-weight:600; line-height:1.6;}
+.bubble-them{background:var(--surface); border:1px solid var(--border); align-self:flex-start; border-start-start-radius:4px;}
+.bubble-me{background:var(--primary); color:#fff; align-self:flex-end; border-start-end-radius:4px;}
+.bubble-time{font-size:9px; opacity:.65; margin-top:4px; display:block; font-weight:700;}
+.chat-input-bar{display:flex; align-items:center; gap:8px; padding:10px 14px; border-top:1px solid var(--border); background:var(--surface); flex:none;}
+.chat-input-bar input{flex:1; border:1px solid var(--border); background:var(--surface-2); border-radius:20px; padding:10px 14px; font-size:12.5px; color:var(--ink); outline:none;}
+.send-btn{width:38px; height:38px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; flex:none;}
+
+/* ---- Profile ---- */
+.profile-head{display:flex; flex-direction:column; align-items:center; gap:10px; padding:18px 0 22px;}
+.profile-avatar{width:74px; height:74px; border-radius:50%; background:var(--primary-tint); color:var(--primary-strong); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:22px;}
+.profile-head b{font-size:15px; font-weight:800;}
+.profile-head span{font-size:11.5px; color:var(--ink-faint); font-weight:700;}
+.settings-row{display:flex; align-items:center; gap:12px; padding:13px 14px; border-bottom:1px solid var(--border);}
+.settings-row:last-child{border-bottom:none;}
+.settings-row .sri{width:32px; height:32px; border-radius:9px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; color:var(--ink-soft); flex:none;}
+.settings-row .srt{flex:1; font-size:12.5px; font-weight:700;}
+.settings-row .srv{font-size:11px; color:var(--ink-faint); font-weight:700;}
+.seg{display:flex; background:var(--surface-2); border-radius:9px; padding:2px; gap:2px;}
+.seg button{padding:5px 10px; border-radius:7px; font-size:10.5px; font-weight:800; color:var(--ink-soft);}
+.seg button.active{background:var(--surface); color:var(--primary-strong); box-shadow:var(--shadow);}
+
+/* ---- Detail sheet ---- */
+.sheet-route{display:flex; align-items:flex-start; overflow-x:auto; padding:8px 2px; gap:0;}
+.sheet-step{display:flex; flex-direction:column; align-items:center; gap:6px; min-width:76px; position:relative; flex:1;}
+.sheet-line{position:absolute; top:13px; height:2px; background:var(--border); inset-inline-start:-50%; width:100%; z-index:0;}
+.sheet-step:first-child .sheet-line{display:none;}
+.sheet-step.done .sheet-line{background:var(--primary);}
+.sheet-node{width:26px; height:26px; border-radius:50%; border:2px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:center; color:var(--ink-faint); z-index:1; flex:none; font-size:10px; font-weight:800;}
+.sheet-step.done .sheet-node{background:var(--primary); border-color:var(--primary); color:#fff;}
+.sheet-step.current .sheet-node{border-color:var(--accent); color:var(--accent); box-shadow:0 0 0 3px var(--accent-tint);}
+.sheet-label{font-size:9px; font-weight:700; text-align:center; color:var(--ink-faint); line-height:1.3;}
+.sheet-step.done .sheet-label, .sheet-step.current .sheet-label{color:var(--ink);}
+
+.field{margin-bottom:14px;}
+.field label{display:block; font-size:11.5px; font-weight:700; color:var(--ink-soft); margin-bottom:6px;}
+.field input, .field select{width:100%; padding:11px 13px; border:1px solid var(--border); border-radius:11px; background:var(--surface-2); color:var(--ink); font-size:13px; outline:none;}
+.btn{display:flex; align-items:center; justify-content:center; gap:8px; padding:12px 16px; border-radius:12px; font-weight:800; font-size:13px;}
+.btn-primary{background:var(--primary); color:#fff;}
+.btn-ghost{background:var(--surface-2); color:var(--ink); border:1px solid var(--border);}
+
+.overlay{position:absolute; inset:0; background:rgba(10,18,17,.5); z-index:80; display:none; align-items:flex-end;}
+.overlay.open{display:flex;}
+.sheet-modal{background:var(--surface); width:100%; border-radius:22px 22px 0 0; padding:20px; max-height:82%; overflow-y:auto; animation:sheetup .2s ease;}
+@keyframes sheetup{from{transform:translateY(30px); opacity:.6;} to{transform:none; opacity:1;}}
+.sheet-handle{width:38px; height:4px; border-radius:20px; background:var(--border); margin:0 auto 16px;}
+
+.text-muted{color:var(--ink-faint); font-weight:600; font-size:11.5px;}
+.mono{font-variant-numeric:tabular-nums;}
+.divider{height:1px; background:var(--border); margin:14px 0;}
+.empty-hint{text-align:center; padding:34px 14px; color:var(--ink-faint); font-size:11.5px; font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="phone" id="phone">
+    <div class="notch"></div>
+
+    <!-- ============ ONBOARDING SLIDER ============ -->
+    <section class="screen active" id="screenOnboard">
+      <div class="onboard-top">
+        <div class="onboard-brand">
+          <div class="mark"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></div>
+          <b>مسار</b>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="start-toggles" style="border:1px solid var(--border); border-radius:8px; overflow:hidden;">
+            <button class="pill-btn js-lang-ar active" style="background:var(--surface-2); color:var(--ink-soft);">AR</button>
+            <button class="pill-btn js-lang-en" style="background:var(--surface-2); color:var(--ink-soft);">EN</button>
+          </div>
+          <button class="tb-icon-btn js-theme-toggle">
+            <svg class="js-theme-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="onboard-slides" id="onboardSlides">
+        <div class="onboard-slide">
+          <svg class="onboard-illustration" viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="130" cy="100" r="92" fill="var(--primary-tint)"/>
+            <path class="anim-dash" d="M35 165 C 80 140, 70 110, 105 95 S 160 55, 150 35 S 205 15, 225 20" stroke="var(--primary)" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <circle cx="35" cy="165" r="7" fill="var(--primary)"/>
+            <g class="svg-anim anim-ring" style="transform-origin:150px 35px;"><circle cx="150" cy="35" r="7" fill="var(--accent)" opacity=".5"/></g>
+            <circle cx="150" cy="35" r="7" fill="var(--accent)"/>
+            <g class="svg-anim anim-float" style="transform-origin:60px 70px;">
+              <rect x="40" y="55" width="34" height="30" rx="6" fill="var(--surface)" stroke="var(--primary-strong)" stroke-width="2"/>
+              <path d="M40 65h34M57 55v30" stroke="var(--primary-strong)" stroke-width="2"/>
+            </g>
+            <g class="svg-anim anim-float2" style="transform-origin:205px 110px;">
+              <circle cx="205" cy="110" r="19" fill="var(--surface)" stroke="var(--success)" stroke-width="2"/>
+              <path d="M197 110l5 5 10-10" stroke="var(--success)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </g>
+          </svg>
+          <h2 data-i18n="ob1Title">تتبّع طلباتك لحظة بلحظة</h2>
+          <p data-i18n="ob1Sub">شاهد كل طلب وهو ينتقل بين الفروع حتى يصل ليد الزبون، بخط سير واضح لكل مرحلة.</p>
+        </div>
+
+        <div class="onboard-slide">
+          <svg class="onboard-illustration" viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="130" cy="100" r="92" fill="var(--accent-tint)"/>
+            <rect x="65" y="80" width="130" height="80" rx="16" fill="var(--primary)"/>
+            <rect x="65" y="98" width="130" height="14" fill="var(--primary-strong)"/>
+            <circle cx="168" cy="130" r="12" fill="var(--accent)"/>
+            <g class="svg-anim anim-coin1"><circle cx="100" cy="70" r="9" fill="var(--accent)"/><text x="100" y="74" font-size="10" fill="#fff" text-anchor="middle" font-weight="800">$</text></g>
+            <g class="svg-anim anim-coin2"><circle cx="130" cy="70" r="9" fill="var(--accent)"/><text x="130" y="74" font-size="10" fill="#fff" text-anchor="middle" font-weight="800">$</text></g>
+            <g class="svg-anim anim-coin3"><circle cx="160" cy="70" r="9" fill="var(--accent)"/><text x="160" y="74" font-size="10" fill="#fff" text-anchor="middle" font-weight="800">$</text></g>
+            <g transform="translate(178,20)">
+              <rect class="svg-anim anim-bar1" x="0" y="14" width="7" height="10" rx="2" fill="var(--success)" style="transform-origin:3.5px 24px;"/>
+              <rect class="svg-anim anim-bar2" x="11" y="8" width="7" height="16" rx="2" fill="var(--success)" style="transform-origin:14.5px 24px;"/>
+              <rect class="svg-anim anim-bar3" x="22" y="2" width="7" height="22" rx="2" fill="var(--success)" style="transform-origin:25.5px 24px;"/>
+            </g>
+          </svg>
+          <h2 data-i18n="ob2Title">محفظتك وتحصيلاتك بمكان واحد</h2>
+          <p data-i18n="ob2Sub">اطّلع على رصيدك، اطلب سحب مستحقاتك، وراجع كل حركة مالية بسجل واضح ومنظّم.</p>
+        </div>
+
+        <div class="onboard-slide">
+          <svg class="onboard-illustration" viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="130" cy="100" r="92" fill="var(--primary-tint)"/>
+            <rect x="42" y="60" width="120" height="58" rx="16" fill="var(--surface)" stroke="var(--border)" stroke-width="2"/>
+            <g>
+              <circle class="svg-anim anim-dot1" cx="76" cy="89" r="5" fill="var(--ink-faint)"/>
+              <circle class="svg-anim anim-dot2" cx="93" cy="89" r="5" fill="var(--ink-faint)"/>
+              <circle class="svg-anim anim-dot3" cx="110" cy="89" r="5" fill="var(--ink-faint)"/>
+            </g>
+            <rect x="98" y="112" width="120" height="46" rx="16" fill="var(--primary)"/>
+            <text x="158" y="140" font-size="11" fill="#fff" text-anchor="middle" font-weight="700" opacity=".9">✓</text>
+            <g class="svg-anim anim-badge" style="transform-origin:205px 62px;">
+              <circle cx="205" cy="62" r="17" fill="var(--success)"/>
+              <path d="M197 62l5 5 10-10" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </g>
+          </svg>
+          <h2 data-i18n="ob3Title">تواصل مباشر مع فريق العمليات</h2>
+          <p data-i18n="ob3Sub">راسل الدعم الفني أو مدير الفرع مباشرة داخل التطبيق، وتابع ردودهم فوراً.</p>
+        </div>
+      </div>
+
+      <div class="onboard-footer">
+        <div class="onboard-dots" id="onboardDots">
+          <div class="onboard-dot active"></div><div class="onboard-dot"></div><div class="onboard-dot"></div>
+        </div>
+        <div class="onboard-actions">
+          <button class="onboard-skip" id="btnSkipOnboard" data-i18n="obSkip">تخطي</button>
+          <button class="onboard-next" id="btnNextOnboard">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" id="onboardArrowIc"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ START / ROLE PICKER ============ -->
+    <section class="screen" id="screenStart">
+      <div>
+        <div class="start-top">
+          <div class="start-brand">
+            <div class="mark"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></div>
+            <b>مسار</b>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <div class="start-toggles">
+              <button class="pill-btn js-lang-ar active">AR</button>
+              <button class="pill-btn js-lang-en">EN</button>
+            </div>
+            <button class="icon-round js-theme-toggle">
+              <svg class="js-theme-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="start-hero">
+          <h1 data-i18n="startTitle">اختر تطبيقك</h1>
+          <p data-i18n="startSub">نفس حساب شركتك على مسار، بواجهة مخصّصة لدورك.</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="role-cards">
+          <button class="role-card" data-role="merchant">
+            <div class="ri"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9a2.4 2.4 0 0 0 4.6 1.1A2.4 2.4 0 0 0 12 9a2.4 2.4 0 0 0 4.4 1.1A2.4 2.4 0 0 0 21 9"/><path d="M5 9v10h14V9"/></svg></div>
+            <div><b data-i18n="merchantApp">تطبيق التاجر</b><span data-i18n="merchantAppSub">طلباتي، كشف حسابي، محفظتي</span></div>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chev"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+          <button class="role-card" data-role="courier">
+            <div class="ri"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17" r="3.3"/><circle cx="18" cy="17" r="3.3"/><path d="M6 17l4-8h4l3 8"/><path d="M10 9h4"/><circle cx="15" cy="6" r="1.6"/></svg></div>
+            <div><b data-i18n="courierApp">تطبيق المندوب</b><span data-i18n="courierAppSub">توصيلاتي، تحصيلاتي، محفظتي</span></div>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chev"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+        </div>
+
+        <div class="install-banner">
+          <div class="ii"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><polyline points="7 11 12 16 17 11"/><path d="M4 19h16"/></svg></div>
+          <p data-i18n="installHint">أضِف مسار إلى شاشتك الرئيسية للوصول السريع والعمل دون اتصال جزئياً</p>
+          <button data-i18n="installBtn">تثبيت</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ APP SHELL ============ -->
+    <section class="screen" id="screenApp">
+      <div class="app-topbar">
+        <button class="tb-icon-btn" id="btnBack" style="display:none;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="backArrowIc"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <div>
+          <div class="tb-title" id="tbTitle">الرئيسية</div>
+          <div class="tb-sub" id="tbSub"></div>
+        </div>
+        <div style="display:flex; gap:6px; margin-inline-start:auto;">
+          <div class="start-toggles" style="border:1px solid var(--border); border-radius:8px; overflow:hidden;">
+            <button class="pill-btn js-lang-ar active" style="background:var(--surface-2); color:var(--ink-soft);">AR</button>
+            <button class="pill-btn js-lang-en" style="background:var(--surface-2); color:var(--ink-soft);">EN</button>
+          </div>
+          <button class="tb-icon-btn js-theme-toggle">
+            <svg class="js-theme-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="app-content" id="appContent"></div>
+
+      <button class="fab" id="fabBtn" style="display:none;">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+
+      <nav class="bottom-tabs" id="bottomTabs"></nav>
+    </section>
+
+    <!-- ============ SHEET / MODAL ============ -->
+    <div class="overlay" id="sheetOverlay">
+      <div class="sheet-modal" id="sheetContent"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= ICONS ================= */
+function ic(name, size){
+  size = size || 18;
+  const S = `width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"`;
+  const M = {
+    home:`<svg ${S}><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>`,
+    box:`<svg ${S}><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>`,
+    wallet:`<svg ${S}><rect x="2.5" y="6" width="19" height="13" rx="2.3"/><path d="M2.5 10h19"/><circle cx="17" cy="14" r="1.2"/></svg>`,
+    chat:`<svg ${S}><path d="M4 4h16v12H8l-4 4V4z"/></svg>`,
+    user:`<svg ${S}><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c0-4.1 3.4-7.5 7.5-7.5s7.5 3.4 7.5 7.5"/></svg>`,
+    bike:`<svg ${S}><circle cx="6" cy="17" r="3.3"/><circle cx="18" cy="17" r="3.3"/><path d="M6 17l4-8h4l3 8"/><path d="M10 9h4"/><circle cx="15" cy="6" r="1.6"/></svg>`,
+    store:`<svg ${S}><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9a2.4 2.4 0 0 0 4.6 1.1A2.4 2.4 0 0 0 12 9a2.4 2.4 0 0 0 4.4 1.1A2.4 2.4 0 0 0 21 9"/><path d="M5 9v10h14V9"/><path d="M9.5 19v-5h5v5"/></svg>`,
+    check:`<svg ${S}><polyline points="20 6 9 17 4 12"/></svg>`,
+    clock:`<svg ${S}><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>`,
+    camera:`<svg ${S}><path d="M4 8h3l1.5-2.5h7L17 8h3a1.5 1.5 0 0 1 1.5 1.5V18A1.5 1.5 0 0 1 20 19.5H4A1.5 1.5 0 0 1 2.5 18V9.5A1.5 1.5 0 0 1 4 8z"/><circle cx="12" cy="13.5" r="3.4"/></svg>`,
+    send:`<svg ${S}><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`,
+    download:`<svg ${S}><path d="M12 4v13"/><polyline points="7 12 12 17 17 12"/><path d="M4 20h16"/></svg>`,
+    upload:`<svg ${S}><path d="M12 20V7"/><polyline points="7 12 12 7 17 12"/><path d="M4 20h16"/></svg>`,
+    mapPin:`<svg ${S}><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg>`,
+    phoneCall:`<svg ${S}><path d="M4 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L14 13l5 2v4a2 2 0 0 1-2 2C9.5 21 3 14.5 3 6a2 2 0 0 1 2-2z"/></svg>`,
+    truck:`<svg ${S}><rect x="1.5" y="7" width="13" height="9" rx="1.3"/><path d="M14.5 10h4l3 3v3h-7"/><circle cx="6" cy="18" r="1.9"/><circle cx="17.5" cy="18" r="1.9"/></svg>`,
+    logout:`<svg ${S}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>`,
+    globe:`<svg ${S}><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><line x1="3" y1="12" x2="21" y2="12"/></svg>`,
+    bell:`<svg ${S}><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>`,
+    shield:`<svg ${S}><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg>`,
+    signature:`<svg ${S}><path d="M3 17c2-4 3-6 5-6s2 3 4 3 2.5-4 4.5-4 1.5 3 3.5 3"/><line x1="3" y1="20.5" x2="21" y2="20.5"/></svg>`,
+    x2:`<svg ${S}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+    plus:`<svg ${S}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+    building:`<svg ${S}><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="7" x2="8" y2="7.01"/><line x1="12" y1="7" x2="12" y2="7.01"/><line x1="16" y1="7" x2="16" y2="7.01"/><line x1="8" y1="11" x2="8" y2="11.01"/><line x1="12" y1="11" x2="12" y2="11.01"/></svg>`,
+  };
+  return M[name] || '';
+}
+
+/* ================= DATA ================= */
+const STAGES = [
+  {ar:'تم إنشاء الطلب', en:'Order Created'},
+  {ar:'بانتظار الاستلام', en:'Awaiting Pickup'},
+  {ar:'تم تكليف مندوب استلام', en:'Pickup Courier Assigned'},
+  {ar:'تم الاستلام من التاجر', en:'Picked Up From Merchant'},
+  {ar:'وصل إلى فرع المصدر', en:'Arrived at Origin Branch'},
+  {ar:'قيد الفرز', en:'Sorting'},
+  {ar:'بانتظار النقل', en:'Awaiting Transfer'},
+  {ar:'قيد النقل بين الفروع', en:'In Transit Between Branches'},
+  {ar:'وصل إلى فرع الوجهة', en:'Arrived at Destination Branch'},
+  {ar:'تم تكليف مندوب توزيع', en:'Delivery Courier Assigned'},
+  {ar:'خرج للتوصيل', en:'Out for Delivery'},
+  {ar:'تم التسليم', en:'Delivered'},
+  {ar:'مغلق مالياً', en:'Financially Closed'},
+];
+
+/* Alternate terminal statuses — outcomes after "Out for Delivery" depending on delivery result */
+const ALT_STATUSES = [
+  {key:'delayed', ar:'مؤجل', en:'Delayed'},
+  {key:'rejected', ar:'رفض', en:'Rejected'},
+  {key:'returned', ar:'راجع', en:'Returned'},
+  {key:'cancelled', ar:'ملغي', en:'Cancelled'},
+  {key:'damaged', ar:'تالف', en:'Damaged'},
+];
+const ALT_ORDER_STATUSES = ['delayed','rejected','returned','cancelled','damaged'];
+
+const MERCHANT_ORDERS = [
+  {track:'IQ-204871', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, amount:38000, stage:7, status:'transit'},
+  {track:'IQ-204879', customer:{ar:'كرم عادل',en:'Karam Adel'}, amount:26500, stage:12, status:'delivered'},
+  {track:'IQ-204880', customer:{ar:'هدى نعيم',en:'Huda Naeem'}, amount:19000, stage:10, status:'out'},
+  {track:'IQ-204881', customer:{ar:'باسم غالب',en:'Bassem Ghalib'}, amount:47500, stage:3, status:'delayed'},
+  {track:'IQ-204862', customer:{ar:'ميساء طه',en:'Maysaa Taha'}, amount:31000, stage:12, status:'delivered'},
+];
+
+const COURIER_DELIVERIES = [
+  {track:'IQ-204873', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, area:{ar:'الكرادة',en:'Karrada'}, amount:64000, stage:10},
+  {track:'IQ-204877', customer:{ar:'مروان طارق',en:'Marwan Tariq'}, area:{ar:'الجادرية',en:'Jadriya'}, amount:29800, stage:9},
+  {track:'IQ-204882', customer:{ar:'رنا فؤاد',en:'Rana Fouad'}, area:{ar:'المنصور',en:'Mansour'}, amount:41500, stage:11},
+  {track:'IQ-204885', customer:{ar:'سيف كامل',en:'Saif Kamel'}, area:{ar:'زيونة',en:'Zayouna'}, amount:18000, stage:8},
+];
+
+const MERCHANT_PROVINCES = [
+  {ar:'بغداد', en:'Baghdad', orders:186, amount:7160000},
+  {ar:'البصرة', en:'Basra', orders:54, amount:2050000},
+  {ar:'أربيل', en:'Erbil', orders:31, amount:1180000},
+  {ar:'النجف', en:'Najaf', orders:22, amount:830000},
+  {ar:'كربلاء', en:'Karbala', orders:14, amount:520000},
+  {ar:'الموصل', en:'Mosul', orders:9, amount:305000},
+  {ar:'ذي قار', en:'Dhi Qar', orders:6, amount:214000},
+  {ar:'الأنبار', en:'Anbar', orders:4, amount:151000},
+];
+
+const MERCHANT_TX = [
+  {icon:'check', color:'success', label:{ar:'تسوية مستلمة',en:'Settlement received'}, ref:'STL-3391', date:'2026-07-01', amount:4210000, dir:1},
+  {icon:'box', color:'primary', label:{ar:'أجور توصيل — IQ-204879',en:'Delivery fee — IQ-204879'}, ref:'IQ-204879', date:'2026-07-05', amount:-2200, dir:-1},
+  {icon:'download', color:'warning', label:{ar:'طلب سحب',en:'Withdrawal request'}, ref:'WD-0118', date:'2026-06-28', amount:-1500000, dir:-1},
+  {icon:'box', color:'primary', label:{ar:'أجور توصيل — IQ-204862',en:'Delivery fee — IQ-204862'}, ref:'IQ-204862', date:'2026-06-24', amount:-1800, dir:-1},
+  {icon:'check', color:'success', label:{ar:'تحصيل زبون',en:'Customer collection'}, ref:'IQ-204862', date:'2026-06-24', amount:31000, dir:1},
+];
+
+const COURIER_TX = [
+  {icon:'check', color:'success', label:{ar:'عمولة توصيل',en:'Delivery commission'}, ref:'IQ-204873', date:'2026-07-09', amount:3500, dir:1},
+  {icon:'upload', color:'primary', label:{ar:'تسليم نقدية للفرع',en:'Cash handover to branch'}, ref:'HND-2291', date:'2026-07-08', amount:-812000, dir:-1},
+  {icon:'download', color:'warning', label:{ar:'سلفة',en:'Advance'}, ref:'ADV-0231', date:'2026-07-06', amount:200000, dir:1},
+  {icon:'check', color:'success', label:{ar:'عمولة توصيل',en:'Delivery commission'}, ref:'IQ-204866', date:'2026-07-05', amount:3200, dir:1},
+];
+
+const MERCHANT_HERO_SLIDES = [
+  {bg:'linear-gradient(135deg, var(--primary-strong), var(--primary))', icon:'illoTrack', title:{ar:'تتبّع كل طلب لحظة بلحظة',en:'Track every order in real time'}, sub:{ar:'اعرف مكان طلبك بالضبط من لوحة الطلبات',en:'Know exactly where your order is from the orders tab'}},
+  {bg:'linear-gradient(135deg, #B96A16, var(--accent))', icon:'illoDiscount', title:{ar:'عمولة أقل على الطلبات الكبيرة',en:'Lower fees on bulk orders'}, sub:{ar:'أضف 20 طلب أو أكثر شهرياً واحصل على خصم تلقائي',en:'Add 20+ orders monthly and get an automatic discount'}},
+  {bg:'linear-gradient(135deg, #1E6E5A, var(--success))', icon:'illoRate', title:{ar:'نسبة تسليمك 96% هذا الشهر',en:'Your delivery rate is 96% this month'}, sub:{ar:'من أفضل 10% من التجار على مسار',en:'You\'re in the top 10% of merchants on Masar'}},
+];
+const COURIER_HERO_SLIDES = [
+  {bg:'linear-gradient(135deg, var(--primary-strong), var(--primary))', icon:'illoGps', title:{ar:'فعّل GPS لتوصيل أدق',en:'Enable GPS for accurate delivery'}, sub:{ar:'يساعد الفرع على تتبع رحلتك لحظياً',en:'Helps the branch track your trip live'}},
+  {bg:'linear-gradient(135deg, #B96A16, var(--accent))', icon:'illoTrophy', title:{ar:'أعلى تحصيل لك هذا الأسبوع',en:'Your best collection week yet'}, sub:{ar:'700,000 د.ع يوم الخميس — استمر بنفس الأداء',en:'700,000 IQD on Thursday — keep it up'}},
+  {bg:'linear-gradient(135deg, #8a5a12, #B9821C)', icon:'illoClock', title:{ar:'سلّم النقدية قبل الساعة 6',en:'Hand over cash before 6 PM'}, sub:{ar:'لضمان إقفال صندوق الفرع بالوقت المحدد',en:'To ensure the branch cashbox closes on time'}},
+];
+
+function heroIllo(type){
+  const wrap = (inner)=> `<svg class="hero-slide-illo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+  if(type==='illoTrack') return wrap(`
+    <circle cx="32" cy="32" r="30" fill="rgba(255,255,255,.14)"/>
+    <path class="anim-dash" d="M10 46 C 22 38, 20 28, 30 24 S 46 14, 54 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".8"/>
+    <circle cx="10" cy="46" r="4" fill="#fff"/>
+    <g class="svg-anim anim-ring" style="transform-origin:54px 12px;"><circle cx="54" cy="12" r="4" fill="#fff" opacity=".5"/></g>
+    <circle cx="54" cy="12" r="4" fill="#fff"/>`);
+  if(type==='illoDiscount') return wrap(`
+    <circle cx="32" cy="32" r="30" fill="rgba(255,255,255,.14)"/>
+    <g class="svg-anim anim-float" style="transform-origin:32px 32px;">
+      <path d="M20 20l24 0 0 24-24 0z" fill="none"/>
+      <path d="M20 32l12-12h12v12l-12 12z" fill="rgba(255,255,255,.9)"/>
+      <circle cx="27" cy="25" r="2.4" fill="var(--accent)"/>
+    </g>`);
+  if(type==='illoRate') return wrap(`
+    <circle cx="32" cy="32" r="30" fill="rgba(255,255,255,.14)"/>
+    <g class="svg-anim anim-badge" style="transform-origin:32px 32px;">
+      <circle cx="32" cy="32" r="16" fill="rgba(255,255,255,.92)"/>
+      <path d="M24 32l6 6 11-12" stroke="var(--success)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>`);
+  if(type==='illoGps') return wrap(`
+    <circle cx="32" cy="32" r="30" fill="rgba(255,255,255,.14)"/>
+    <g class="svg-anim anim-ring" style="transform-origin:32px 30px;"><circle cx="32" cy="30" r="7" fill="#fff" opacity=".45"/></g>
+    <path d="M32 14c-7 0-12 5.4-12 12 0 9 12 22 12 22s12-13 12-22c0-6.6-5-12-12-12z" fill="rgba(255,255,255,.92)"/>
+    <circle cx="32" cy="26" r="4.4" fill="var(--primary)"/>`);
+  if(type==='illoTrophy') return wrap(`
+    <circle cx="32" cy="32" r="30" fill="rgba(255,255,255,.14)"/>
+    <g transform="translate(20,16)">
+      <path d="M4 2h16v10a8 8 0 0 1-16 0V2z" fill="rgba(255,255,255,.92)"/>
+      <path d="M2 4H0a4 4 0 0 0 4 6M22 4h2a4 4 0 0 1-4 6" stroke="rgba(255,255,255,.92)" stroke-width="2" fill="none"/>
+      <rect x="9" y="20" width="6" height="6" fill="rgba(255,255,255,.92)"/>
+      <rect x="5" y="26" width="14" height="3" rx="1.4" fill="rgba(255,255,255,.92)"/>
+    </g>
+    <g class="svg-anim anim-float2" style="transform-origin:48px 18px;"><circle cx="48" cy="18" r="5" fill="var(--accent)"/></g>`);
+  if(type==='illoClock') return wrap(`
+    <circle cx="32" cy="32" r="30" fill="rgba(255,255,255,.14)"/>
+    <circle cx="32" cy="32" r="17" fill="none" stroke="rgba(255,255,255,.92)" stroke-width="2.5"/>
+    <g class="svg-anim anim-badge" style="transform-origin:32px 32px;">
+      <path d="M32 22v11l8 5" stroke="rgba(255,255,255,.95)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>`);
+  return '';
+}
+
+let heroSliderTimer = null;
+function renderHeroSlider(containerId, slides){
+  const wrap = document.getElementById(containerId);
+  if(!wrap) return;
+  wrap.innerHTML = `
+    <div class="hero-slider" id="${containerId}Track">
+      ${slides.map(s=>`
+        <div class="hero-slide" style="background:${s.bg};">
+          ${heroIllo(s.icon)}
+          <div class="hero-slide-text"><h4>${nm(s.title)}</h4><p>${nm(s.sub)}</p></div>
+        </div>`).join('')}
+    </div>
+    <div class="hero-slider-dots" id="${containerId}Dots">${slides.map((_,i)=>`<div class="hd ${i===0?'active':''}"></div>`).join('')}</div>
+  `;
+  const track = document.getElementById(containerId+'Track');
+  const dots = document.querySelectorAll(`#${containerId}Dots .hd`);
+  let idx = 0;
+  function goTo(i){
+    idx = (i+slides.length)%slides.length;
+    const w = track.clientWidth;
+    track.scrollTo({left:(LANG==='ar'?-1:1)*idx*w, behavior:'smooth'});
+    dots.forEach((d,di)=> d.classList.toggle('active', di===idx));
+  }
+  track.addEventListener('scroll', ()=>{
+    const w = track.clientWidth || 1;
+    const raw = Math.round(Math.abs(track.scrollLeft)/w);
+    const clamped = Math.min(slides.length-1, Math.max(0, raw));
+    if(clamped!==idx){ idx=clamped; dots.forEach((d,di)=> d.classList.toggle('active', di===idx)); }
+  });
+  if(heroSliderTimer) clearInterval(heroSliderTimer);
+  heroSliderTimer = setInterval(()=> goTo(idx+1), 4200);
+}
+
+const MERCHANT_CHATS = [
+  {id:'support', name:{ar:'الدعم الفني',en:'Support Team'}, last:{ar:'تم استلام طلبك، سنرد خلال دقائق',en:'Your request was received, we will reply shortly'}, time:'10:24', unread:2,
+    messages:[
+      {from:'them', text:{ar:'مرحباً، كيف نقدر نساعدك اليوم؟',en:'Hello, how can we help you today?'}, time:'09:50'},
+      {from:'me', text:{ar:'أريد الاستفسار عن الطلب IQ-204871',en:'I want to ask about order IQ-204871'}, time:'09:52'},
+      {from:'them', text:{ar:'الطلب حالياً قيد النقل بين الفروع، وسيصل خلال ساعتين تقريباً',en:'The order is currently in transit between branches, arriving in about two hours'}, time:'09:55'},
+      {from:'them', text:{ar:'هل يوجد أي شيء آخر؟',en:'Is there anything else you need?'}, time:'09:55'},
+    ]},
+  {id:'branch', name:{ar:'مدير فرع بغداد',en:'Baghdad Branch Manager'}, last:{ar:'تم تأكيد استلام الشحنة',en:'Shipment receipt confirmed'}, time:'أمس', unread:0,
+    messages:[
+      {from:'me', text:{ar:'هل وصلت شحنة اليوم لفرعكم؟',en:'Did today\'s shipment reach your branch?'}, time:'أمس 16:10'},
+      {from:'them', text:{ar:'نعم، تم استلامها وجاري الفرز',en:'Yes, received and sorting now'}, time:'أمس 16:22'},
+    ]},
+];
+
+const COURIER_CHATS = [
+  {id:'dispatch', name:{ar:'مسؤول العمليات',en:'Dispatch Officer'}, last:{ar:'وصلك طلب جديد بمنطقة الكرادة',en:'A new order was assigned to you in Karrada'}, time:'11:02', unread:1,
+    messages:[
+      {from:'them', text:{ar:'صباح الخير، عندك 4 طلبات اليوم بمنطقتك',en:'Good morning, you have 4 orders today in your area'}, time:'08:30'},
+      {from:'me', text:{ar:'تمام، بدأت فيهم',en:'Got it, starting now'}, time:'08:31'},
+      {from:'them', text:{ar:'وصلك طلب جديد بمنطقة الكرادة',en:'A new order was assigned to you in Karrada'}, time:'11:02'},
+    ]},
+  {id:'branch', name:{ar:'مدير فرع بغداد',en:'Baghdad Branch Manager'}, last:{ar:'الرجاء تسليم النقدية قبل الساعة 6',en:'Please hand over the cash before 6 PM'}, time:'أمس', unread:0,
+    messages:[
+      {from:'them', text:{ar:'الرجاء تسليم النقدية قبل الساعة 6',en:'Please hand over the cash before 6 PM'}, time:'أمس 14:00'},
+      {from:'me', text:{ar:'حاضر، بوصل خلال ساعة',en:'Sure, I will arrive within an hour'}, time:'أمس 14:05'},
+    ]},
+];
+
+/* ================= I18N ================= */
+const T = {
+  ar:{
+    startTitle:'اختر تطبيقك', startSub:'نفس حساب شركتك على مسار، بواجهة مخصّصة لدورك.',
+    merchantApp:'تطبيق التاجر', merchantAppSub:'طلباتي، كشف حسابي، محفظتي',
+    courierApp:'تطبيق المندوب', courierAppSub:'توصيلاتي، تحصيلاتي، محفظتي',
+    installHint:'أضِف مسار إلى شاشتك الرئيسية للوصول السريع والعمل دون اتصال جزئياً', installBtn:'تثبيت',
+    tabHome:'الرئيسية', tabOrders:'طلباتي', tabDeliveries:'توصيلاتي', tabWallet:'المحفظة', tabChat:'الدردشة', tabProfile:'حسابي',
+    greeting:'مساك الله بالخير', merchantSubName:'متجر النور للإلكترونيات', courierSubName:'مندوب توزيع — فرع بغداد',
+    myOrdersToday:'طلباتي اليوم', myDueBalance:'رصيدي المستحق', deliveryRate:'نسبة التسليم', monthlyOrders:'طلبات الشهر',
+    myDeliveriesToday:'توصيلاتي اليوم', collectedToday:'المحصّل اليوم', onDuty:'أنا متاح للعمل', offDuty:'غير متاح حالياً',
+    recentOrders:'أحدث الطلبات', seeAll:'عرض الكل', newOrder:'طلب جديد',
+    filterAll:'الكل', filterTransit:'قيد النقل', filterOut:'خرج للتوصيل', filterDelivered:'تم التسليم', filterDelayed:'مؤجل',
+    walletBalance:'رصيدي الحالي', walletDue:'مستحقاتي غير المسلمة', cashOnHand:'النقدية بحوزتي', withdraw:'طلب سحب', handover:'تسليم النقدية', history:'سجل الحركات',
+    chatSearch:'ابحث في المحادثات', typeMessage:'اكتب رسالتك...',
+    profileTitle:'حسابي', settingsLang:'اللغة', settingsTheme:'المظهر', light:'فاتح', dark:'داكن',
+    settingsNotif:'الإشعارات', settingsSupport:'الدعم الفني', settingsAbout:'عن التطبيق', settingsLogout:'تسجيل الخروج',
+    orderDetail:'تفاصيل الطلب', activityLog:'سجل الحركة', close:'إغلاق',
+    actionDeliver:'تسليم', actionCollect:'تحصيل', actionDelay:'تأجيل', actionReturn:'إرجاع', actionCall:'اتصال',
+    withdrawTitle:'طلب سحب رصيد', handoverTitle:'تسليم النقدية للفرع', amountLabel:'المبلغ', noteLabel:'ملاحظة (اختياري)', submitRequest:'إرسال الطلب',
+    availableBalance:'الرصيد المتاح', backToApps:'تبديل التطبيق', dueLabel:'د.ع',
+    ob1Title:'تتبّع طلباتك لحظة بلحظة', ob1Sub:'شاهد كل طلب وهو ينتقل بين الفروع حتى يصل ليد الزبون، بخط سير واضح لكل مرحلة.',
+    ob2Title:'محفظتك وتحصيلاتك بمكان واحد', ob2Sub:'اطّلع على رصيدك، اطلب سحب مستحقاتك، وراجع كل حركة مالية بسجل واضح ومنظّم.',
+    ob3Title:'تواصل مباشر مع فريق العمليات', ob3Sub:'راسل الدعم الفني أو مدير الفرع مباشرة داخل التطبيق، وتابع ردودهم فوراً.',
+    obSkip:'تخطي', obStart:'ابدأ الآن',
+    statusDist:'توزيع حالات الطلبات', weeklyOrders:'طلبات الأسبوع', weeklyCollections:'التحصيل الأسبوعي', deliveryOutcomes:'نتائج التوصيل',
+    allStatuses:'كل الحالات', inProgressStatuses:'قيد التنفيذ', finalStatuses:'حالات نهائية',
+    reportsTitle:'التقارير', provinceReport:'الطلبات حسب المحافظة', ordersByProvince:'توزيع الطلبات على المحافظات',
+    totalOrdersLabel:'إجمالي الطلبات', viewFullReport:'عرض التقرير الكامل', ordersUnit:'طلب',
+  },
+  en:{
+    startTitle:'Choose your app', startSub:'Same company account on Masar, with an interface built for your role.',
+    merchantApp:'Merchant App', merchantAppSub:'My orders, statement, wallet',
+    courierApp:'Courier App', courierAppSub:'My deliveries, collections, wallet',
+    installHint:'Add Masar to your home screen for quick access and partial offline use', installBtn:'Install',
+    tabHome:'Home', tabOrders:'My Orders', tabDeliveries:'My Deliveries', tabWallet:'Wallet', tabChat:'Chat', tabProfile:'Profile',
+    greeting:'Good to see you', merchantSubName:'Al-Noor Electronics', courierSubName:'Delivery Courier — Baghdad Branch',
+    myOrdersToday:'My Orders Today', myDueBalance:'My Due Balance', deliveryRate:'Delivery Rate', monthlyOrders:'Orders This Month',
+    myDeliveriesToday:'My Deliveries Today', collectedToday:'Collected Today', onDuty:'Available for Work', offDuty:'Currently Unavailable',
+    recentOrders:'Recent Orders', seeAll:'See all', newOrder:'New Order',
+    filterAll:'All', filterTransit:'In Transit', filterOut:'Out for Delivery', filterDelivered:'Delivered', filterDelayed:'Delayed',
+    walletBalance:'Current Balance', walletDue:'Undisbursed Dues', cashOnHand:'Cash On Hand', withdraw:'Request Withdrawal', handover:'Hand Over Cash', history:'Transaction History',
+    chatSearch:'Search conversations', typeMessage:'Type a message...',
+    profileTitle:'My Profile', settingsLang:'Language', settingsTheme:'Appearance', light:'Light', dark:'Dark',
+    settingsNotif:'Notifications', settingsSupport:'Support', settingsAbout:'About the app', settingsLogout:'Log Out',
+    orderDetail:'Order Details', activityLog:'Activity Log', close:'Close',
+    actionDeliver:'Deliver', actionCollect:'Collect', actionDelay:'Delay', actionReturn:'Return', actionCall:'Call',
+    withdrawTitle:'Request Withdrawal', handoverTitle:'Hand Over Cash to Branch', amountLabel:'Amount', noteLabel:'Note (optional)', submitRequest:'Submit Request',
+    availableBalance:'Available Balance', backToApps:'Switch App', dueLabel:'IQD',
+    ob1Title:'Track your orders moment by moment', ob1Sub:'Watch every order move between branches until it reaches the customer, with a clear timeline for every stage.',
+    ob2Title:'Your wallet and collections in one place', ob2Sub:'Check your balance, request a withdrawal, and review every transaction in a clear, organized log.',
+    ob3Title:'Talk directly with the operations team', ob3Sub:'Message support or your branch manager right inside the app, and see their replies instantly.',
+    obSkip:'Skip', obStart:'Get Started',
+    statusDist:'Order Status Distribution', weeklyOrders:'Orders This Week', weeklyCollections:'Weekly Collections', deliveryOutcomes:'Delivery Outcomes',
+    allStatuses:'All Statuses', inProgressStatuses:'In Progress', finalStatuses:'Final Statuses',
+    reportsTitle:'Reports', provinceReport:'Orders by Governorate', ordersByProvince:'Order Distribution by Governorate',
+    totalOrdersLabel:'Total Orders', viewFullReport:'View Full Report', ordersUnit:'orders',
+  }
+};
+
+let LANG='ar', THEME='light', ROLE='merchant', TAB='home', activeChat=null;
+
+function t(k){ return T[LANG][k] || k; }
+function nm(o){ return o[LANG] || o.ar; }
+function fmt(n){ return Math.abs(n).toLocaleString('en-US'); }
+
+const TABS = {
+  merchant:[
+    {id:'home', ic:'home', label:'tabHome'},
+    {id:'orders', ic:'box', label:'tabOrders'},
+    {id:'wallet', ic:'wallet', label:'tabWallet'},
+    {id:'chat', ic:'chat', label:'tabChat', badge:true},
+    {id:'profile', ic:'user', label:'tabProfile'},
+  ],
+  courier:[
+    {id:'home', ic:'home', label:'tabHome'},
+    {id:'deliveries', ic:'bike', label:'tabDeliveries'},
+    {id:'wallet', ic:'wallet', label:'tabWallet'},
+    {id:'chat', ic:'chat', label:'tabChat', badge:true},
+    {id:'profile', ic:'user', label:'tabProfile'},
+  ]
+};
+
+/* ================= I18N APPLY ================= */
+function applyI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.dataset.i18n;
+    if(T[LANG][key]) el.textContent = T[LANG][key];
+  });
+}
+function setLang(lang){
+  LANG = lang;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang==='ar' ? 'rtl' : 'ltr';
+  document.querySelectorAll('.js-lang-ar').forEach(b=>b.classList.toggle('active', lang==='ar'));
+  document.querySelectorAll('.js-lang-en').forEach(b=>b.classList.toggle('active', lang==='en'));
+  applyI18n();
+  if(document.getElementById('screenApp').classList.contains('active')) renderTab();
+}
+function setTheme(theme){
+  THEME = theme;
+  document.documentElement.dataset.theme = theme;
+  const paths = theme==='dark'
+    ? '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/>'
+    : '<circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/>';
+  document.querySelectorAll('.js-theme-icon').forEach(el=> el.innerHTML = paths);
+}
+
+/* ================= APP ENTRY ================= */
+/* ================= ONBOARDING SLIDER ================= */
+const OB_SLIDE_COUNT = 3;
+let obIndex = 0;
+function goToOnboardSlide(i){
+  const track = document.getElementById('onboardSlides');
+  const w = track.clientWidth;
+  track.scrollTo({left: (LANG==='ar' ? -1 : 1) * i * w, behavior:'smooth'});
+}
+function updateOnboardUI(i){
+  obIndex = i;
+  document.querySelectorAll('#onboardDots .onboard-dot').forEach((d,idx)=> d.classList.toggle('active', idx===i));
+  const btn = document.getElementById('btnNextOnboard');
+  if(i === OB_SLIDE_COUNT-1){
+    btn.classList.add('final');
+    btn.innerHTML = `<span>${t('obStart')}</span>` + document.getElementById('onboardArrowIc').outerHTML;
+  } else {
+    btn.classList.remove('final');
+    btn.innerHTML = document.getElementById('onboardArrowIc') ? document.getElementById('onboardArrowIc').outerHTML : '';
+  }
+}
+function finishOnboarding(){
+  document.getElementById('screenOnboard').classList.remove('active');
+  document.getElementById('screenStart').classList.add('active');
+}
+document.getElementById('onboardSlides').addEventListener('scroll', ()=>{
+  const track = document.getElementById('onboardSlides');
+  const w = track.clientWidth || 1;
+  const raw = Math.round(Math.abs(track.scrollLeft) / w);
+  const idx = Math.min(OB_SLIDE_COUNT-1, Math.max(0, raw));
+  if(idx !== obIndex) updateOnboardUI(idx);
+});
+document.getElementById('btnNextOnboard').addEventListener('click', ()=>{
+  if(obIndex >= OB_SLIDE_COUNT-1){ finishOnboarding(); return; }
+  goToOnboardSlide(obIndex+1);
+});
+document.getElementById('btnSkipOnboard').addEventListener('click', finishOnboarding);
+
+function enterApp(role){
+  ROLE = role; TAB = 'home'; activeChat = null; subPage = null;
+  document.getElementById('screenStart').classList.remove('active');
+  document.getElementById('screenApp').classList.add('active');
+  renderTabs();
+  renderTab();
+}
+function backToStart(){
+  document.getElementById('screenApp').classList.remove('active');
+  document.getElementById('screenStart').classList.add('active');
+}
+
+function renderTabs(){
+  const wrap = document.getElementById('bottomTabs');
+  wrap.innerHTML = TABS[ROLE].map(tb=>{
+    const chats = ROLE==='merchant' ? MERCHANT_CHATS : COURIER_CHATS;
+    const unread = chats.reduce((a,c)=>a+c.unread,0);
+    return `
+    <button class="tab-btn ${TAB===tb.id?'active':''}" data-tab="${tb.id}">
+      ${ic(tb.ic,20)}
+      ${tb.badge && unread>0 ? `<span class="tdot"></span>` : ''}
+      <span class="tlabel">${t(tb.label)}</span>
+    </button>`;
+  }).join('');
+  wrap.querySelectorAll('[data-tab]').forEach(b=>{
+    b.addEventListener('click', ()=>{ TAB=b.dataset.tab; activeChat=null; subPage=null; renderTabs(); renderTab(); });
+  });
+}
+
+function setTopbar(title, sub, showBack, onBack){
+  document.getElementById('tbTitle').textContent = title;
+  document.getElementById('tbSub').textContent = sub || '';
+  const backBtn = document.getElementById('btnBack');
+  backBtn.style.display = showBack ? 'flex' : 'none';
+  backBtn.onclick = onBack || null;
+}
+
+function statusBadge(status){
+  const map={transit:'b-primary', out:'b-warning', delivered:'b-success', delayed:'b-danger'};
+  const dot={transit:'var(--primary)', out:'var(--warning)', delivered:'var(--success)', delayed:'var(--danger)'};
+  const label={transit:t('filterTransit'), out:t('filterOut'), delivered:t('filterDelivered'), delayed:t('filterDelayed')};
+  return `<span class="badge ${map[status]}"><span class="badge-dot" style="background:${dot[status]}"></span>${label[status]}</span>`;
+}
+
+/* ================= TAB ROUTER ================= */
+let subPage = null;
+function renderTab(){
+  document.getElementById('fabBtn').style.display = 'none';
+  document.getElementById('fabBtn').onclick = null;
+  if(subPage==='reports') return renderReportsPage();
+  if(TAB==='home') return ROLE==='merchant' ? renderMerchantHome() : renderCourierHome();
+  if(TAB==='orders') return renderMerchantOrders();
+  if(TAB==='deliveries') return renderCourierDeliveries();
+  if(TAB==='wallet') return ROLE==='merchant' ? renderMerchantWallet() : renderCourierWallet();
+  if(TAB==='chat') return activeChat ? renderChatThread(activeChat) : renderChatList();
+  if(TAB==='profile') return renderProfile();
+}
+function openReports(){ subPage='reports'; renderTab(); }
+
+/* ---- Merchant Home ---- */
+function renderMerchantHome(){
+  setTopbar(t('greeting'), t('merchantSubName'), false);
+  const el = document.getElementById('appContent');
+  el.innerHTML = `
+    <div class="hero-slider-wrap" id="merchantHeroSlider"></div>
+    <div class="hero-card">
+      <div class="hc-label">${t('myDueBalance')}</div>
+      <div class="hc-value mono">4,210,000 <span style="font-size:13px; opacity:.8;">${t('dueLabel')}</span></div>
+      <div class="hc-row">
+        <span class="hc-chip">${ic('box',13)} ${t('myOrdersToday')}: 5</span>
+        <span class="hc-chip">${ic('check',13)} ${t('deliveryRate')}: 96%</span>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="si" style="background:var(--primary-tint); color:var(--primary-strong);">${ic('box',15)}</div><div class="sv">312</div><div class="sl">${t('monthlyOrders')}</div></div>
+      <div class="stat-card"><div class="si" style="background:var(--success-tint); color:var(--success);">${ic('check',15)}</div><div class="sv">96%</div><div class="sl">${t('deliveryRate')}</div></div>
+    </div>
+    ${donutCard(t('statusDist'), [
+      {label:t('filterDelivered'), pct:64, color:'var(--success)'},
+      {label:t('filterTransit'), pct:18, color:'var(--primary)'},
+      {label:t('filterOut'), pct:11, color:'var(--accent)'},
+      {label:t('filterDelayed'), pct:7, color:'var(--danger)'},
+    ], '312', t('monthlyOrders'))}
+    ${weekChartCard(t('weeklyOrders'), [62,74,58,80,66,90,71], weekDayLabels())}
+    <div class="section-title"><h3>${t('reportsTitle')}</h3><a id="openReportsLink">${t('viewFullReport')}</a></div>
+    <div class="chart-card" id="provincePreviewCard" style="cursor:pointer;"></div>
+    <div class="section-title"><h3>${t('recentOrders')}</h3><a data-goto-tab="orders">${t('seeAll')}</a></div>
+    <div class="list-card" id="homeOrdersList"></div>
+  `;
+  const provTotal = MERCHANT_PROVINCES.reduce((a,p)=>a+p.orders,0);
+  const provMax = Math.max(...MERCHANT_PROVINCES.map(p=>p.orders));
+  document.getElementById('provincePreviewCard').innerHTML = `
+    <div class="chart-card-head"><h4>${t('provinceReport')}</h4><span class="badge b-primary">${provTotal} ${t('ordersUnit')}</span></div>
+    ${MERCHANT_PROVINCES.slice(0,3).map(p=>`
+      <div style="margin-bottom:9px;">
+        <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; margin-bottom:4px;"><span>${nm(p)}</span><span class="mono">${p.orders}</span></div>
+        <div style="height:6px; border-radius:20px; background:var(--surface-3); overflow:hidden;"><div style="height:100%; width:${(p.orders/provMax*100).toFixed(0)}%; background:var(--primary); border-radius:20px;"></div></div>
+      </div>`).join('')}
+  `;
+  document.getElementById('provincePreviewCard').addEventListener('click', openReports);
+  document.getElementById('openReportsLink').addEventListener('click', openReports);
+  const list = document.getElementById('homeOrdersList');
+  list.innerHTML = MERCHANT_ORDERS.slice(0,4).map(o=>orderRow(o)).join('');
+  renderHeroSlider('merchantHeroSlider', MERCHANT_HERO_SLIDES);
+  bindOrderRows(list, MERCHANT_ORDERS);
+  el.querySelector('[data-goto-tab]').addEventListener('click', ()=>{ TAB='orders'; renderTabs(); renderTab(); });
+
+  document.getElementById('fabBtn').style.display='flex';
+  document.getElementById('fabBtn').onclick = ()=> openOrderSheet();
+}
+
+function weekDayLabels(){
+  return LANG==='ar' ? ['سبت','أحد','اثن','ثلا','أرب','خمي','جمع'] : ['Sat','Sun','Mon','Tue','Wed','Thu','Fri'];
+}
+
+function donutCard(title, data, centerValue, centerLabel){
+  let acc = 0;
+  const gradParts = data.map(s=>{ const start=acc; acc+=s.pct; return `${s.color} ${start}% ${acc}%`; }).join(', ');
+  return `
+  <div class="chart-card">
+    <div class="chart-card-head"><h4>${title}</h4></div>
+    <div class="donut-row">
+      <div class="donut" style="background:conic-gradient(${gradParts});">
+        <div class="donut-hole"><b>${centerValue}</b><span>${centerLabel}</span></div>
+      </div>
+      <div class="legend-col">
+        ${data.map(s=>`<div class="legend-item"><span class="ldot" style="background:${s.color};"></span>${s.label}<b>${s.pct}%</b></div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function weekChartCard(title, values, labels, alt){
+  const max = Math.max(...values);
+  return `
+  <div class="chart-card">
+    <div class="chart-card-head"><h4>${title}</h4></div>
+    <div class="week-chart">
+      ${values.map((v,i)=>`
+        <div class="week-col">
+          <div class="week-bar" style="height:${Math.round(v/max*100)}%; ${alt?'background:linear-gradient(180deg, var(--accent), #C97418);':''}"></div>
+          <div class="week-label">${labels[i]}</div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function orderRow(o){
+  return `
+  <div class="order-row" data-track="${o.track}">
+    <div class="order-ic">${ic('box',17)}</div>
+    <div class="order-mid"><b>${nm(o.customer)}</b><span class="mono">${o.track}</span></div>
+    <div class="order-end"><b class="mono">${fmt(o.amount)}</b>${statusBadge(o.status)}</div>
+  </div>`;
+}
+function bindOrderRows(container, orders){
+  container.querySelectorAll('[data-track]').forEach(row=>{
+    row.addEventListener('click', ()=>{
+      const o = orders.find(x=>x.track===row.dataset.track);
+      openOrderDetailSheet(o);
+    });
+  });
+}
+
+/* ---- Full status filter system (fast pill bar + grid sheet, ~19 statuses) ---- */
+const STAGE_ICONS = ['box','clock','bike','check','building','box','clock','truck','building','bike','truck','check','shield'];
+const FULL_STATUS_DEFS = STAGES.map((s,i)=>({key:'stage'+i, label:s, icon:STAGE_ICONS[i], tint:'var(--primary-tint)', color:'var(--primary-strong)', alt:false}))
+  .concat(ALT_STATUSES.map(a=>({key:a.key, label:a, icon:'x2', tint:'var(--danger-tint)', color:'var(--danger)', alt:true})));
+
+function statusKeyOf(o){ return (o.status && ALT_ORDER_STATUSES.includes(o.status)) ? o.status : 'stage'+o.stage; }
+
+function statusFilterBar(items, activeKey, barId, onChange){
+  const def = activeKey!=='all' ? FULL_STATUS_DEFS.find(d=>d.key===activeKey) : null;
+  return `
+  <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+    <button class="status-chip-pill ${activeKey==='all'?'active':''}" data-f="all">
+      <span>${t('filterAll')}</span><b>${items.length}</b>
+    </button>
+    ${def ? `
+    <button class="status-chip-pill active" data-f="${def.key}">
+      ${ic(def.icon,12)}<span>${nm(def.label)}</span><b>${items.filter(x=>statusKeyOf(x)===def.key).length}</b>
+    </button>` : ''}
+    <button class="status-more-btn" data-open-status-sheet="1">${ic('box',14)}<span>${t('allStatuses')}</span></button>
+  </div>`;
+}
+function bindStatusFilterBar(container, items, activeKey, onChange){
+  container.querySelectorAll('[data-f]').forEach(b=> b.addEventListener('click', ()=> onChange(b.dataset.f)));
+  const moreBtn = container.querySelector('[data-open-status-sheet]');
+  if(moreBtn) moreBtn.addEventListener('click', ()=> openStatusSheet(items, activeKey, onChange));
+}
+function statusGridHTML(defs, items, activeKey){
+  return `<div class="status-grid">` + defs.map(d=>{
+    const count = items.filter(x=>statusKeyOf(x)===d.key).length;
+    const active = activeKey===d.key;
+    return `
+    <div class="status-card sm ${active?'active':''}" data-f="${d.key}">
+      <div class="sc-top"><div class="sc-icon" style="background:${active?'rgba(255,255,255,.22)':d.tint}; color:${active?'#fff':d.color};">${ic(d.icon,13)}</div></div>
+      <div class="sc-count">${count}</div>
+      <div class="sc-label">${nm(d.label)}</div>
+    </div>`;
+  }).join('') + `</div>`;
+}
+function openStatusSheet(items, activeKey, onChange){
+  const inProgress = FULL_STATUS_DEFS.filter(d=>!d.alt);
+  const final = FULL_STATUS_DEFS.filter(d=>d.alt);
+  openSheet(`
+    <div style="font-weight:800; font-size:14.5px; margin-bottom:14px;">${t('allStatuses')}</div>
+    <div style="padding:9px 12px; border-radius:11px; background:${activeKey==='all'?'var(--primary)':'var(--surface-2)'}; color:${activeKey==='all'?'#fff':'var(--ink)'}; font-size:11.5px; font-weight:800; margin-bottom:14px; display:flex; justify-content:space-between;" data-f="all">
+      <span>${t('filterAll')}</span><span>${items.length}</span>
+    </div>
+    <div class="text-muted" style="margin-bottom:8px; font-weight:800;">${t('inProgressStatuses')}</div>
+    ${statusGridHTML(inProgress, items, activeKey)}
+    <div class="divider"></div>
+    <div class="text-muted" style="margin-bottom:8px; font-weight:800;">${t('finalStatuses')}</div>
+    ${statusGridHTML(final, items, activeKey)}
+  `);
+  document.querySelectorAll('#sheetContent [data-f]').forEach(c=>{
+    c.addEventListener('click', ()=>{ onChange(c.dataset.f); closeSheet(); });
+  });
+}
+
+/* ---- Merchant Orders ---- */
+let merchantFilter='all';
+function renderMerchantOrders(){
+  setTopbar(t('tabOrders'), '', false);
+  const el = document.getElementById('appContent');
+  el.innerHTML = `
+    <div id="mFilterRow">${statusFilterBar(MERCHANT_ORDERS, merchantFilter)}</div>
+    <div class="list-card" id="mOrdersList"></div>
+  `;
+  bindStatusFilterBar(document.getElementById('mFilterRow'), MERCHANT_ORDERS, merchantFilter, (k)=>{ merchantFilter=k; renderMerchantOrders(); });
+  const rows = merchantFilter==='all' ? MERCHANT_ORDERS : MERCHANT_ORDERS.filter(o=> statusKeyOf(o)===merchantFilter);
+  const list = document.getElementById('mOrdersList');
+  list.innerHTML = rows.length ? rows.map(o=>orderRow(o)).join('') : `<div class="empty-hint">—</div>`;
+  bindOrderRows(list, MERCHANT_ORDERS);
+
+  document.getElementById('fabBtn').style.display='flex';
+  document.getElementById('fabBtn').onclick = ()=> openOrderSheet();
+}
+
+/* ---- Courier Home ---- */
+let onDuty = true;
+function renderCourierHome(){
+  setTopbar(t('greeting'), t('courierSubName'), false);
+  const el = document.getElementById('appContent');
+  el.innerHTML = `
+    <div class="hero-slider-wrap" id="courierHeroSlider"></div>
+    <div class="hero-card">
+      <div class="hc-label">${t('collectedToday')}</div>
+      <div class="hc-value mono">153,300 <span style="font-size:13px; opacity:.8;">${t('dueLabel')}</span></div>
+      <div class="hc-row">
+        <span class="hc-chip">${ic('bike',13)} ${t('myDeliveriesToday')}: 4</span>
+        <button class="hc-chip" id="dutyToggle" style="cursor:pointer;">${ic('check',13)} <span id="dutyLabel">${onDuty?t('onDuty'):t('offDuty')}</span></button>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="si" style="background:var(--success-tint); color:var(--success);">${ic('check',15)}</div><div class="sv">812</div><div class="sl">${t('filterDelivered')}</div></div>
+      <div class="stat-card"><div class="si" style="background:var(--danger-tint); color:var(--danger);">${ic('x2',15)}</div><div class="sv">34</div><div class="sl">${t('filterDelayed')}</div></div>
+    </div>
+    ${donutCard(t('deliveryOutcomes'), [
+      {label:t('filterDelivered'), pct:88, color:'var(--success)'},
+      {label:t('filterDelayed'), pct:7, color:'var(--warning)'},
+      {label:LANG==='ar'?'راجع':'Returned', pct:5, color:'var(--danger)'},
+    ], '846', LANG==='ar'?'إجمالي التوصيلات':'Total Deliveries')}
+    ${weekChartCard(t('weeklyCollections'), [420,510,380,610,540,700,590], weekDayLabels(), true)}
+    <div class="section-title"><h3>${t('myDeliveriesToday')}</h3><a data-goto-tab="deliveries">${t('seeAll')}</a></div>
+    <div id="homeDeliveries"></div>
+  `;
+  document.getElementById('homeDeliveries').innerHTML = COURIER_DELIVERIES.slice(0,2).map(d=>deliveryCard(d)).join('');
+  renderHeroSlider('courierHeroSlider', COURIER_HERO_SLIDES);
+  bindDeliveryActions();
+  el.querySelector('[data-goto-tab]').addEventListener('click', ()=>{ TAB='deliveries'; renderTabs(); renderTab(); });
+  document.getElementById('dutyToggle').addEventListener('click', ()=>{ onDuty=!onDuty; document.getElementById('dutyLabel').textContent = onDuty?t('onDuty'):t('offDuty'); });
+}
+
+/* ---- Courier Deliveries ---- */
+let courierListFilter='all';
+function renderCourierDeliveries(){
+  setTopbar(t('tabDeliveries'), '', false);
+  const el = document.getElementById('appContent');
+  el.innerHTML = `<div id="cFilterRow">${statusFilterBar(COURIER_DELIVERIES, courierListFilter)}</div><div id="deliveriesList"></div>`;
+  bindStatusFilterBar(document.getElementById('cFilterRow'), COURIER_DELIVERIES, courierListFilter, (k)=>{ courierListFilter=k; renderCourierDeliveries(); });
+  const rows = courierListFilter==='all' ? COURIER_DELIVERIES : COURIER_DELIVERIES.filter(d=> statusKeyOf(d)===courierListFilter);
+  document.getElementById('deliveriesList').innerHTML = rows.length ? rows.map(d=>deliveryCard(d)).join('') : `<div class="empty-hint">—</div>`;
+  bindDeliveryActions();
+}
+function deliveryCard(d){
+  return `
+  <div class="deliv-card" data-track="${d.track}">
+    <div class="deliv-top">
+      <div>
+        <b style="font-size:12.5px; font-weight:800; display:block;">${nm(d.customer)}</b>
+        <span class="text-muted">${ic('mapPin',11)} ${nm(d.area)} · ${d.track}</span>
+      </div>
+      <b class="mono" style="font-size:12.5px; font-weight:800;">${fmt(d.amount)}</b>
+    </div>
+    <div class="sheet-route" style="padding:4px 0;">
+      ${STAGES.slice(8,12).map((s,i)=>{
+        const idx=i+8; const cls = idx<d.stage?'done':idx===d.stage?'current':'';
+        return `<div class="sheet-step ${cls}"><div class="sheet-line"></div><div class="sheet-node">${idx<d.stage?ic('check',11):''}</div></div>`;
+      }).join('')}
+    </div>
+    <div class="deliv-actions">
+      <button class="mini-btn primary" data-act="deliver">${t('actionDeliver')}</button>
+      <button class="mini-btn" data-act="collect">${t('actionCollect')}</button>
+      <button class="mini-btn" data-act="delay">${t('actionDelay')}</button>
+      <button class="mini-btn" data-act="call">${ic('phoneCall',12)}</button>
+    </div>
+  </div>`;
+}
+function bindDeliveryActions(){
+  document.querySelectorAll('.deliv-card [data-act]').forEach(b=>{
+    b.addEventListener('click', (e)=>{ e.stopPropagation(); openToast(t('actionDeliver')); });
+  });
+  document.querySelectorAll('.deliv-card').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      const d = COURIER_DELIVERIES.find(x=>x.track===c.dataset.track);
+      openOrderDetailSheet({track:d.track, customer:d.customer, amount:d.amount, stage:d.stage, status: d.stage>=12?'delivered':d.stage>=10?'out':'transit'});
+    });
+  });
+}
+
+/* ---- Wallets ---- */
+function walletTxRow(tx){
+  const colorVar = {success:'var(--success)', primary:'var(--primary)', warning:'var(--warning)', danger:'var(--danger)'}[tx.color];
+  const tintVar = {success:'var(--success-tint)', primary:'var(--primary-tint)', warning:'var(--warning-tint)', danger:'var(--danger-tint)'}[tx.color];
+  return `
+  <div class="tx-row">
+    <div class="tx-ic" style="background:${tintVar}; color:${colorVar};">${ic(tx.icon,15)}</div>
+    <div class="tx-mid"><b>${nm(tx.label)}</b><span>${tx.date} · ${tx.ref}</span></div>
+    <div class="tx-amt" style="color:${tx.dir>0?'var(--success)':'var(--danger)'};">${tx.dir>0?'+':'-'}${fmt(tx.amount)}</div>
+  </div>`;
+}
+
+function renderMerchantWallet(){
+  setTopbar(t('tabWallet'), '', false);
+  const el = document.getElementById('appContent');
+  el.innerHTML = `
+    <div class="wallet-card">
+      <div class="wc-top"><span class="wc-badge">${t('availableBalance')}</span>${ic('wallet',18)}</div>
+      <div class="wc-value mono">4,210,000</div>
+      <div class="wc-label">${t('dueLabel')} · ${t('walletBalance')}</div>
+      <div class="wallet-actions">
+        <button class="solid" id="btnWithdraw">${ic('download',16)}<span>${t('withdraw')}</span></button>
+        <button id="btnChatFinance">${ic('chat',16)}<span>${t('settingsSupport')}</span></button>
+      </div>
+    </div>
+    <div class="section-title"><h3>${t('history')}</h3></div>
+    <div class="list-card">${MERCHANT_TX.map(walletTxRow).join('')}</div>
+  `;
+  document.getElementById('btnWithdraw').addEventListener('click', ()=> openWithdrawSheet('merchant'));
+  document.getElementById('btnChatFinance').addEventListener('click', ()=>{ TAB='chat'; activeChat='support'; renderTabs(); renderTab(); });
+}
+
+function renderCourierWallet(){
+  setTopbar(t('tabWallet'), '', false);
+  const el = document.getElementById('appContent');
+  el.innerHTML = `
+    <div class="wallet-card">
+      <div class="wc-top"><span class="wc-badge">${t('cashOnHand')}</span>${ic('wallet',18)}</div>
+      <div class="wc-value mono">812,000</div>
+      <div class="wc-label">${t('dueLabel')} · ${t('walletDue')}: 61,200 ${t('dueLabel')}</div>
+      <div class="wallet-actions">
+        <button class="solid" id="btnHandover">${ic('upload',16)}<span>${t('handover')}</span></button>
+        <button id="btnChatFinance2">${ic('chat',16)}<span>${t('settingsSupport')}</span></button>
+      </div>
+    </div>
+    <div class="section-title"><h3>${t('history')}</h3></div>
+    <div class="list-card">${COURIER_TX.map(walletTxRow).join('')}</div>
+  `;
+  document.getElementById('btnHandover').addEventListener('click', ()=> openWithdrawSheet('courier'));
+  document.getElementById('btnChatFinance2').addEventListener('click', ()=>{ TAB='chat'; activeChat='branch'; renderTabs(); renderTab(); });
+}
+
+/* ---- Chat ---- */
+function renderChatList(){
+  setTopbar(t('tabChat'), '', false);
+  const chats = ROLE==='merchant' ? MERCHANT_CHATS : COURIER_CHATS;
+  const el = document.getElementById('appContent');
+  el.innerHTML = `<div class="list-card" id="chatListWrap"></div>`;
+  document.getElementById('chatListWrap').innerHTML = chats.map(c=>`
+    <div class="chat-row" data-chat="${c.id}">
+      <div class="chat-avatar">${nm(c.name).charAt(0)}</div>
+      <div class="chat-mid"><b>${nm(c.name)}</b><span>${nm(c.last)}</span></div>
+      <div class="chat-end"><time>${c.time}</time>${c.unread>0?`<span class="unread-badge">${c.unread}</span>`:''}</div>
+    </div>`).join('');
+  document.querySelectorAll('[data-chat]').forEach(row=>{
+    row.addEventListener('click', ()=>{ activeChat = row.dataset.chat; renderTab(); });
+  });
+}
+
+function renderChatThread(chatId){
+  const chats = ROLE==='merchant' ? MERCHANT_CHATS : COURIER_CHATS;
+  const c = chats.find(x=>x.id===chatId);
+  c.unread = 0;
+  setTopbar(nm(c.name), '', true, ()=>{ activeChat=null; renderTab(); });
+  const el = document.getElementById('appContent');
+  el.style.paddingBottom = '16px';
+  el.innerHTML = `<div class="thread" id="threadWrap"></div>`;
+  const wrap = document.getElementById('threadWrap');
+  wrap.innerHTML = c.messages.map(m=>`
+    <div class="bubble ${m.from==='me'?'bubble-me':'bubble-them'}">${nm(m.text)}<span class="bubble-time">${m.time}</span></div>
+  `).join('');
+
+  // inject input bar right after content, inside app shell (not scrollable content)
+  let bar = document.getElementById('chatInputBar');
+  if(!bar){
+    bar = document.createElement('div');
+    bar.className = 'chat-input-bar';
+    bar.id = 'chatInputBar';
+    bar.innerHTML = `
+      <input type="text" id="chatInput" placeholder="${t('typeMessage')}">
+      <button class="send-btn" id="chatSendBtn">${ic('send',16)}</button>`;
+    document.getElementById('screenApp').insertBefore(bar, document.getElementById('bottomTabs'));
+  } else {
+    bar.querySelector('#chatInput').placeholder = t('typeMessage');
+  }
+  bar.style.display = 'flex';
+  document.getElementById('bottomTabs').style.display = 'none';
+  document.getElementById('fabBtn').style.display = 'none';
+
+  document.getElementById('chatSendBtn').onclick = ()=>{
+    const input = document.getElementById('chatInput');
+    if(!input.value.trim()) return;
+    c.messages.push({from:'me', text:{ar:input.value, en:input.value}, time:'الآن'});
+    input.value='';
+    renderChatThread(chatId);
+    wrap.scrollTop = wrap.scrollHeight;
+  };
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+/* hide chat input bar whenever leaving the thread */
+const _origRenderTab = renderTab;
+renderTab = function(){
+  const bar = document.getElementById('chatInputBar');
+  const tabs = document.getElementById('bottomTabs');
+  if(bar) bar.style.display = 'none';
+  if(tabs) tabs.style.display = 'flex';
+  _origRenderTab();
+};
+
+/* ---- Profile ---- */
+/* ---- Reports (governorate breakdown) ---- */
+function renderReportsPage(){
+  setTopbar(t('reportsTitle'), '', true, ()=>{ subPage=null; renderTab(); });
+  const el = document.getElementById('appContent');
+  const total = MERCHANT_PROVINCES.reduce((a,p)=>a+p.orders,0);
+  const maxOrders = Math.max(...MERCHANT_PROVINCES.map(p=>p.orders));
+  const palette = ['var(--primary)','var(--accent)','var(--success)','var(--warning)','#6C8EBF','#A65DA6','#4FA6A0','var(--danger)'];
+  const donutData = MERCHANT_PROVINCES.map((p,i)=>({label:nm(p), pct:Math.round(p.orders/total*100), color:palette[i%palette.length]}));
+
+  el.innerHTML = `
+    ${donutCard(t('provinceReport'), donutData, total, t('totalOrdersLabel'))}
+    <div class="section-title"><h3>${t('ordersByProvince')}</h3></div>
+    <div class="list-card" id="provinceFullList"></div>
+  `;
+  document.getElementById('provinceFullList').innerHTML = MERCHANT_PROVINCES.map((p,i)=>`
+    <div style="padding:13px 14px; border-bottom:1px solid var(--border);">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+        <div style="width:26px; height:26px; border-radius:8px; background:color-mix(in srgb, ${palette[i%palette.length]} 18%, transparent); display:flex; align-items:center; justify-content:center; color:${palette[i%palette.length]}; flex:none;">${ic('mapPin',14)}</div>
+        <div style="flex:1;">
+          <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:800;"><span>${nm(p)}</span><span class="mono">${p.orders} ${t('ordersUnit')}</span></div>
+        </div>
+      </div>
+      <div style="height:6px; border-radius:20px; background:var(--surface-3); overflow:hidden; margin-bottom:6px;">
+        <div style="height:100%; width:${(p.orders/maxOrders*100).toFixed(0)}%; background:${palette[i%palette.length]}; border-radius:20px;"></div>
+      </div>
+      <div class="text-muted">${fmt(p.amount)} ${t('dueLabel')}</div>
+    </div>`).join('');
+}
+
+function renderProfile(){
+  setTopbar(t('profileTitle'), '', false);
+  const el = document.getElementById('appContent');
+  const name = ROLE==='merchant' ? 'متجر النور للإلكترونيات' : 'أحمد كريم';
+  const sub = ROLE==='merchant' ? t('merchantAppSub') : t('courierSubName');
+  el.innerHTML = `
+    <div class="profile-head">
+      <div class="profile-avatar">${name.charAt(0)}</div>
+      <b>${name}</b>
+      <span>${sub}</span>
+    </div>
+    <div class="list-card" style="margin-bottom:14px;">
+      <div class="settings-row">
+        <div class="sri">${ic('globe',15)}</div>
+        <div class="srt">${t('settingsLang')}</div>
+        <div class="seg">
+          <button class="js-lang-ar ${LANG==='ar'?'active':''}">AR</button>
+          <button class="js-lang-en ${LANG==='en'?'active':''}">EN</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <div class="sri">${ic('bell',15)}</div>
+        <div class="srt">${t('settingsTheme')}</div>
+        <div class="seg">
+          <button id="segLight" class="${THEME==='light'?'active':''}">${t('light')}</button>
+          <button id="segDark" class="${THEME==='dark'?'active':''}">${t('dark')}</button>
+        </div>
+      </div>
+    </div>
+    <div class="list-card" style="margin-bottom:14px;">
+      <div class="settings-row"><div class="sri">${ic('bell',15)}</div><div class="srt">${t('settingsNotif')}</div><div class="srv">${ic('check',13)}</div></div>
+      ${ROLE==='merchant' ? `<div class="settings-row" id="rowReports"><div class="sri">${ic('box',15)}</div><div class="srt">${t('reportsTitle')}</div><div class="srv">›</div></div>` : ''}
+      <div class="settings-row" id="rowSupport"><div class="sri">${ic('chat',15)}</div><div class="srt">${t('settingsSupport')}</div><div class="srv">›</div></div>
+      <div class="settings-row"><div class="sri">${ic('shield',15)}</div><div class="srt">${t('settingsAbout')}</div><div class="srv">v1.0</div></div>
+    </div>
+    <button class="btn btn-ghost" style="width:100%; color:var(--danger);" id="btnLogout">${ic('logout',16)}<span>${t('settingsLogout')}</span></button>
+  `;
+  el.querySelectorAll('.js-lang-ar').forEach(b=>b.addEventListener('click', ()=>setLang('ar')));
+  el.querySelectorAll('.js-lang-en').forEach(b=>b.addEventListener('click', ()=>setLang('en')));
+  document.getElementById('segLight').addEventListener('click', ()=>{ setTheme('light'); renderProfile(); });
+  document.getElementById('segDark').addEventListener('click', ()=>{ setTheme('dark'); renderProfile(); });
+  document.getElementById('rowSupport').addEventListener('click', ()=>{ TAB='chat'; activeChat = ROLE==='merchant'?'support':'dispatch'; renderTabs(); renderTab(); });
+  const rowReports = document.getElementById('rowReports');
+  if(rowReports) rowReports.addEventListener('click', openReports);
+  document.getElementById('btnLogout').addEventListener('click', backToStart);
+}
+
+/* ================= SHEETS / MODALS ================= */
+function openSheet(html){
+  document.getElementById('sheetContent').innerHTML = `<div class="sheet-handle"></div>` + html;
+  document.getElementById('sheetOverlay').classList.add('open');
+}
+function closeSheet(){ document.getElementById('sheetOverlay').classList.remove('open'); }
+document.getElementById('sheetOverlay').addEventListener('click', (e)=>{ if(e.target.id==='sheetOverlay') closeSheet(); });
+
+function openOrderDetailSheet(o){
+  const isAlt = ALT_ORDER_STATUSES.includes(o.status);
+  let route = STAGES.map((s,i)=>{
+    if(isAlt && i>o.stage) return '';
+    let cls = i<o.stage?'done': i===o.stage?(isAlt?'done':'current'):'';
+    return `<div class="sheet-step ${cls}"><div class="sheet-line"></div><div class="sheet-node">${i<o.stage||(isAlt&&i===o.stage)?ic('check',11):(i+1)}</div><div class="sheet-label">${nm(s)}</div></div>`;
+  }).join('');
+  if(isAlt) route += `<div class="sheet-step" style="color:var(--danger);"><div class="sheet-line" style="background:var(--danger);"></div><div class="sheet-node" style="background:var(--danger); border-color:var(--danger); color:#fff;">${ic('x2',11)}</div><div class="sheet-label" style="color:var(--danger); font-weight:800;">${t('filterDelayed')}</div></div>`;
+
+  openSheet(`
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+      <div><div style="font-weight:800; font-size:14.5px;" class="mono">${o.track}</div><div class="text-muted">${nm(o.customer)}</div></div>
+      ${statusBadge(o.status)}
+    </div>
+    <div class="sheet-route">${route}</div>
+    <div class="divider"></div>
+    <div style="display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; margin-bottom:16px;">
+      <span class="text-muted">${t('amountLabel')}</span><span class="mono">${fmt(o.amount)} ${t('dueLabel')}</span>
+    </div>
+    <button class="btn btn-ghost" style="width:100%;" onclick="closeSheet()">${t('close')}</button>
+  `);
+}
+
+function openOrderSheet(){
+  openSheet(`
+    <div style="font-weight:800; font-size:14.5px; margin-bottom:14px;">${t('newOrder')}</div>
+    <div class="field"><label>${LANG==='ar'?'اسم الزبون':'Customer Name'}</label><input type="text" placeholder="${LANG==='ar'?'مثال: زينب صالح':'e.g. Zainab Saleh'}"></div>
+    <div class="field"><label>${LANG==='ar'?'هاتف الزبون':'Customer Phone'}</label><input type="text" placeholder="07xx xxx xxxx"></div>
+    <div class="field"><label>${LANG==='ar'?'عنوان الزبون':'Customer Address'}</label><input type="text" placeholder="${LANG==='ar'?'المنطقة — أقرب نقطة دالة':'Area — nearest landmark'}"></div>
+    <div class="field"><label>${t('amountLabel')}</label><input type="text" placeholder="0"></div>
+    <button class="btn btn-primary" style="width:100%;" onclick="closeSheet()">${t('submitRequest')}</button>
+  `);
+}
+
+function openWithdrawSheet(kind){
+  const title = kind==='merchant' ? t('withdrawTitle') : t('handoverTitle');
+  openSheet(`
+    <div style="font-weight:800; font-size:14.5px; margin-bottom:14px;">${title}</div>
+    <div class="field"><label>${t('amountLabel')}</label><input type="text" placeholder="0 ${t('dueLabel')}"></div>
+    <div class="field"><label>${t('noteLabel')}</label><input type="text" placeholder="${LANG==='ar'?'اختياري':'Optional'}"></div>
+    <button class="btn btn-primary" style="width:100%;" onclick="closeSheet()">${t('submitRequest')}</button>
+  `);
+}
+
+function openToast(msg){
+  openSheet(`
+    <div style="text-align:center; padding:10px 0;">
+      <div style="width:52px; height:52px; border-radius:50%; background:var(--success-tint); color:var(--success); display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">${ic('check',24)}</div>
+      <div style="font-weight:800; font-size:13.5px;">${msg}</div>
+    </div>
+    <button class="btn btn-ghost" style="width:100%; margin-top:14px;" onclick="closeSheet()">${t('close')}</button>
+  `);
+}
+
+/* ================= EVENTS ================= */
+document.querySelectorAll('#screenStart [data-role]').forEach(b=>{
+  b.addEventListener('click', ()=> enterApp(b.dataset.role));
+});
+document.querySelectorAll('.js-lang-ar').forEach(b=> b.addEventListener('click', ()=>setLang('ar')));
+document.querySelectorAll('.js-lang-en').forEach(b=> b.addEventListener('click', ()=>setLang('en')));
+document.querySelectorAll('.js-theme-toggle').forEach(b=> b.addEventListener('click', ()=> setTheme(THEME==='light'?'dark':'light')));
+document.querySelector('.install-banner button').addEventListener('click', ()=>{
+  const banner = document.querySelector('.install-banner');
+  banner.innerHTML = `<div style="text-align:center; width:100%; font-size:11px; font-weight:800; padding:4px 0;">${LANG==='ar'?'تم التثبيت ✓ (محاكاة)':'Installed ✓ (simulated)'}</div>`;
+});
+
+/* ================= INIT ================= */
+setLang('ar');
+setTheme('light');
+</script>
+</body>
+</html>
