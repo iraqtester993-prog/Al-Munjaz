@@ -1090,20 +1090,18 @@ const STAGES = [
 
 /* Alternate terminal statuses — outcomes after "Out for Delivery" depending on delivery result */
 const ALT_STATUSES = [
-  {key:'delayed', ar:'مؤجل', en:'Delayed'},
-  {key:'rejected', ar:'رفض', en:'Rejected'},
+  {key:'courier', ar:'بحوزة المندوب', en:'With Courier'},
+  {key:'delivered', ar:'تم التسليم', en:'Delivered'},
   {key:'returned', ar:'راجع', en:'Returned'},
-  {key:'cancelled', ar:'ملغي', en:'Cancelled'},
-  {key:'damaged', ar:'تالف', en:'Damaged'},
 ];
-const ALT_ORDER_STATUSES = ['delayed','rejected','returned','cancelled','damaged'];
+const ALT_ORDER_STATUSES = ['courier','delivered','returned'];
 
 const MERCHANT_ORDERS = [
-  {track:'IQ-204871', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, amount:38000, stage:7, status:'transit'},
-  {track:'IQ-204879', customer:{ar:'كرم عادل',en:'Karam Adel'}, amount:26500, stage:12, status:'delivered'},
-  {track:'IQ-204880', customer:{ar:'هدى نعيم',en:'Huda Naeem'}, amount:19000, stage:10, status:'out'},
-  {track:'IQ-204881', customer:{ar:'باسم غالب',en:'Bassem Ghalib'}, amount:47500, stage:3, status:'delayed'},
-  {track:'IQ-204862', customer:{ar:'ميساء طه',en:'Maysaa Taha'}, amount:31000, stage:12, status:'delivered'},
+  {track:'IQ-204871', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, phone:'07701234567', phone2:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, amount:38000, price:42000, notes:{ar:'الباب الخلفي',en:'Back door'}, status:'courier'},
+  {track:'IQ-204879', customer:{ar:'كرم عادل',en:'Karam Adel'}, phone:'07705551234', phone2:'', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}, orderType:{ar:'طلب سريع',en:'Express Order'}, amount:26500, price:28000, notes:'', status:'delivered'},
+  {track:'IQ-204880', customer:{ar:'هدى نعيم',en:'Huda Naeem'}, phone:'07708889999', phone2:'07701112233', address:{ar:'البصرة — الحزام الأخضر',en:'Basra — Green Belt'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, amount:19000, price:21000, notes:{ar:'يتصل قبل الوصول',en:'Call before arrival'}, status:'courier'},
+  {track:'IQ-204881', customer:{ar:'باسم غالب',en:'Bassem Ghalib'}, phone:'07704445566', phone2:'', address:{ar:'أربيل — شارع 60 متر',en:'Erbil — 60m Street'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, amount:47500, price:50000, notes:'', status:'returned'},
+  {track:'IQ-204862', customer:{ar:'ميساء طه',en:'Maysaa Taha'}, phone:'07707778899', phone2:'07703334455', address:{ar:'النجف — الحيدرية',en:'Najaf — Al-Haydariya'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, amount:31000, price:33000, notes:{ar:'عميل VIP',en:'VIP customer'}, status:'delivered'},
 ];
 
 const COURIER_DELIVERIES = [
@@ -1714,10 +1712,10 @@ function setTopbar(title, sub, showBack, onBack){
 }
 
 function statusBadge(status){
-  const map={transit:'b-primary', out:'b-warning', delivered:'b-success', delayed:'b-danger'};
-  const dot={transit:'var(--primary)', out:'var(--warning)', delivered:'var(--success)', delayed:'var(--danger)'};
-  const label={transit:t('filterTransit'), out:t('filterOut'), delivered:t('filterDelivered'), delayed:t('filterDelayed')};
-  return `<span class="badge ${map[status]}"><span class="badge-dot" style="background:${dot[status]}"></span>${label[status]}</span>`;
+  const map={courier:'b-primary', delivered:'b-success', returned:'b-danger'};
+  const dot={courier:'var(--primary)', delivered:'var(--success)', returned:'var(--danger)'};
+  const label={courier:LANG==='ar'?'بحوزة المندوب':'With Courier', delivered:t('filterDelivered'), returned:LANG==='ar'?'راجع':'Returned'};
+  return `<span class="badge ${map[status]||'b-primary'}"><span class="badge-dot" style="background:${dot[status]||'var(--primary)'}"></span>${label[status]||status}</span>`;
 }
 
 /* ================= TAB ROUTER ================= */
@@ -1740,51 +1738,44 @@ function renderMerchantHome(){
   setTopbar(t('greeting'), currentUser ? currentUser.name : t('merchantSubName'), false);
   const el = document.getElementById('appContent');
   el.innerHTML = `
-    <div class="hero-slider-wrap" id="merchantHeroSlider"></div>
+    <button id="homeNewOrder" style="
+      width:100%; padding:16px; border-radius:16px; background:var(--primary); color:#fff;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      font-size:14px; font-weight:800; margin-bottom:16px;
+      box-shadow:0 8px 24px -6px color-mix(in srgb, var(--primary) 55%, transparent);
+      border:none; cursor:pointer; transition:transform .1s;
+    ">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span>${t('newOrder')}</span>
+    </button>
     <div class="hero-card">
-      <div class="hc-label">${t('myDueBalance')}</div>
-      <div class="hc-value mono">4,210,000 <span style="font-size:13px; opacity:.8;">${t('dueLabel')}</span></div>
+      <div class="hc-label">${t('myOrdersToday')}</div>
+      <div class="hc-value mono">5</div>
       <div class="hc-row">
-        <span class="hc-chip">${ic('box',13)} ${t('myOrdersToday')}: 5</span>
         <span class="hc-chip">${ic('check',13)} ${t('deliveryRate')}: 96%</span>
       </div>
     </div>
-    <div class="stat-grid">
-      <div class="stat-card"><div class="si" style="background:var(--primary-tint); color:var(--primary-strong);">${ic('box',15)}</div><div class="sv">312</div><div class="sl">${t('monthlyOrders')}</div></div>
-      <div class="stat-card"><div class="si" style="background:var(--success-tint); color:var(--success);">${ic('check',15)}</div><div class="sv">96%</div><div class="sl">${t('deliveryRate')}</div></div>
-    </div>
-    ${donutCard(t('statusDist'), [
-      {label:t('filterDelivered'), pct:64, color:'var(--success)'},
-      {label:t('filterTransit'), pct:18, color:'var(--primary)'},
-      {label:t('filterOut'), pct:11, color:'var(--accent)'},
-      {label:t('filterDelayed'), pct:7, color:'var(--danger)'},
-    ], '312', t('monthlyOrders'))}
-    ${weekChartCard(t('weeklyOrders'), [62,74,58,80,66,90,71], weekDayLabels())}
-    <div class="section-title"><h3>${t('reportsTitle')}</h3><a id="openReportsLink">${t('viewFullReport')}</a></div>
-    <div class="chart-card" id="provincePreviewCard" style="cursor:pointer;"></div>
+    ${(() => {
+      const total = MERCHANT_ORDERS.length || 1;
+      const c = MERCHANT_ORDERS.filter(o=>o.status==='courier').length;
+      const d = MERCHANT_ORDERS.filter(o=>o.status==='delivered').length;
+      const r = MERCHANT_ORDERS.filter(o=>o.status==='returned').length;
+      return donutCard(t('statusDist'), [
+        {label:LANG==='ar'?'بحوزة المندوب':'With Courier', pct:Math.round(c/total*100), color:'var(--primary)'},
+        {label:t('filterDelivered'), pct:Math.round(d/total*100), color:'var(--success)'},
+        {label:LANG==='ar'?'راجع':'Returned', pct:Math.round(r/total*100), color:'var(--danger)'},
+      ], total, t('monthlyOrders'));
+    })()}
     <div class="section-title"><h3>${t('recentOrders')}</h3><a data-goto-tab="orders">${t('seeAll')}</a></div>
     <div class="list-card" id="homeOrdersList"></div>
   `;
-  const provTotal = MERCHANT_PROVINCES.reduce((a,p)=>a+p.orders,0);
-  const provMax = Math.max(...MERCHANT_PROVINCES.map(p=>p.orders));
-  document.getElementById('provincePreviewCard').innerHTML = `
-    <div class="chart-card-head"><h4>${t('provinceReport')}</h4><span class="badge b-primary">${provTotal} ${t('ordersUnit')}</span></div>
-    ${MERCHANT_PROVINCES.slice(0,3).map(p=>`
-      <div style="margin-bottom:9px;">
-        <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; margin-bottom:4px;"><span>${nm(p)}</span><span class="mono">${p.orders}</span></div>
-        <div style="height:6px; border-radius:20px; background:var(--surface-3); overflow:hidden;"><div style="height:100%; width:${(p.orders/provMax*100).toFixed(0)}%; background:var(--primary); border-radius:20px;"></div></div>
-      </div>`).join('')}
-  `;
-  document.getElementById('provincePreviewCard').addEventListener('click', openReports);
-  document.getElementById('openReportsLink').addEventListener('click', openReports);
+  document.getElementById('homeNewOrder').addEventListener('click', openOrderSheet);
   const list = document.getElementById('homeOrdersList');
   list.innerHTML = MERCHANT_ORDERS.slice(0,4).map(o=>orderRow(o)).join('');
-  renderHeroSlider('merchantHeroSlider', MERCHANT_HERO_SLIDES);
   bindOrderRows(list, MERCHANT_ORDERS);
   el.querySelector('[data-goto-tab]').addEventListener('click', ()=>{ TAB='orders'; renderTabs(); renderTab(); });
 
-  document.getElementById('fabBtn').style.display='flex';
-  document.getElementById('fabBtn').onclick = ()=> openOrderSheet();
+  document.getElementById('fabBtn').style.display='none';
 }
 
 function weekDayLabels(){
@@ -1828,7 +1819,7 @@ function orderRow(o){
   <div class="order-row" data-track="${o.track}">
     <div class="order-ic">${ic('box',17)}</div>
     <div class="order-mid"><b>${nm(o.customer)}</b><span class="mono">${o.track}</span></div>
-    <div class="order-end"><b class="mono">${fmt(o.amount)}</b>${statusBadge(o.status)}</div>
+    <div class="order-end"><b class="mono">${fmt(o.price||o.amount)}</b>${statusBadge(o.status)}</div>
   </div>`;
 }
 function bindOrderRows(container, orders){
@@ -1842,10 +1833,9 @@ function bindOrderRows(container, orders){
 
 /* ---- Full status filter system (fast pill bar + grid sheet, ~19 statuses) ---- */
 const STAGE_ICONS = ['box','clock','bike','check','building','box','clock','truck','building','bike','truck','check','shield'];
-const FULL_STATUS_DEFS = STAGES.map((s,i)=>({key:'stage'+i, label:s, icon:STAGE_ICONS[i], tint:'var(--primary-tint)', color:'var(--primary-strong)', alt:false}))
-  .concat(ALT_STATUSES.map(a=>({key:a.key, label:a, icon:'x2', tint:'var(--danger-tint)', color:'var(--danger)', alt:true})));
+const FULL_STATUS_DEFS = ALT_STATUSES.map(a=>({key:a.key, label:{ar:a.ar,en:a.en}, icon:a.key==='courier'?'bike':a.key==='delivered'?'check':'x2', tint:a.key==='courier'?'var(--primary-tint)':a.key==='delivered'?'var(--success-tint)':'var(--danger-tint)', color:a.key==='courier'?'var(--primary)':a.key==='delivered'?'var(--success)':'var(--danger)', alt:false}));
 
-function statusKeyOf(o){ return (o.status && ALT_ORDER_STATUSES.includes(o.status)) ? o.status : 'stage'+o.stage; }
+function statusKeyOf(o){ return o.status || 'courier'; }
 
 function statusFilterBar(items, activeKey, barId, onChange){
   const def = activeKey!=='all' ? FULL_STATUS_DEFS.find(d=>d.key===activeKey) : null;
@@ -1879,18 +1869,12 @@ function statusGridHTML(defs, items, activeKey){
   }).join('') + `</div>`;
 }
 function openStatusSheet(items, activeKey, onChange){
-  const inProgress = FULL_STATUS_DEFS.filter(d=>!d.alt);
-  const final = FULL_STATUS_DEFS.filter(d=>d.alt);
   openSheet(`
     <div style="font-weight:800; font-size:14.5px; margin-bottom:14px;">${t('allStatuses')}</div>
     <div style="padding:9px 12px; border-radius:11px; background:${activeKey==='all'?'var(--primary)':'var(--surface-2)'}; color:${activeKey==='all'?'#fff':'var(--ink)'}; font-size:11.5px; font-weight:800; margin-bottom:14px; display:flex; justify-content:space-between;" data-f="all">
       <span>${t('filterAll')}</span><span>${items.length}</span>
     </div>
-    <div class="text-muted" style="margin-bottom:8px; font-weight:800;">${t('inProgressStatuses')}</div>
-    ${statusGridHTML(inProgress, items, activeKey)}
-    <div class="divider"></div>
-    <div class="text-muted" style="margin-bottom:8px; font-weight:800;">${t('finalStatuses')}</div>
-    ${statusGridHTML(final, items, activeKey)}
+    ${statusGridHTML(FULL_STATUS_DEFS, items, activeKey)}
   `);
   document.querySelectorAll('#sheetContent [data-f]').forEach(c=>{
     c.addEventListener('click', ()=>{ onChange(c.dataset.f); closeSheet(); });
@@ -1993,7 +1977,7 @@ function bindDeliveryActions(){
   document.querySelectorAll('.deliv-card').forEach(c=>{
     c.addEventListener('click', ()=>{
       const d = COURIER_DELIVERIES.find(x=>x.track===c.dataset.track);
-      openOrderDetailSheet({track:d.track, customer:d.customer, amount:d.amount, stage:d.stage, status: d.stage>=12?'delivered':d.stage>=10?'out':'transit'});
+      openOrderDetailSheet({track:d.track, customer:d.customer, phone:'07700000000', phone2:'', address:d.area, orderType:{ar:'طلب عادي',en:'Normal'}, amount:d.amount, price:d.amount+3000, notes:'', status: d.stage>=12?'delivered':d.stage>=10?'courier':'courier'});
     });
   });
 }
@@ -2204,13 +2188,20 @@ function closeSheet(){ document.getElementById('sheetOverlay').classList.remove(
 document.getElementById('sheetOverlay').addEventListener('click', (e)=>{ if(e.target.id==='sheetOverlay') closeSheet(); });
 
 function openOrderDetailSheet(o){
-  const isAlt = ALT_ORDER_STATUSES.includes(o.status);
-  let route = STAGES.map((s,i)=>{
-    if(isAlt && i>o.stage) return '';
-    let cls = i<o.stage?'done': i===o.stage?(isAlt?'done':'current'):'';
-    return `<div class="sheet-step ${cls}"><div class="sheet-line"></div><div class="sheet-node">${i<o.stage||(isAlt&&i===o.stage)?ic('check',11):(i+1)}</div><div class="sheet-label">${nm(s)}</div></div>`;
+  const statusSteps = [
+    {key:'courier', label:LANG==='ar'?'بحوزة المندوب':'With Courier'},
+    {key:'delivered', label:LANG==='ar'?'تم التسليم':'Delivered'},
+    {key:'returned', label:LANG==='ar'?'راجع':'Returned'},
+  ];
+  const currentIdx = statusSteps.findIndex(s=>s.key===o.status);
+  let route = statusSteps.map((s,i)=>{
+    let cls = i<currentIdx?'done': i===currentIdx?'current':'';
+    return `<div class="sheet-step ${cls}"><div class="sheet-line"></div><div class="sheet-node">${i<currentIdx?ic('check',11):(i+1)}</div><div class="sheet-label">${s.label}</div></div>`;
   }).join('');
-  if(isAlt) route += `<div class="sheet-step" style="color:var(--danger);"><div class="sheet-line" style="background:var(--danger);"></div><div class="sheet-node" style="background:var(--danger); border-color:var(--danger); color:#fff;">${ic('x2',11)}</div><div class="sheet-label" style="color:var(--danger); font-weight:800;">${t('filterDelayed')}</div></div>`;
+
+  const phone2 = o.phone2 ? `<div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${LANG==='ar'?'هاتف ثان':'Second Phone'}</span><span class="mono">${o.phone2}</span></div>` : '';
+  const notes = o.notes ? `<div style="margin-top:10px;"><div style="font-size:12px; color:var(--ink-soft); margin-bottom:4px;">${LANG==='ar'?'ملاحظات':'Notes'}</div><div style="font-size:12.5px; background:var(--surface-2); padding:10px; border-radius:10px;">${typeof o.notes==='object'?o.notes[LANG]:o.notes}</div></div>` : '';
+  const addr = typeof o.address==='object'?o.address[LANG]:o.address;
 
   openSheet(`
     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
@@ -2219,8 +2210,16 @@ function openOrderDetailSheet(o){
     </div>
     <div class="sheet-route">${route}</div>
     <div class="divider"></div>
-    <div style="display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; margin-bottom:16px;">
-      <span class="text-muted">${t('amountLabel')}</span><span class="mono">${fmt(o.amount)} ${t('dueLabel')}</span>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:12.5px; font-weight:800; margin-bottom:10px; color:var(--ink);">${LANG==='ar'?'تفاصيل الطلب':'Order Details'}</div>
+      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${LANG==='ar'?'الزبون':'Customer'}</span><span>${nm(o.customer)}</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${LANG==='ar'?'الهاتف':'Phone'}</span><span class="mono">${o.phone||''}</span></div>
+      ${phone2}
+      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${LANG==='ar'?'العنوان':'Address'}</span><span>${addr||''}</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${LANG==='ar'?'نوع الطلب':'Order Type'}</span><span>${typeof o.orderType==='object'?o.orderType[LANG]:o.orderType||''}</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${t('amountLabel')}</span><span class="mono">${fmt(o.amount)} ${t('dueLabel')}</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${LANG==='ar'?'السعر':'Price'}</span><span class="mono">${fmt(o.price||0)} ${t('dueLabel')}</span></div>
+      ${notes}
     </div>
     <button class="btn btn-ghost" style="width:100%;" onclick="closeSheet()">${t('close')}</button>
   `);
@@ -2228,13 +2227,42 @@ function openOrderDetailSheet(o){
 
 function openOrderSheet(){
   openSheet(`
-    <div style="font-weight:800; font-size:14.5px; margin-bottom:14px;">${t('newOrder')}</div>
-    <div class="field"><label>${LANG==='ar'?'اسم الزبون':'Customer Name'}</label><input type="text" placeholder="${LANG==='ar'?'مثال: زينب صالح':'e.g. Zainab Saleh'}"></div>
-    <div class="field"><label>${LANG==='ar'?'هاتف الزبون':'Customer Phone'}</label><input type="text" placeholder="07xx xxx xxxx"></div>
-    <div class="field"><label>${LANG==='ar'?'عنوان الزبون':'Customer Address'}</label><input type="text" placeholder="${LANG==='ar'?'المنطقة — أقرب نقطة دالة':'Area — nearest landmark'}"></div>
-    <div class="field"><label>${t('amountLabel')}</label><input type="text" placeholder="0"></div>
-    <button class="btn btn-primary" style="width:100%;" onclick="closeSheet()">${t('submitRequest')}</button>
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+      <div style="font-weight:800; font-size:14.5px;">${t('newOrder')}</div>
+      <button onclick="closeSheet()" style="width:30px; height:30px; border-radius:50%; background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-soft);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="field"><label>${LANG==='ar'?'اسم الزبون':'Customer Name'}</label><input id="fCustomer" type="text" placeholder="${LANG==='ar'?'الاسم الكامل':'Full name'}"></div>
+    <div class="field"><label>${LANG==='ar'?'رقم الهاتف':'Phone Number'}</label><input id="fPhone" type="tel" placeholder="07xx xxx xxxx" dir="ltr"></div>
+    <div class="field"><label>${LANG==='ar'?'رقم هاتف ثاني (اختياري)':'Second Phone (optional)'}</label><input id="fPhone2" type="tel" placeholder="07xx xxx xxxx" dir="ltr"></div>
+    <div class="field"><label>${LANG==='ar'?'العنوان':'Address'}</label><input id="fAddress" type="text" placeholder="${LANG==='ar'?'المدينة — المنطقة — أقرب نقطة دالة':'City — Area — Landmark'}"></div>
+    <div class="field"><label>${LANG==='ar'?'نوع الطلب':'Order Type'}</label><input id="fOrderType" type="text" placeholder="${LANG==='ar'?'مثال: طلب عادي، سريع، الدفع عند الاستلام':'e.g. Normal, Express, COD'}"></div>
+    <div class="field"><label>${LANG==='ar'?'المبلغ':'Amount'}</label><input id="fAmount" type="number" placeholder="0 ${t('dueLabel')}"></div>
+    <div class="field"><label>${LANG==='ar'?'السعر':'Price'}</label><input id="fPrice" type="number" placeholder="0 ${t('dueLabel')}"></div>
+    <div class="field"><label>${LANG==='ar'?'ملاحظات (اختياري)':'Notes (optional)'}</label><textarea id="fNotes" rows="3" placeholder="${LANG==='ar'?'أي ملاحظات إضافية...':'Any additional notes...'}" style="width:100%; padding:11px 13px; border:1px solid var(--border); border-radius:11px; background:var(--surface-2); color:var(--ink); font-size:13px; outline:none; resize:none; font-family:inherit;"></textarea></div>
+    <button class="btn btn-primary" style="width:100%;" onclick="submitNewOrder()">${t('submitRequest')}</button>
   `);
+}
+
+function submitNewOrder(){
+  const customer = document.getElementById('fCustomer').value.trim();
+  const phone = document.getElementById('fPhone').value.trim();
+  const phone2 = document.getElementById('fPhone2').value.trim();
+  const address = document.getElementById('fAddress').value.trim();
+  const orderType = document.getElementById('fOrderType').value.trim();
+  const amount = parseFloat(document.getElementById('fAmount').value)||0;
+  const price = parseFloat(document.getElementById('fPrice').value)||0;
+  const notes = document.getElementById('fNotes').value.trim();
+  if(!customer){return;}
+  const track = 'IQ-' + Math.floor(100000+Math.random()*900000);
+  MERCHANT_ORDERS.unshift({
+    track, customer:{ar:customer,en:customer}, phone, phone2,
+    address:{ar:address,en:address}, orderType:{ar:orderType,en:orderType},
+    amount, price:price||amount, notes:{ar:notes,en:notes}, status:'courier'
+  });
+  closeSheet();
+  renderMerchantHome();
 }
 
 function openWithdrawSheet(kind){
