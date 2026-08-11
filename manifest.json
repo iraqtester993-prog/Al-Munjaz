@@ -1,0 +1,27 @@
+{
+  "name": "مسار — تطبيق التاجر والمندوب",
+  "short_name": "مسار",
+  "description": "تطبيق التاجر والمندوب لإدارة الطلبات والتوصيل",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F4F6F5",
+  "theme_color": "#0B6E68",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["business", "shopping"],
+  "icons": [
+    {
+      "src": "المنجز.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "المنجز.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
