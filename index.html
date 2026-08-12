@@ -1112,12 +1112,12 @@ const MERCHANT_ORDERS = [
 ];
 
 const COURIER_DELIVERIES = [
-  {track:'IQ-204873', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, phone:'07701234567', address:{ar:'الكرادة — شارع 60',en:'Karrada — 60m Street'}, price:64000, status:'pending', date:'2026-08-12', merchant:{ar:'متجر النور',en:'Al-Noor Store', phone:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}}},
-  {track:'IQ-204877', customer:{ar:'مروان طارق',en:'Marwan Tariq'}, phone:'07705551234', address:{ar:'الجادرية —شارع 40',en:'Jadriya — 40m Street'}, price:29800, status:'approved', date:'2026-08-12', merchant:{ar:'عالم الإلكترونيات',en:'Electronics World', phone:'07703334455', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}}},
-  {track:'IQ-204882', customer:{ar:'رنا فؤاد',en:'Rana Fouad'}, phone:'07708889999', address:{ar:'المنصور — zona 609',en:'Mansour — Zone 609'}, price:41500, status:'courier', date:'2026-08-11', merchant:{ar:'سوق الجملة',en:'Wholesale Market', phone:'07701112233', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}}},
-  {track:'IQ-204885', customer:{ar:'سيف كامل',en:'Saif Kamel'}, phone:'07704445566', address:{ar:'زيونة —شارع الحسين',en:'Zayouna — Hussain Street'}, price:18000, status:'delivered', date:'2026-08-10', merchant:{ar:'متجر النور',en:'Al-Noor Store', phone:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}}},
-  {track:'IQ-204890', customer:{ar:'نور حسين',en:'Noor Hussein'}, phone:'07702223344', address:{ar:'الكرادة — فيلا 12',en:'Karrada — Villa 12'}, price:52000, status:'returned', date:'2026-08-09', merchant:{ar:'عالم الإلكترونيات',en:'Electronics World', phone:'07703334455', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}}},
-  {track:'IQ-204895', customer:{ar:'عمار حسين',en:'Ammar Hussein'}, phone:'07707778899', address:{ar:'الكاظمية —شارع?',en:'Kadhimiya — Main St'}, price:35000, status:'pending', date:'2026-08-12', merchant:{ar:'سوق الجملة',en:'Wholesale Market', phone:'07701112233', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}}},
+  {track:'IQ-204873', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, phone:'07701234567', address:{ar:'الكرادة — شارع 60',en:'Karrada — 60m Street'}, price:64000, fee:2500, status:'pending', date:'2026-08-12', merchant:{ar:'متجر النور',en:'Al-Noor Store', phone:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}}},
+  {track:'IQ-204877', customer:{ar:'مروان طارق',en:'Marwan Tariq'}, phone:'07705551234', address:{ar:'الجادرية —شارع 40',en:'Jadriya — 40m Street'}, price:29800, fee:2200, status:'approved', date:'2026-08-12', merchant:{ar:'عالم الإلكترونيات',en:'Electronics World', phone:'07703334455', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}}},
+  {track:'IQ-204882', customer:{ar:'رنا فؤاد',en:'Rana Fouad'}, phone:'07708889999', address:{ar:'المنصور — zona 609',en:'Mansour — Zone 609'}, price:41500, fee:2300, status:'courier', date:'2026-08-11', merchant:{ar:'سوق الجملة',en:'Wholesale Market', phone:'07701112233', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}}},
+  {track:'IQ-204885', customer:{ar:'سيف كامل',en:'Saif Kamel'}, phone:'07704445566', address:{ar:'زيونة —شارع الحسين',en:'Zayouna — Hussain Street'}, price:18000, fee:2000, status:'delivered', date:'2026-08-10', merchant:{ar:'متجر النور',en:'Al-Noor Store', phone:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}}},
+  {track:'IQ-204890', customer:{ar:'نور حسين',en:'Noor Hussein'}, phone:'07702223344', address:{ar:'الكرادة — فيلا 12',en:'Karrada — Villa 12'}, price:52000, fee:2500, status:'returned', date:'2026-08-09', merchant:{ar:'عالم الإلكترونيات',en:'Electronics World', phone:'07703334455', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}}},
+  {track:'IQ-204895', customer:{ar:'عمار حسين',en:'Ammar Hussein'}, phone:'07707778899', address:{ar:'الكاظمية —شارع?',en:'Kadhimiya — Main St'}, price:35000, fee:2200, status:'pending', date:'2026-08-12', merchant:{ar:'سوق الجملة',en:'Wholesale Market', phone:'07701112233', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}}},
 ];
 
 const MERCHANT_PROVINCES = [
@@ -1528,6 +1528,48 @@ function creditCourierBudget(amount){
   saveBudget();
 }
 
+/* ---- Pickup countdown (time to reach merchant) ---- */
+const PICKUP_DEADLINE_MS = 3600000; // ساعة واحدة — يُعدَّل لاحقاً
+function ensurePickupDeadline(d){
+  if(d.status==='approved' && !d.pickupDeadline) d.pickupDeadline = Date.now() + PICKUP_DEADLINE_MS;
+}
+function pickupTimerCard(d){
+  if(d.status!=='approved') return '';
+  ensurePickupDeadline(d);
+  return `
+    <div style="margin-top:12px; padding:14px; border-radius:14px; background:var(--warning-tint); border:1.5px solid color-mix(in srgb, var(--warning) 30%, transparent);">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+        ${ic('clock',15)}
+        <div style="font-size:12px; font-weight:800; color:var(--ink);">${LANG==='ar'?'الوقت المحدد للوصول إلى التاجر':'Time to reach the merchant'}</div>
+      </div>
+      <div class="pickup-timer mono" data-deadline="${d.pickupDeadline}" style="font-size:24px; font-weight:900; color:var(--warning); letter-spacing:1px; text-align:center; line-height:1.2;"></div>
+    </div>`;
+}
+function pickupTimerLine(d){
+  if(d.status!=='approved') return '';
+  ensurePickupDeadline(d);
+  return `<div style="display:flex; align-items:center; gap:5px; font-size:10.5px; font-weight:800; color:var(--warning); margin-top:6px;">${ic('clock',11)} ${LANG==='ar'?'الوقت المتبقي':'Time left'}: <b class="pickup-timer mono" data-deadline="${d.pickupDeadline}" style="font-size:11px;"></b></div>`;
+}
+let courierTickerStarted = false;
+function startCourierTimerTicker(){
+  if(courierTickerStarted) return;
+  courierTickerStarted = true;
+  setInterval(()=>{
+    document.querySelectorAll('.pickup-timer').forEach(el=>{
+      const rem = parseInt(el.dataset.deadline||'0', 10) - Date.now();
+      if(rem<=0){
+        el.innerHTML = `<span style="color:var(--danger); font-size:13px;">${LANG==='ar'?'انتهى الوقت':'Time expired'}</span>`;
+        return;
+      }
+      const pad = n=> String(n).padStart(2,'0');
+      const h = Math.floor(rem/3600000);
+      const m = Math.floor(rem%3600000/60000);
+      const s = Math.floor(rem%60000/1000);
+      el.innerHTML = `${pad(h)}:${pad(m)}:${pad(s)}`;
+    });
+  },1000);
+}
+
 function hideAllAuthScreens(){
   document.querySelectorAll('.auth-screen').forEach(s=> s.classList.remove('active'));
 }
@@ -1722,6 +1764,7 @@ function renderApp(){
   hideAllAuthScreens();
   document.getElementById('screenStart').classList.remove('active');
   document.getElementById('screenApp').classList.add('active');
+  startCourierTimerTicker();
   renderTabs();
   renderTab();
 }
@@ -2027,6 +2070,46 @@ function getCourierStats(){
 function renderCourierHome(){
   setTopbar(t('greeting'), currentUser ? currentUser.name : t('courierSubName'), false);
   const el = document.getElementById('appContent');
+
+  if(courierHomeView==='list'){
+    const items = COURIER_DELIVERIES.filter(o=>o.status===courierHomeStatus);
+    const label = {pending:LANG==='ar'?'قيد الانتظار':'Pending', approved:LANG==='ar'?'تم قبول الطلب':'Accepted', courier:LANG==='ar'?'بحوزتي':'With Me', delivered:t('filterDelivered'), returned:LANG==='ar'?'راجع':'Returned'}[courierHomeStatus] || '';
+    el.innerHTML = `
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+        <button onclick="courierHomeView='main'; renderCourierHome();" style="width:36px; height:36px; border-radius:10px; background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div style="font-weight:800; font-size:14px;">${label}</div>
+        <span style="font-size:11px; color:var(--ink-soft); font-weight:700; background:var(--surface-2); padding:3px 10px; border-radius:20px;">${items.length}</span>
+      </div>
+    `;
+    el.innerHTML += items.length ? items.map(d=>{
+      const statusDef = [
+        {key:'pending', color:'var(--st-pending)', tint:'var(--st-pending-tint)', icon:'clock'},
+        {key:'approved', color:'var(--st-approved)', tint:'var(--st-approved-tint)', icon:'shield'},
+        {key:'courier', color:'var(--st-courier)', tint:'var(--st-courier-tint)', icon:'bike'},
+        {key:'delivered', color:'var(--st-delivered)', tint:'var(--st-delivered-tint)', icon:'check'},
+        {key:'returned', color:'var(--st-returned)', tint:'var(--st-returned-tint)', icon:'x2'},
+      ].find(s=>s.key===d.status);
+      return `
+      <div class="list-card" style="margin-bottom:10px; padding:14px; cursor:pointer;" onclick="openCourierDetailSheet(COURIER_DELIVERIES.find(x=>x.track==='${d.track}'))">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:40px; height:40px; border-radius:10px; background:${statusDef.tint}; color:${statusDef.color}; display:flex; align-items:center; justify-content:center; flex:none;">${ic(statusDef.icon,18)}</div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:12.5px; font-weight:800;">${nm(d.customer)}</div>
+            <div style="font-size:10.5px; color:var(--ink-faint);">${d.track} · ${nm(d.address)}</div>
+            ${pickupTimerLine(d)}
+          </div>
+          <div style="text-align:end;">
+            <div class="mono" style="font-size:13px; font-weight:900;">${fmt(d.price)}</div>
+            ${statusBadge(d.status)}
+          </div>
+        </div>
+      </div>`;
+    }).join('') : `<div class="empty-hint">${LANG==='ar'?'لا طلبات':'No orders'}</div>`;
+    return;
+  }
+
   const stats = getCourierStats();
   const newCount = stats.newOrders.length;
   const totalDelivered = stats.results.delivered.length;
@@ -2097,6 +2180,7 @@ function approveCourierOrder(track){
   const d = COURIER_DELIVERIES.find(x=>x.track===track);
   if(d && d.status==='pending'){
     d.status = 'approved';
+    ensurePickupDeadline(d);
     if(!d.deducted){ d.deducted = true; creditCourierBudget(-d.price); }
   }
   renderCourierHome();
@@ -2107,10 +2191,25 @@ function setCourierStatus(track, status){
   if(!d) return;
   const prev = d.status;
   if(status==='approved' && prev==='pending'){
+    ensurePickupDeadline(d);
     if(!d.deducted){ d.deducted = true; creditCourierBudget(-d.price); }
   }
   if((status==='pending' || status==='delivered' || status==='returned') && d.deducted){
     d.deducted = false; creditCourierBudget(d.price);
+  }
+  if(status==='delivered' && !d.feePaid){
+    d.feePaid = true;
+    const fee = d.fee || 0;
+    if(fee>0){
+      walletCredit -= fee;
+      saveCredit();
+      COURIER_TX.unshift({
+        icon:'upload', color:'warning',
+        label:{ar:`عمولة توصيل — ${d.track}`, en:`Delivery fee — ${d.track}`},
+        ref:d.track, date:new Date().toISOString().slice(0,10),
+        amount:fee, dir:-1
+      });
+    }
   }
   d.status = status;
   closeSheet();
@@ -2161,7 +2260,7 @@ function openCourierDetailSheet(d){
     </div>
   ` : '';
 
-  const customerActions = `
+  const customerActions = d.status==='pending' ? '' : `
     <div style="display:flex; gap:6px; margin-top:10px;">
       <a href="https://wa.me/${d.phone.replace(/[^0-9]/g,'')}" target="_blank" style="flex:1; display:flex; align-items:center; justify-content:center; gap:5px; padding:8px; border-radius:8px; background:rgba(25,135,84,.12); color:#198754; text-decoration:none; font-size:11px; font-weight:700;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -2189,6 +2288,7 @@ function openCourierDetailSheet(d){
     </div>
     ${customerActions}
     ${merchantCard}
+    ${pickupTimerCard(d)}
     ${d.status==='pending' ? `<button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="setCourierStatus('${d.track}','approved')">${LANG==='ar'?'موافقة على الطلب':'Accept Order'}</button>` : ''}
     ${d.status==='approved' ? `
       <button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="setCourierStatus('${d.track}','courier')">${LANG==='ar'?'استلام الطلب':'Pick Up Order'}</button>
@@ -2197,8 +2297,33 @@ function openCourierDetailSheet(d){
       <button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="setCourierStatus('${d.track}','delivered')">${LANG==='ar'?'تم التسليم':'Mark as Delivered'}</button>
       <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="setCourierStatus('${d.track}','returned')">${LANG==='ar'?'راجع':'Mark as Returned'}</button>
       <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="setCourierStatus('${d.track}','pending')">${LANG==='ar'?'الغاء الطلب':'Cancel Order'}</button>` : ''}
+    ${d.status==='returned' ? `
+      <button class="btn btn-primary" style="width:100%; margin-top:14px; background:var(--st-returned); border-color:var(--st-returned);" onclick="returnToMerchant('${d.track}')">${LANG==='ar'?'إرجاع إلى التاجر':'Return to Merchant'}</button>` : ''}
     <button class="btn btn-ghost" style="width:100%; margin-top:8px;" onclick="closeSheet()">${t('close')}</button>
   `);
+}
+
+function returnToMerchant(track){
+  const d = COURIER_DELIVERIES.find(x=>x.track===track);
+  if(!d) return;
+  openSheet(`
+    <div style="text-align:center; padding:20px 0;">
+      <div style="width:52px; height:52px; border-radius:50%; background:var(--st-returned-tint); color:var(--st-returned); display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">${ic('x2',24)}</div>
+      <div style="font-weight:800; font-size:14px; margin-bottom:6px;">${LANG==='ar'?'إرجاع إلى التاجر':'Return to Merchant'}</div>
+      <div style="font-size:12px; color:var(--ink-soft); line-height:1.7;">${LANG==='ar'?'سيتم إرجاع الطلب إلى التاجر وإزالته من قائمة طلباتك.':'The order will be returned to the merchant and removed from your orders.'}</div>
+    </div>
+    <div style="display:flex; gap:8px; margin-top:14px;">
+      <button class="btn btn-ghost" style="flex:1;" onclick="closeSheet()">${LANG==='ar'?'إلغاء':'Cancel'}</button>
+      <button class="btn btn-primary" style="flex:1; background:var(--st-returned); border-color:var(--st-returned);" onclick="confirmReturnToMerchant('${track}')">${LANG==='ar'?'تأكيد الإرجاع':'Confirm'}</button>
+    </div>
+  `);
+}
+
+function confirmReturnToMerchant(track){
+  const idx = COURIER_DELIVERIES.findIndex(x=>x.track===track);
+  if(idx>-1) COURIER_DELIVERIES.splice(idx,1);
+  closeSheet();
+  renderTab();
 }
 
 function startMerchantChat(track, name){
@@ -2267,6 +2392,7 @@ function renderCourierDeliveries(){
           <div style="flex:1; min-width:0;">
             <div style="font-size:12.5px; font-weight:800;">${nm(d.customer)}</div>
             <div style="font-size:10.5px; color:var(--ink-faint);">${d.track} · ${nm(d.address)}</div>
+            ${pickupTimerLine(d)}
           </div>
           <div style="text-align:end;">
             <div class="mono" style="font-size:13px; font-weight:900;">${fmt(d.price)}</div>
@@ -2398,7 +2524,15 @@ function renderCourierWallet(){
   const el = document.getElementById('appContent');
 
   el.innerHTML = `
-    <div style="padding:22px 20px; border-radius:22px; background:linear-gradient(135deg, var(--primary-strong), var(--primary)); color:#fff; margin-bottom:14px; position:relative; overflow:hidden;">
+    <div style="display:flex; align-items:center; gap:13px; padding:18px 20px; border-radius:18px; background:var(--surface); border:1px solid var(--border); margin-bottom:14px;">
+      <div style="width:44px; height:44px; border-radius:13px; background:var(--primary-tint); color:var(--primary-strong); display:flex; align-items:center; justify-content:center; flex:none;">${ic('wallet',19)}</div>
+      <div style="flex:1; min-width:0;">
+        <div style="font-size:11px; color:var(--ink-soft); font-weight:700; margin-bottom:3px;">${LANG==='ar'?'الرصيد المتاح في محفظتي':'My Available Wallet Balance'}</div>
+        <div class="mono" style="font-size:21px; font-weight:900;">${fmt(walletCredit)} <span style="font-size:11px; color:var(--ink-faint); font-weight:700;">${t('dueLabel')}</span></div>
+      </div>
+    </div>
+
+    <div style="padding:22px 20px; border-radius:22px; background:linear-gradient(135deg, var(--primary-strong), var(--primary)); color:#fff; margin-bottom:16px; position:relative; overflow:hidden;">
       <div style="position:absolute; top:-30px; left:-30px; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,.07);"></div>
       <div style="position:absolute; bottom:-40px; right:-20px; width:140px; height:140px; border-radius:50%; background:rgba(255,255,255,.07);"></div>
       <div style="position:relative; z-index:1;">
@@ -2414,13 +2548,11 @@ function renderCourierWallet(){
       </div>
     </div>
 
-    <div style="display:flex; align-items:center; gap:13px; padding:18px 20px; border-radius:18px; background:var(--surface); border:1px solid var(--border);">
-      <div style="width:44px; height:44px; border-radius:13px; background:var(--primary-tint); color:var(--primary-strong); display:flex; align-items:center; justify-content:center; flex:none;">${ic('wallet',19)}</div>
-      <div style="flex:1; min-width:0;">
-        <div style="font-size:11px; color:var(--ink-soft); font-weight:700; margin-bottom:3px;">${LANG==='ar'?'الرصيد المتاح في محفظتي':'My Available Wallet Balance'}</div>
-        <div class="mono" style="font-size:21px; font-weight:900;">${fmt(walletCredit)} <span style="font-size:11px; color:var(--ink-faint); font-weight:700;">${t('dueLabel')}</span></div>
-      </div>
+    <div class="section-title">
+      <h3>${t('history')}</h3>
+      <span style="font-size:10px; color:var(--ink-faint); font-weight:700;">${LANG==='ar'?'الحركات الأخيرة':'Recent Transactions'}</span>
     </div>
+    <div class="list-card" style="overflow:hidden;">${walletTxsHTML(COURIER_TX, COURIER_TX_COLORS)}</div>
   `;
 }
 
@@ -2757,7 +2889,7 @@ function renderProfile(){
     </div>` : ''}
     <div class="list-card" style="margin-bottom:14px;">
       <div class="settings-row"><div class="sri">${ic('bell',15)}</div><div class="srt">${t('settingsNotif')}</div><div class="srv">${ic('check',13)}</div></div>
-      <div class="settings-row" id="rowVerify"><div class="sri">${ic('shield',15)}</div><div class="srt">${LANG==='ar'?'توثيق الحساب':'Account Verification'}</div><div class="srv">›</div></div>
+      ${ROLE==='merchant' ? `<div class="settings-row" id="rowVerify"><div class="sri">${ic('shield',15)}</div><div class="srt">${LANG==='ar'?'توثيق الحساب':'Account Verification'}</div><div class="srv">›</div></div>` : ''}
       ${ROLE==='merchant' ? `<div class="settings-row" id="rowReports"><div class="sri">${ic('box',15)}</div><div class="srt">${t('reportsTitle')}</div><div class="srv">›</div></div>` : ''}
       <div class="settings-row" id="rowSupport"><div class="sri">${ic('chat',15)}</div><div class="srt">${t('settingsSupport')}</div><div class="srv">›</div></div>
       <div class="settings-row"><div class="sri">${ic('shield',15)}</div><div class="srt">${t('settingsAbout')}</div><div class="srv">v1.0</div></div>
@@ -2773,7 +2905,8 @@ function renderProfile(){
   document.getElementById('segLight').addEventListener('click', ()=>{ setTheme('light'); renderProfile(); });
   document.getElementById('segDark').addEventListener('click', ()=>{ setTheme('dark'); renderProfile(); });
   document.getElementById('rowSupport').addEventListener('click', ()=>{ TAB='chat'; activeChat = ROLE==='merchant'?'support':'dispatch'; renderTabs(); renderTab(); });
-  document.getElementById('rowVerify').addEventListener('click', openVerifySheet);
+  const rowVerify = document.getElementById('rowVerify');
+  if(rowVerify) rowVerify.addEventListener('click', openVerifySheet);
   const rowReports = document.getElementById('rowReports');
   if(rowReports) rowReports.addEventListener('click', openReports);
   document.getElementById('btnLogout').addEventListener('click', backToStart);
@@ -2900,7 +3033,7 @@ function openOrderDetailSheet(o){
 
   const showCourier = o.status !== 'pending' && o.courier;
   const courierCard = showCourier ? `
-    <div style="margin-top:16px; padding:16px; border-radius:16px; background:linear-gradient(135deg, var(--st-courier), color-mix(in srgb, var(--st-courier) 70%, #000)); color:#fff; position:relative; overflow:hidden;">
+    <div style="margin-top:16px; padding:16px; border-radius:16px; background:linear-gradient(135deg, var(--primary), var(--primary-strong)); color:#fff; position:relative; overflow:hidden;">
       <div style="position:absolute; top:-20px; right:-20px; width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,.1);"></div>
       <div style="position:absolute; bottom:-30px; left:-15px; width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,.07);"></div>
       <div style="position:relative; z-index:1;">
