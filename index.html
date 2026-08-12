@@ -1077,6 +1077,7 @@ function ic(name, size){
     upload:`<svg ${S}><path d="M12 20V7"/><polyline points="7 12 12 7 17 12"/><path d="M4 20h16"/></svg>`,
     mapPin:`<svg ${S}><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg>`,
     phoneCall:`<svg ${S}><path d="M4 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L14 13l5 2v4a2 2 0 0 1-2 2C9.5 21 3 14.5 3 6a2 2 0 0 1 2-2z"/></svg>`,
+    phone:`<svg ${S}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
     truck:`<svg ${S}><rect x="1.5" y="7" width="13" height="9" rx="1.3"/><path d="M14.5 10h4l3 3v3h-7"/><circle cx="6" cy="18" r="1.9"/><circle cx="17.5" cy="18" r="1.9"/></svg>`,
     logout:`<svg ${S}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>`,
     globe:`<svg ${S}><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><line x1="3" y1="12" x2="21" y2="12"/></svg>`,
@@ -1118,14 +1119,14 @@ const ALT_STATUSES = [
 const ALT_ORDER_STATUSES = ['pending','approved','courier','delivered','returned'];
 
 const MERCHANT_ORDERS = [
-  {track:'IQ-204871', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, phone:'07701234567', phone2:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:42000, notes:{ar:'الباب الخلفي',en:'Back door'}, status:'pending', date:'2026-08-10'},
-  {track:'IQ-204879', customer:{ar:'كرم عادل',en:'Karam Adel'}, phone:'07705551234', phone2:'', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}, orderType:{ar:'طلب سريع',en:'Express Order'}, price:28000, notes:'', status:'approved', date:'2026-08-11'},
-  {track:'IQ-204880', customer:{ar:'هدى نعيم',en:'Huda Naeem'}, phone:'07708889999', phone2:'07701112233', address:{ar:'البصرة — الحزام الأخضر',en:'Basra — Green Belt'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, price:21000, notes:{ar:'يتصل قبل الوصول',en:'Call before arrival'}, status:'courier', date:'2026-08-08'},
-  {track:'IQ-204881', customer:{ar:'باسم غالب',en:'Bassem Ghalib'}, phone:'07704445566', phone2:'', address:{ar:'أربيل — شارع 60 متر',en:'Erbil — 60m Street'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:50000, notes:'', status:'returned', date:'2026-08-05'},
-  {track:'IQ-204862', customer:{ar:'ميساء طه',en:'Maysaa Taha'}, phone:'07707778899', phone2:'07703334455', address:{ar:'النجف — الحيدرية',en:'Najaf — Al-Haydariya'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:33000, notes:{ar:'عميل VIP',en:'VIP customer'}, status:'delivered', date:'2026-08-12'},
-  {track:'IQ-204890', customer:{ar:'نور حسين',en:'Noor Hussein'}, phone:'07702223344', phone2:'', address:{ar:'كربلاء — الحسينية',en:'Karbala — Husseiniya'}, orderType:{ar:'طلب سريع',en:'Express'}, price:15000, notes:'', status:'courier', date:'2026-08-09'},
-  {track:'IQ-204891', customer:{ar:'عمر فاطمة',en:'Omar Fatima'}, phone:'07706667788', phone2:'07709990011', address:{ar:'الموصل — التحرير',en:'Mosul — Al-Tahrir'}, orderType:{ar:'طلب عادي',en:'Normal'}, price:37000, notes:'', status:'delivered', date:'2026-08-01'},
-  {track:'IQ-204892', customer:{ar:'سارة أحمد',en:'Sara Ahmed'}, phone:'07704445566', phone2:'', address:{ar:'البصرة — العشار',en:'Basra — Al-Ashar'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, price:48000, notes:{ar:'يوجد خصم',en:'Discount applied'}, status:'pending', date:'2026-07-28'},
+  {track:'IQ-204871', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, phone:'07701234567', phone2:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:42000, notes:{ar:'الباب الخلفي',en:'Back door'}, status:'pending', date:'2026-08-10', courier:null},
+  {track:'IQ-204879', customer:{ar:'كرم عادل',en:'Karam Adel'}, phone:'07705551234', phone2:'', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}, orderType:{ar:'طلب سريع',en:'Express Order'}, price:28000, notes:'', status:'approved', date:'2026-08-11', courier:{ar:'محمد علي',en:'Mohammed Ali', phone:'07701112233'}},
+  {track:'IQ-204880', customer:{ar:'هدى نعيم',en:'Huda Naeem'}, phone:'07708889999', phone2:'07701112233', address:{ar:'البصرة — الحزام الأخضر',en:'Basra — Green Belt'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, price:21000, notes:{ar:'يتصل قبل الوصول',en:'Call before arrival'}, status:'courier', date:'2026-08-08', courier:{ar:'أحمد كريم',en:'Ahmed Kareem', phone:'07704445566'}},
+  {track:'IQ-204881', customer:{ar:'باسم غالب',en:'Bassem Ghalib'}, phone:'07704445566', phone2:'', address:{ar:'أربيل — شارع 60 متر',en:'Erbil — 60m Street'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:50000, notes:'', status:'returned', date:'2026-08-05', courier:{ar:'عمر حسن',en:'Omar Hassan', phone:'07707778899'}},
+  {track:'IQ-204862', customer:{ar:'ميساء طه',en:'Maysaa Taha'}, phone:'07707778899', phone2:'07703334455', address:{ar:'النجف — الحيدرية',en:'Najaf — Al-Haydariya'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:33000, notes:{ar:'عميل VIP',en:'VIP customer'}, status:'delivered', date:'2026-08-12', courier:{ar:'سعيد محمود',en:'Saeed Mahmoud', phone:'07702223344'}},
+  {track:'IQ-204890', customer:{ar:'نور حسين',en:'Noor Hussein'}, phone:'07702223344', phone2:'', address:{ar:'كربلاء — الحسينية',en:'Karbala — Husseiniya'}, orderType:{ar:'طلب سريع',en:'Express'}, price:15000, notes:'', status:'courier', date:'2026-08-09', courier:{ar:'خالد ياسر',en:'Khalid Yasser', phone:'07705551234'}},
+  {track:'IQ-204891', customer:{ar:'عمر فاطمة',en:'Omar Fatima'}, phone:'07706667788', phone2:'07709990011', address:{ar:'الموصل — التحرير',en:'Mosul — Al-Tahrir'}, orderType:{ar:'طلب عادي',en:'Normal'}, price:37000, notes:'', status:'delivered', date:'2026-08-01', courier:{ar:'حسين جلال',en:'Hussein Jalal', phone:'07708889999'}},
+  {track:'IQ-204892', customer:{ar:'سارة أحمد',en:'Sara Ahmed'}, phone:'07704445566', phone2:'', address:{ar:'البصرة — العشار',en:'Basra — Al-Ashar'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, price:48000, notes:{ar:'يوجد خصم',en:'Discount applied'}, status:'pending', date:'2026-07-28', courier:null},
 ];
 
 const COURIER_DELIVERIES = [
@@ -1826,7 +1827,7 @@ function donutCard(title, data, centerValue, centerLabel){
         <div class="donut-hole"><b>${centerValue}</b><span>${centerLabel}</span></div>
       </div>
       <div class="legend-col">
-        ${data.map(s=>`<div class="legend-item"><span class="ldot" style="background:${s.color};"></span>${s.label}<b>${s.pct}%</b></div>`).join('')}
+        ${data.map(s=>`<div class="legend-item" style="color:${s.color} !important; font-weight:800;"><span class="ldot" style="background:${s.color};"></span>${s.label}<b style="color:${s.color} !important;">${s.pct}%</b></div>`).join('')}
       </div>
     </div>
   </div>`;
@@ -2194,23 +2195,29 @@ renderTab = function(){
 };
 
 /* ---- Profile ---- */
-/* ---- Reports (governorate breakdown) ---- */
-let reportsFilter = 'weekly';
+/* ---- Reports ---- */
+let reportsView = 'main';
+let reportFrom = '';
+let reportTo = '';
+let reportStatus = '';
+
+function getFilteredOrders(){
+  let list = MERCHANT_ORDERS;
+  if(reportFrom){ list = list.filter(o=> o.date >= reportFrom); }
+  if(reportTo){ list = list.filter(o=> o.date <= reportTo); }
+  return list;
+}
 
 function renderReportsPage(){
-  setTopbar(t('reportsTitle'), '', true, ()=>{ subPage=null; renderTab(); });
+  setTopbar(t('reportsTitle'), '', true, ()=>{ subPage=null; reportsView='main'; renderTab(); });
   const el = document.getElementById('appContent');
 
-  const now = new Date();
-  let filtered = MERCHANT_ORDERS;
-  if(reportsFilter==='weekly'){
-    const weekAgo = new Date(now); weekAgo.setDate(now.getDate()-7);
-    filtered = MERCHANT_ORDERS.filter(o=> new Date(o.date) >= weekAgo);
-  } else {
-    const monthAgo = new Date(now); monthAgo.setMonth(now.getMonth()-1);
-    filtered = MERCHANT_ORDERS.filter(o=> new Date(o.date) >= monthAgo);
+  if(reportsView==='detail'){
+    renderReportsDetail(el);
+    return;
   }
 
+  const filtered = getFilteredOrders();
   const statuses = [
     {key:'pending', label:LANG==='ar'?'قيد الانتظار':'Pending', color:'var(--st-pending)', tint:'var(--st-pending-tint)', icon:'clock'},
     {key:'approved', label:LANG==='ar'?'تم قبول الطلب':'Accepted', color:'var(--st-approved)', tint:'var(--st-approved-tint)', icon:'shield'},
@@ -2228,9 +2235,18 @@ function renderReportsPage(){
   const grandTotal = filtered.reduce((a,o)=>a+o.price,0);
 
   el.innerHTML = `
-    <div class="seg" style="margin-bottom:16px;">
-      <button class="${reportsFilter==='weekly'?'active':''}" id="rptWeek">${LANG==='ar'?'أسبوعي':'Weekly'}</button>
-      <button class="${reportsFilter==='monthly'?'active':''}" id="rptMonth">${LANG==='ar'?'شهري':'Monthly'}</button>
+    <div class="list-card" style="margin-bottom:14px; padding:14px;">
+      <div style="font-size:12.5px; font-weight:800; margin-bottom:12px; color:var(--ink);">${LANG==='ar'?'فلترة حسب التاريخ':'Filter by Date'}</div>
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1;">
+          <div style="font-size:10.5px; font-weight:700; color:var(--ink-soft); margin-bottom:5px;">${LANG==='ar'?'من تاريخ':'From Date'}</div>
+          <input id="rptFrom" type="date" value="${reportFrom}" style="width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px; background:var(--surface-2); color:var(--ink); font-size:12px; font-family:inherit;">
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:10.5px; font-weight:700; color:var(--ink-soft); margin-bottom:5px;">${LANG==='ar'?'إلى تاريخ':'To Date'}</div>
+          <input id="rptTo" type="date" value="${reportTo}" style="width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px; background:var(--surface-2); color:var(--ink); font-size:12px; font-family:inherit;">
+        </div>
+      </div>
     </div>
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding:14px 16px; border-radius:14px; background:var(--primary); color:#fff;">
       <div>
@@ -2242,44 +2258,78 @@ function renderReportsPage(){
         <div style="font-size:22px; font-weight:900; line-height:1;">${filtered.length}</div>
       </div>
     </div>
-    <div id="reportsGroups"></div>
+    <div id="rptStatusCards"></div>
   `;
 
-  document.getElementById('rptWeek').addEventListener('click', ()=>{ reportsFilter='weekly'; renderReportsPage(); });
-  document.getElementById('rptMonth').addEventListener('click', ()=>{ reportsFilter='monthly'; renderReportsPage(); });
+  document.getElementById('rptFrom').addEventListener('change', (e)=>{ reportFrom=e.target.value; renderReportsPage(); });
+  document.getElementById('rptTo').addEventListener('change', (e)=>{ reportTo=e.target.value; renderReportsPage(); });
 
-  const groupsEl = document.getElementById('reportsGroups');
-  groupsEl.innerHTML = groups.map(g=>{
-    const itemsHtml = g.items.map(o=>{
-      const date = new Date(o.date).toLocaleDateString(LANG==='ar'?'ar-IQ':'en-US', {month:'short', day:'numeric'});
-      return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);">
-        <div style="flex:1;">
-          <div style="font-size:12.5px; font-weight:700;">${nm(o.customer)}</div>
-          <div style="font-size:10.5px; color:var(--ink-faint); display:flex; gap:8px; margin-top:2px;">
-            <span class="mono">${o.track}</span>
-            <span>${date}</span>
-          </div>
-        </div>
-        <div class="mono" style="font-size:12.5px; font-weight:800;">${fmt(o.price)} ${t('dueLabel')}</div>
-      </div>`;
-    }).join('');
-
-    return `
-    <div class="list-card" style="margin-bottom:12px;">
-      <div style="padding:12px 14px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border);">
-        <div style="width:32px; height:32px; border-radius:10px; background:${g.tint}; color:${g.color}; display:flex; align-items:center; justify-content:center;">${ic(g.icon,16)}</div>
-        <div style="flex:1;">
-          <div style="font-size:12.5px; font-weight:800;">${g.label}</div>
-          <div style="font-size:10.5px; color:var(--ink-faint);">${g.items.length} ${LANG==='ar'?'طلبات':'orders'}</div>
-        </div>
-        <div style="text-align:end;">
-          <div class="mono" style="font-size:13px; font-weight:900; color:${g.color};">${fmt(g.total)}</div>
-          <div style="font-size:9.5px; color:var(--ink-faint);">${t('dueLabel')}</div>
-        </div>
+  const cardsEl = document.getElementById('rptStatusCards');
+  cardsEl.innerHTML = groups.map(g=>`
+    <div class="list-card" onclick="reportsView='detail'; reportStatus='${g.key}'; renderReportsPage();" style="margin-bottom:10px; cursor:pointer; display:flex; align-items:center; gap:12px; padding:14px;">
+      <div style="width:42px; height:42px; border-radius:12px; background:${g.tint}; color:${g.color}; display:flex; align-items:center; justify-content:center; flex:none;">${ic(g.icon,20)}</div>
+      <div style="flex:1;">
+        <div style="font-size:13px; font-weight:800;">${g.label}</div>
+        <div style="font-size:10.5px; color:var(--ink-faint);">${g.items.length} ${LANG==='ar'?'طلبات':'orders'}</div>
       </div>
-      ${itemsHtml || `<div style="padding:16px; text-align:center; color:var(--ink-faint); font-size:11px;">${LANG==='ar'?'لا طلبات':'No orders'}</div>`}
+      <div style="text-align:end;">
+        <div class="mono" style="font-size:14px; font-weight:900; color:${g.color};">${fmt(g.total)}</div>
+        <div style="font-size:9.5px; color:var(--ink-faint);">${t('dueLabel')}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderReportsDetail(el){
+  const filtered = getFilteredOrders().filter(o=>o.status===reportStatus);
+  const statusDef = [
+    {key:'pending', label:LANG==='ar'?'قيد الانتظار':'Pending', color:'var(--st-pending)', tint:'var(--st-pending-tint)', icon:'clock'},
+    {key:'approved', label:LANG==='ar'?'تم قبول الطلب':'Accepted', color:'var(--st-approved)', tint:'var(--st-approved-tint)', icon:'shield'},
+    {key:'courier', label:LANG==='ar'?'بحوزة المندوب':'With Courier', color:'var(--st-courier)', tint:'var(--st-courier-tint)', icon:'bike'},
+    {key:'delivered', label:LANG==='ar'?'تم التسليم':'Delivered', color:'var(--st-delivered)', tint:'var(--st-delivered-tint)', icon:'check'},
+    {key:'returned', label:LANG==='ar'?'راجع':'Returned', color:'var(--st-returned)', tint:'var(--st-returned-tint)', icon:'x2'},
+  ].find(s=>s.key===reportStatus);
+
+  const total = filtered.reduce((a,o)=>a+o.price,0);
+
+  el.innerHTML = `
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+      <button onclick="reportsView='main'; renderReportsPage();" style="width:36px; height:36px; border-radius:10px; background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div style="width:32px; height:32px; border-radius:10px; background:${statusDef.tint}; color:${statusDef.color}; display:flex; align-items:center; justify-content:center;">${ic(statusDef.icon,16)}</div>
+      <div style="flex:1; font-weight:800; font-size:14px;">${statusDef.label}</div>
+      <div style="text-align:end;">
+        <div class="mono" style="font-size:14px; font-weight:900; color:${statusDef.color};">${fmt(total)} ${t('dueLabel')}</div>
+        <div style="font-size:10px; color:var(--ink-faint);">${filtered.length} ${LANG==='ar'?'طلبات':'orders'}</div>
+      </div>
+    </div>
+    <div class="list-card" id="rptOrdersList"></div>
+  `;
+
+  const listEl = document.getElementById('rptOrdersList');
+  listEl.innerHTML = filtered.length ? filtered.map(o=>{
+    const date = new Date(o.date).toLocaleDateString(LANG==='ar'?'ar-IQ':'en-US', {year:'numeric', month:'short', day:'numeric'});
+    return `
+    <div class="order-row" data-track="${o.track}" style="cursor:pointer;">
+      <div class="order-ic" style="background:${statusDef.tint}; color:${statusDef.color};">${ic(statusDef.icon,17)}</div>
+      <div class="order-mid">
+        <b>${nm(o.customer)}</b>
+        <span class="mono">${o.track} · ${date}</span>
+      </div>
+      <div class="order-end">
+        <b class="mono">${fmt(o.price)} ${t('dueLabel')}</b>
+        ${statusBadge(o.status)}
+      </div>
     </div>`;
-  }).join('');
+  }).join('') : `<div class="empty-hint">${LANG==='ar'?'لا طلبات في هذه الفترة':'No orders in this period'}</div>`;
+
+  listEl.querySelectorAll('[data-track]').forEach(row=>{
+    row.addEventListener('click', ()=>{
+      const o = MERCHANT_ORDERS.find(x=>x.track===row.dataset.track);
+      if(o) openOrderDetailSheet(o);
+    });
+  });
 }
 
 function renderProfile(){
@@ -2450,9 +2500,44 @@ function openOrderDetailSheet(o){
   const notes = o.notes ? `<div style="margin-top:10px;"><div style="font-size:12px; color:var(--ink-soft); margin-bottom:4px;">${LANG==='ar'?'ملاحظات':'Notes'}</div><div style="font-size:12.5px; background:var(--surface-2); padding:10px; border-radius:10px;">${typeof o.notes==='object'?o.notes[LANG]:o.notes}</div></div>` : '';
   const addr = typeof o.address==='object'?o.address[LANG]:o.address;
 
+  const showCourier = o.status !== 'pending' && o.courier;
+  const courierCard = showCourier ? `
+    <div style="margin-top:16px; padding:16px; border-radius:16px; background:linear-gradient(135deg, var(--st-courier), color-mix(in srgb, var(--st-courier) 70%, #000)); color:#fff; position:relative; overflow:hidden;">
+      <div style="position:absolute; top:-20px; right:-20px; width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,.1);"></div>
+      <div style="position:absolute; bottom:-30px; left:-15px; width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,.07);"></div>
+      <div style="position:relative; z-index:1;">
+        <div style="font-size:10px; font-weight:700; opacity:.75; margin-bottom:12px; letter-spacing:.5px;">${LANG==='ar'?'المندوب المسؤول':'ASSIGNED COURIER'}</div>
+        <div style="display:flex; align-items:center; gap:14px; margin-bottom:14px;">
+          <div style="width:54px; height:54px; border-radius:50%; background:rgba(255,255,255,.2); border:2.5px solid rgba(255,255,255,.4); display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px; flex:none; backdrop-filter:blur(4px);">${nm(o.courier).charAt(0)}</div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:15px; font-weight:900; margin-bottom:3px;">${nm(o.courier)}</div>
+            <div style="font-size:12px; opacity:.85; display:flex; align-items:center; gap:5px;">
+              ${ic('phone',13)}
+              <span class="mono" dir="ltr">${o.courier.phone}</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <a href="https://wa.me/${o.courier.phone.replace(/[^0-9]/g,'')}" target="_blank" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px; border-radius:10px; background:rgba(255,255,255,.18); color:#fff; text-decoration:none; font-size:12px; font-weight:700; backdrop-filter:blur(4px);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            <span>${LANG==='ar'?'واتساب':'WhatsApp'}</span>
+          </a>
+          <button onclick="startCourierChat('${o.track}', '${nm(o.courier)}', '${o.courier.phone}')" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px; border-radius:10px; background:rgba(255,255,255,.18); color:#fff; border:none; font-size:12px; font-weight:700; cursor:pointer; backdrop-filter:blur(4px);">
+            ${ic('chat',15)}
+            <span>${LANG==='ar'?'دردشة':'Chat'}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  ` : '';
+
   openSheet(`
     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
-      <div><div style="font-weight:800; font-size:14.5px;" class="mono">${o.track}</div><div class="text-muted">${nm(o.customer)}</div></div>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+        <div style="width:24px; height:24px; border-radius:7px; background:var(--primary-tint); color:var(--primary-strong); display:flex; align-items:center; justify-content:center;">${ic('box',12)}</div>
+        <div class="mono" style="font-weight:900; font-size:14px; color:var(--primary-strong);">${o.track}</div>
+      </div>
+      <div class="text-muted" style="font-size:12px;">${nm(o.customer)}</div>
       ${statusBadge(o.status)}
     </div>
     <div class="sheet-route">${route}</div>
@@ -2467,9 +2552,34 @@ function openOrderDetailSheet(o){
       <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${LANG==='ar'?'سعر الطلب':'Order Price'}</span><span class="mono">${fmt(o.price)} ${t('dueLabel')}</span></div>
       ${notes}
     </div>
+    ${courierCard}
     ${o.status==='pending' ? `<button class="btn btn-primary" style="width:100%; margin-bottom:8px;" onclick="openEditOrderSheet('${o.track}')">${LANG==='ar'?'تعديل الطلب':'Edit Order'}</button>` : ''}
     <button class="btn btn-ghost" style="width:100%;" onclick="closeSheet()">${t('close')}</button>
   `);
+}
+
+function startCourierChat(track, name, phone){
+  const chatId = 'courier_' + track;
+  const chats = ROLE==='merchant' ? MERCHANT_CHATS : COURIER_CHATS;
+  let chat = chats.find(x=>x.id===chatId);
+  if(!chat){
+    chat = {
+      id: chatId,
+      name: {ar:name, en:name},
+      last: {ar:'', en:''},
+      time: '',
+      unread: 0,
+      messages: [
+        {from:'them', text:{ar:`مرحباً، أنا المندوب المسؤول عن الطلب ${track}`,en:`Hello, I'm the courier for order ${track}`}, time:'الآن'},
+      ]
+    };
+    chats.push(chat);
+  }
+  closeSheet();
+  TAB = 'chat';
+  activeChat = chatId;
+  renderTabs();
+  renderTab();
 }
 
 function openEditOrderSheet(track){
@@ -2519,12 +2629,20 @@ function submitEditOrder(track){
 }
 
 function openOrderSheet(){
+  const newTrack = 'IQ-' + Math.floor(100000+Math.random()*900000);
   openSheet(`
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
       <div style="font-weight:800; font-size:14.5px;">${t('newOrder')}</div>
       <button onclick="closeSheet()" style="width:30px; height:30px; border-radius:50%; background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-soft);">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; padding:10px 14px; border-radius:11px; background:var(--primary-tint); margin-bottom:14px;">
+      <div style="width:28px; height:28px; border-radius:8px; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center;">${ic('box',14)}</div>
+      <div>
+        <div style="font-size:10px; color:var(--ink-soft);">${LANG==='ar'?'رقم الطلب':'Order Number'}</div>
+        <div style="font-size:13px; font-weight:900; color:var(--primary-strong);" class="mono">${newTrack}</div>
+      </div>
     </div>
     <div class="field"><label>${LANG==='ar'?'اسم الزبون':'Customer Name'}</label><input id="fCustomer" type="text" placeholder="${LANG==='ar'?'الاسم الكامل':'Full name'}"></div>
     <div class="field"><label>${LANG==='ar'?'رقم الهاتف':'Phone Number'}</label><input id="fPhone" type="tel" placeholder="07xx xxx xxxx" dir="ltr"></div>
@@ -2533,11 +2651,11 @@ function openOrderSheet(){
     <div class="field"><label>${LANG==='ar'?'نوع الطلب':'Order Type'}</label><input id="fOrderType" type="text" placeholder="${LANG==='ar'?'مثال: طلب عادي، سريع، الدفع عند الاستلام':'e.g. Normal, Express, COD'}"></div>
     <div class="field"><label>${LANG==='ar'?'سعر الطلب':'Order Price'}</label><input id="fPrice" type="number" placeholder="0 ${t('dueLabel')}"></div>
     <div class="field"><label>${LANG==='ar'?'ملاحظات (اختياري)':'Notes (optional)'}</label><textarea id="fNotes" rows="3" placeholder="${LANG==='ar'?'أي ملاحظات إضافية...':'Any additional notes...'}" style="width:100%; padding:11px 13px; border:1px solid var(--border); border-radius:11px; background:var(--surface-2); color:var(--ink); font-size:13px; outline:none; resize:none; font-family:inherit;"></textarea></div>
-    <button class="btn btn-primary" style="width:100%;" onclick="submitNewOrder()">${t('submitRequest')}</button>
+    <button class="btn btn-primary" style="width:100%;" onclick="submitNewOrder('${newTrack}')">${t('submitRequest')}</button>
   `);
 }
 
-function submitNewOrder(){
+function submitNewOrder(track){
   const customer = document.getElementById('fCustomer').value.trim();
   const phone = document.getElementById('fPhone').value.trim();
   const phone2 = document.getElementById('fPhone2').value.trim();
@@ -2546,12 +2664,11 @@ function submitNewOrder(){
   const price = parseFloat(document.getElementById('fPrice').value)||0;
   const notes = document.getElementById('fNotes').value.trim();
   if(!customer){return;}
-  const track = 'IQ-' + Math.floor(100000+Math.random()*900000);
   MERCHANT_ORDERS.unshift({
     track, customer:{ar:customer,en:customer}, phone, phone2,
     address:{ar:address,en:address}, orderType:{ar:orderType,en:orderType},
     price, notes:{ar:notes,en:notes}, status:'pending',
-    date: new Date().toISOString().slice(0,10)
+    date: new Date().toISOString().slice(0,10), courier:null
   });
   closeSheet();
   renderMerchantHome();
