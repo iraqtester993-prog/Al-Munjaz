@@ -198,6 +198,8 @@ svg{display:block; flex-shrink:0;}
 }
 .tb-icon-btn{width:34px; height:34px; border-radius:10px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; color:var(--ink-soft); flex:none;}
 .notif-badge{position:absolute; top:-4px; inset-inline-end:-4px; min-width:16px; height:16px; border-radius:20px; background:var(--st-returned); color:#fff; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0 4px; border:1.5px solid var(--surface); box-sizing:border-box;}
+@keyframes bobY{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.bob-anim{animation:bobY 1.6s ease-in-out infinite;}
 .tb-title{font-size:15.5px; font-weight:800; flex:1;}
 .tb-sub{font-size:10.5px; color:var(--ink-faint); font-weight:700;}
 
@@ -2347,7 +2349,7 @@ function renderCourierHome(){
           <div style="font-size:11.5px; opacity:.7; margin-top:3px;">${LANG==='ar'?'اضغط لعرض الطلبات الجديدة':'Tap to view new orders'}</div>
         </div>
         <div style="text-align:center; flex:none;">
-          <div class="mono" style="min-width:44px; height:44px; border-radius:50%; background:#0B6E68; color:#fff; display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:900; box-shadow:0 4px 12px rgba(11,110,104,.28);">${newCount}</div>
+          <div class="mono bob-anim" style="min-width:44px; height:44px; border-radius:50%; background:#0B6E68; color:#fff; display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:900; box-shadow:0 4px 12px rgba(11,110,104,.28);">${newCount}</div>
           <div style="font-size:9.5px; font-weight:800; opacity:.6; margin-top:5px;">${LANG==='ar'?'طلب':'order'}</div>
         </div>
       </div>
