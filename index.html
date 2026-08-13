@@ -197,6 +197,7 @@ svg{display:block; flex-shrink:0;}
   border-bottom:1px solid var(--border); background:var(--surface); flex:none;
 }
 .tb-icon-btn{width:34px; height:34px; border-radius:10px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; color:var(--ink-soft); flex:none;}
+.notif-badge{position:absolute; top:-4px; inset-inline-end:-4px; min-width:16px; height:16px; border-radius:20px; background:var(--st-returned); color:#fff; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0 4px; border:1.5px solid var(--surface); box-sizing:border-box;}
 .tb-title{font-size:15.5px; font-weight:800; flex:1;}
 .tb-sub{font-size:10.5px; color:var(--ink-faint); font-weight:700;}
 
@@ -212,7 +213,7 @@ svg{display:block; flex-shrink:0;}
 .tab-btn{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--ink-faint); position:relative;}
 .tab-btn.active{color:var(--primary);}
 .tab-btn .tlabel{font-size:9.5px; font-weight:700;}
-.tab-btn .tdot{position:absolute; top:-2px; inset-inline-end:24%; width:7px; height:7px; border-radius:50%; background:var(--accent); border:1.5px solid var(--surface);}
+.tab-btn .tdot{position:absolute; top:-2px; inset-inline-end:20%; min-width:15px; height:15px; border-radius:20px; background:var(--accent); border:1.5px solid var(--surface); color:#fff; font-size:8.5px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0 3px; box-sizing:border-box;}
 
 /* ---- Common bits ---- */
 .hero-card{
@@ -1099,7 +1100,7 @@ svg{display:block; flex-shrink:0;}
         <div style="display:flex; gap:6px; margin-inline-start:auto;">
           <button class="tb-icon-btn" id="btnNotifications" style="position:relative;">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-            <span style="position:absolute; top:2px; right:2px; width:8px; height:8px; border-radius:50%; background:var(--st-returned); border:2px solid var(--surface);"></span>
+            <span class="notif-badge" style="display:none;"></span>
           </button>
           <button class="tb-icon-btn js-theme-toggle">
             <svg class="js-theme-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/></svg>
@@ -1366,7 +1367,7 @@ const T = {
     merchantApp:'تطبيق التاجر', merchantAppSub:'طلباتي، كشف حسابي، محفظتي',
     courierApp:'تطبيق المندوب', courierAppSub:'توصيلاتي، تحصيلاتي، محفظتي',
     installHint:'أضِف المنجز السريع إلى شاشتك الرئيسية للوصول السريع والعمل دون اتصال جزئياً', installBtn:'تثبيت',
-    tabHome:'الرئيسية', tabOrders:'طلباتي', tabDeliveries:'توصيلاتي', tabWallet:'المحفظة', tabChat:'الدردشة', tabProfile:'حسابي',
+    tabHome:'الرئيسية', tabOrders:'طلباتي', tabDeliveries:'طلباتي', tabWallet:'المحفظة', tabChat:'الدردشة', tabProfile:'حسابي',
     greeting:'مساك الله بالخير', merchantSubName:'متجر النور للإلكترونيات', courierSubName:'مندوب توزيع — فرع بغداد',
     myOrdersToday:'طلباتي اليوم', myDueBalance:'رصيدي المستحق', deliveryRate:'نسبة التسليم', monthlyOrders:'طلبات الشهر',
     myDeliveriesToday:'توصيلاتي اليوم', collectedToday:'المحصّل اليوم', onDuty:'أنا متاح للعمل', offDuty:'غير متاح حالياً',
@@ -1420,7 +1421,7 @@ const T = {
     merchantApp:'Merchant App', merchantAppSub:'My orders, statement, wallet',
     courierApp:'Courier App', courierAppSub:'My deliveries, collections, wallet',
     installHint:'Add Al-Munjaz Al-Saree to your home screen for quick access and partial offline use', installBtn:'Install',
-    tabHome:'Home', tabOrders:'My Orders', tabDeliveries:'My Deliveries', tabWallet:'Wallet', tabChat:'Chat', tabProfile:'Profile',
+    tabHome:'Home', tabOrders:'My Orders', tabDeliveries:'My Orders', tabWallet:'Wallet', tabChat:'Chat', tabProfile:'Profile',
     greeting:'Good to see you', merchantSubName:'Al-Noor Electronics', courierSubName:'Delivery Courier — Baghdad Branch',
     myOrdersToday:'My Orders Today', myDueBalance:'My Due Balance', deliveryRate:'Delivery Rate', monthlyOrders:'Orders This Month',
     myDeliveriesToday:'My Deliveries Today', collectedToday:'Collected Today', onDuty:'Available for Work', offDuty:'Currently Unavailable',
@@ -1621,6 +1622,64 @@ function creditCourierBudget(amount){
   courierBudget += amount;
   saveBudget();
 }
+
+/* ================= NOTIFICATIONS ================= */
+let APP_NOTIFS = [];
+(function(){
+  try{
+    const n = JSON.parse(localStorage.getItem('masar_notifs'));
+    if(Array.isArray(n)) APP_NOTIFS = n;
+  }catch(e){}
+})();
+function saveNotifs(){ try{ localStorage.setItem('masar_notifs', JSON.stringify(APP_NOTIFS)); }catch(e){} }
+function pushNotif(role, icon, title, body){
+  APP_NOTIFS.unshift({id:Date.now()+Math.floor(Math.random()*9999), role, icon, title, body, time:LANG==='ar'?'الآن':'Now', read:false});
+  saveNotifs();
+  updateNotifBadge();
+}
+function loc(txt){ return typeof txt === 'object' ? (txt[LANG] || txt.ar || '') : txt; }
+function notifsForRole(role){ return APP_NOTIFS.filter(n=>n.role===role); }
+function unreadNotifsCount(role){ return notifsForRole(role).filter(n=>!n.read).length; }
+function updateNotifBadge(){
+  const bell = document.getElementById('btnNotifications');
+  if(!bell) return;
+  const count = unreadNotifsCount(ROLE);
+  let badge = bell.querySelector('.notif-badge');
+  if(count>0){
+    if(!badge){
+      badge = document.createElement('span');
+      badge.className = 'notif-badge';
+      bell.appendChild(badge);
+    }
+    badge.textContent = count>9?'9+':count;
+    badge.style.display = 'flex';
+  } else if(badge){ badge.style.display = 'none'; }
+}
+function openNotificationsSheet(){
+  const list = notifsForRole(ROLE);
+  const iconMap = {box:'box', truck:'truck', check:'check', bike:'bike', shield:'shield', wallet:'wallet', x2:'x2', chat:'chat', bell:'bell', clock:'clock'};
+  openSheet(`
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+      <div style="font-weight:800; font-size:14.5px;">${LANG==='ar'?'الإشعارات':'Notifications'}</div>
+      <span style="font-size:10.5px; color:var(--ink-soft); font-weight:700;">${list.length} ${LANG==='ar'?'إشعار':'notifs'}</span>
+    </div>
+    ${list.length ? list.map(n=>`
+      <div style="display:flex; gap:11px; padding:13px; border-radius:13px; background:${n.read?'var(--surface)':'var(--primary-tint)'}; border:1px solid var(--border); margin-bottom:9px; align-items:flex-start;">
+        <div style="width:38px; height:38px; border-radius:11px; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; flex:none;">${ic(iconMap[n.icon]||'bell',17)}</div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:12.5px; font-weight:800;">${loc(n.title)}</div>
+          <div style="font-size:11px; color:var(--ink-soft); line-height:1.6;">${loc(n.body)}</div>
+          <div style="font-size:9.5px; color:var(--ink-faint); margin-top:4px;">${n.time}</div>
+        </div>
+        ${n.read?'':'<span style="width:8px; height:8px; border-radius:50%; background:var(--primary); flex:none; margin-top:4px;"></span>'}
+      </div>`).join('') : `<div style="padding:30px 0; text-align:center; color:var(--ink-faint); font-size:12px;">${LANG==='ar'?'لا توجد إشعارات':'No notifications'}</div>`}
+    <button class="btn btn-ghost" style="width:100%; margin-top:12px;" onclick="closeSheet()">${t('close')}</button>
+  `);
+  list.forEach(n=>{ n.read = true; });
+  saveNotifs();
+  updateNotifBadge();
+}
+document.getElementById('btnNotifications').addEventListener('click', openNotificationsSheet);
 
 /* ---- Pickup countdown (time to reach merchant) ---- */
 const PICKUP_DEADLINE_MS = 3600000; // ساعة واحدة — يُعدَّل لاحقاً
@@ -1891,6 +1950,7 @@ function renderApp(){
   document.getElementById('screenApp').classList.add('active');
   startCourierTimerTicker();
   renderTabs();
+  updateNotifBadge();
   renderTab();
 }
 
@@ -1902,7 +1962,7 @@ function renderTabs(){
     return `
     <button class="tab-btn ${TAB===tb.id?'active':''}" data-tab="${tb.id}">
       ${ic(tb.ic,20)}
-      ${tb.badge && unread>0 ? `<span class="tdot"></span>` : ''}
+      ${tb.badge && unread>0 ? `<span class="tdot">${unread>9?'9+':unread}</span>` : ''}
       <span class="tlabel">${t(tb.label)}</span>
     </button>`;
   }).join('');
@@ -2244,6 +2304,7 @@ function renderCourierHome(){
           <div style="flex:1; min-width:0;">
             <div style="font-size:12.5px; font-weight:800;">${nm(d.customer)}</div>
             <div style="font-size:10.5px; color:var(--ink-faint);">${d.track} · ${nm(d.address)}</div>
+            ${d.status==='pending' && d.price > courierBudget ? `<div style="font-size:9.5px; font-weight:800; color:var(--danger); margin-top:3px;">${LANG==='ar'?'لا يمكن أخذ الطلب — الميزانية أقل':'Cannot take — budget less than order'}</div>` : ''}
             ${pickupTimerLine(d)}
           </div>
           <div style="text-align:end;">
@@ -2275,22 +2336,31 @@ function renderCourierHome(){
       </div>
     </div>
 
-    <div onclick="courierHomeView='list'; courierHomeStatus='pending'; renderCourierHome();" style="margin-bottom:16px; padding:18px; border-radius:18px; cursor:pointer; position:relative; overflow:hidden; background:linear-gradient(135deg, #F9FAFB, #EEF0F4); color:#454B57; box-shadow:0 8px 22px -10px rgba(69,75,87,.22); border:1px solid rgba(69,75,87,.1);">
-      <div style="position:absolute; top:-28px; right:-18px; width:110px; height:110px; border-radius:50%; background:rgba(69,75,87,.05);"></div>
-      <div style="position:absolute; bottom:-34px; left:-20px; width:90px; height:90px; border-radius:50%; background:rgba(69,75,87,.04);"></div>
-      <div style="position:absolute; top:16px; right:52px; width:18px; height:18px; border-radius:50%; background:rgba(69,75,87,.06);"></div>
+    <div onclick="courierHomeView='list'; courierHomeStatus='pending'; renderCourierHome();" style="margin-bottom:16px; padding:18px; border-radius:18px; cursor:pointer; position:relative; overflow:hidden; background:linear-gradient(135deg, #F1FAF8, #DDF1ED); color:#0B6E68; box-shadow:0 0 0 2.5px rgba(11,110,104,.55), 0 8px 22px -10px rgba(11,110,104,.35); border:none;">
+      <div style="position:absolute; top:-28px; right:-18px; width:110px; height:110px; border-radius:50%; background:rgba(11,110,104,.07);"></div>
+      <div style="position:absolute; bottom:-34px; left:-20px; width:90px; height:90px; border-radius:50%; background:rgba(11,110,104,.05);"></div>
+      <div style="position:absolute; top:16px; right:52px; width:18px; height:18px; border-radius:50%; background:rgba(11,110,104,.08);"></div>
       <div style="position:relative; z-index:1; display:flex; align-items:center; gap:14px;">
-        <div style="width:56px; height:56px; border-radius:16px; background:rgba(255,255,255,.85); display:flex; align-items:center; justify-content:center; flex:none; color:#454B57; box-shadow:inset 0 0 0 1px rgba(69,75,87,.1);">${ic('clock',28)}</div>
+        <div style="width:56px; height:56px; border-radius:16px; background:rgba(255,255,255,.8); display:flex; align-items:center; justify-content:center; flex:none; color:#0B6E68; box-shadow:inset 0 0 0 1px rgba(11,110,104,.12);">${ic('clock',28)}</div>
         <div style="flex:1; min-width:0;">
           <div style="font-size:16px; font-weight:900;">${LANG==='ar'?'طلبات جديدة متاحة':'Available New Orders'}</div>
-          <div style="font-size:11.5px; opacity:.65; margin-top:3px;">${LANG==='ar'?'اضغط لعرض الطلبات الجديدة':'Tap to view new orders'}</div>
+          <div style="font-size:11.5px; opacity:.7; margin-top:3px;">${LANG==='ar'?'اضغط لعرض الطلبات الجديدة':'Tap to view new orders'}</div>
         </div>
         <div style="text-align:center; flex:none;">
-          <div class="mono" style="min-width:44px; height:44px; border-radius:50%; background:#454B57; color:#fff; display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:900; box-shadow:0 4px 12px rgba(69,75,87,.22);">${newCount}</div>
-          <div style="font-size:9.5px; font-weight:800; opacity:.55; margin-top:5px;">${LANG==='ar'?'طلب':'order'}</div>
+          <div class="mono" style="min-width:44px; height:44px; border-radius:50%; background:#0B6E68; color:#fff; display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:900; box-shadow:0 4px 12px rgba(11,110,104,.28);">${newCount}</div>
+          <div style="font-size:9.5px; font-weight:800; opacity:.6; margin-top:5px;">${LANG==='ar'?'طلب':'order'}</div>
         </div>
       </div>
-      ${LANG==='ar'?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(69,75,87,.45)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; bottom:10px; right:14px;"><path d="M15 18l-6-6 6-6"/></svg>':'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(69,75,87,.45)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; bottom:10px; right:14px;"><path d="M9 18l6-6-6-6"/></svg>'}
+      ${LANG==='ar'?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(11,110,104,.5)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; bottom:10px; right:14px;"><path d="M15 18l-6-6 6-6"/></svg>':'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(11,110,104,.5)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; bottom:10px; right:14px;"><path d="M9 18l6-6-6-6"/></svg>'}
+    </div>
+
+    <div style="display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:13px; background:var(--surface); border:1px solid var(--border); margin-bottom:16px;">
+      <div style="width:34px; height:34px; border-radius:10px; background:var(--accent-tint); color:var(--accent); display:flex; align-items:center; justify-content:center; flex:none;">${ic('shield',16)}</div>
+      <div style="flex:1;">
+        <div style="font-size:10.5px; color:var(--ink-soft); font-weight:700; margin-bottom:2px;">${LANG==='ar'?'الميزانية المتبقية':'Remaining Budget'}</div>
+        <div class="mono" style="font-size:15px; font-weight:900; color:var(--accent);">${fmt(courierBudget)} ${t('dueLabel')}</div>
+      </div>
+      <button onclick="openBudgetSheet()" style="font-size:11px; font-weight:800; color:var(--primary); background:var(--primary-tint); border:none; padding:7px 12px; border-radius:9px; cursor:pointer;">${LANG==='ar'?'تعديل':'Edit'}</button>
     </div>
 
     <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--ink);">${LANG==='ar'?'نتائج التوصيل':'Delivery Results'}</div>
@@ -2317,9 +2387,28 @@ function renderCourierHome(){
   `).join('');
 }
 
+function canAcceptCourierOrder(d){
+  return d && d.status==='pending' && d.price <= courierBudget;
+}
+
+function openBudgetInsufficientSheet(d){
+  openSheet(`
+    <div style="text-align:center; padding:22px 6px;">
+      <div style="width:52px; height:52px; border-radius:50%; background:var(--danger-tint); color:var(--danger); display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">${ic('shield',24)}</div>
+      <div style="font-weight:800; font-size:14px; margin-bottom:6px;">${LANG==='ar'?'لا يمكن أخذ الطلب':'Cannot Take Order'}</div>
+      <div style="font-size:12px; color:var(--ink-soft); line-height:1.7;">
+        ${LANG==='ar' ? `لا يمكن أخذ الطلب لأن الميزانية أقل من قيمة الطلب.<br>قيمة الطلب: <b class="mono" style="color:var(--danger);">${fmt(d.price)} ${t('dueLabel')}</b><br>رصيد الميزانية المتبقي: <b class="mono" style="color:var(--danger);">${fmt(courierBudget)} ${t('dueLabel')}</b>. تواصل مع الدعم لزيادة الميزانية.` : `You cannot take this order because the budget is less than the order amount.<br>Order amount: <b class="mono" style="color:var(--danger);">${fmt(d.price)} ${t('dueLabel')}</b><br>Remaining budget: <b class="mono" style="color:var(--danger);">${fmt(courierBudget)} ${t('dueLabel')}</b>. Contact support to increase it.`}
+      </div>
+    </div>
+    <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="openSupportChat()">${LANG==='ar'?'تواصل مع الدعم':'Contact Support'}</button>
+    <button class="btn btn-ghost" style="width:100%; margin-top:8px;" onclick="closeSheet()">${t('close')}</button>
+  `);
+}
+
 function approveCourierOrder(track){
   const d = COURIER_DELIVERIES.find(x=>x.track===track);
   if(d && d.status==='pending'){
+    if(!canAcceptCourierOrder(d)){ openBudgetInsufficientSheet(d); return; }
     d.status = 'approved';
     ensurePickupDeadline(d);
     if(!d.deducted){ d.deducted = true; creditCourierBudget(-d.price); }
@@ -2331,9 +2420,11 @@ function setCourierStatus(track, status){
   const d = COURIER_DELIVERIES.find(x=>x.track===track);
   if(!d) return;
   const prev = d.status;
+  let budgetDeducted = 0;
   if(status==='approved' && prev==='pending'){
+    if(!canAcceptCourierOrder(d)){ openBudgetInsufficientSheet(d); return; }
     ensurePickupDeadline(d);
-    if(!d.deducted){ d.deducted = true; creditCourierBudget(-d.price); }
+    if(!d.deducted){ d.deducted = true; creditCourierBudget(-d.price); budgetDeducted = d.price; }
   }
   if((status==='pending' || status==='delivered' || status==='returned') && d.deducted){
     d.deducted = false; creditCourierBudget(d.price);
@@ -2353,7 +2444,30 @@ function setCourierStatus(track, status){
     }
   }
   d.status = status;
+  const notifMap = {
+    approved:{icon:'shield', title:{ar:`تم قبول طلبك ${d.track}`, en:`Your order ${d.track} was accepted`}, body:{ar:'قام المندوب بقبول طلبك وسيقوم باستلامه من متجرك.', en:'The courier accepted your order and will pick it up from your store.'}},
+    courier:{icon:'bike', title:{ar:`تم استلام طلبك ${d.track}`, en:`Your order ${d.track} was picked up`}, body:{ar:'استلم المندوب الطلب من متجرك وهو الآن في الطريق للتوصيل.', en:'The courier picked up your order and is now delivering it.'}},
+    delivered:{icon:'check', title:{ar:`تم تسليم طلبك ${d.track}`, en:`Your order ${d.track} was delivered`}, body:{ar:'تم تسليم الطلب إلى الزبون بنجاح.', en:'The order was delivered to the customer successfully.'}},
+    returned:{icon:'x2', title:{ar:`تم إرجاع طلبك ${d.track}`, en:`Your order ${d.track} was returned`}, body:{ar:'لم يتم تسليم الطلب وتم إرجاعه.', en:'The order was not delivered and has been returned.'}},
+  };
+  const nt = notifMap[status];
+  if(nt) pushNotif('merchant', nt.icon, nt.title, nt.body);
+  if(status==='approved') pushNotif('courier', 'shield', {ar:`تم أخذ الطلب ${d.track}`, en:`Order ${d.track} taken`}, {ar:`تم خصم ${fmt(d.price)} ${t('dueLabel')} من الميزانية. الرصيد المتبقي: ${fmt(courierBudget)} ${t('dueLabel')}.`, en:`${fmt(d.price)} ${t('dueLabel')} deducted from the budget. Remaining: ${fmt(courierBudget)} ${t('dueLabel')}.`});
+  if(status==='delivered') pushNotif('courier', 'check', {ar:`تم تسليم الطلب ${d.track}`, en:`Order ${d.track} delivered`}, {ar:`تم إعادة مبلغ الطلب إلى الميزانية. الرصيد المتبقي: ${fmt(courierBudget)} ${t('dueLabel')}.`, en:`The order amount was returned to the budget. Remaining: ${fmt(courierBudget)} ${t('dueLabel')}.`});
+  if(status==='returned') pushNotif('courier', 'x2', {ar:`تم إرجاع الطلب ${d.track}`, en:`Order ${d.track} returned`}, {ar:`تم إعادة مبلغ الطلب إلى الميزانية. الرصيد المتبقي: ${fmt(courierBudget)} ${t('dueLabel')}.`, en:`The order amount was returned to the budget. Remaining: ${fmt(courierBudget)} ${t('dueLabel')}.`});
   closeSheet();
+  if(budgetDeducted){
+    openSheet(`
+      <div style="text-align:center; padding:20px 0;">
+        <div style="width:52px; height:52px; border-radius:50%; background:var(--success-tint); color:var(--success); display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">${ic('check',24)}</div>
+        <div style="font-weight:800; font-size:14px; margin-bottom:8px;">${LANG==='ar'?'تم أخذ الطلب':'Order Taken'}</div>
+        <div style="font-size:12px; color:var(--ink-soft); line-height:1.8;">
+          ${LANG==='ar' ? `تم خصم <b class="mono" style="color:var(--danger);">${fmt(budgetDeducted)} ${t('dueLabel')}</b> من الميزانية.<br>الرصيد المتبقي: <b class="mono" style="color:var(--primary);">${fmt(courierBudget)} ${t('dueLabel')}</b>` : `Deducted <b class="mono" style="color:var(--danger);">${fmt(budgetDeducted)} ${t('dueLabel')}</b> from the budget.<br>Remaining budget: <b class="mono" style="color:var(--primary);">${fmt(courierBudget)} ${t('dueLabel')}</b>`}
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="closeSheet()">${t('ok') || (LANG==='ar'?'حسناً':'OK')}</button>
+    `);
+  }
   renderTab();
 }
 
@@ -2430,18 +2544,31 @@ function openCourierDetailSheet(d){
     ${customerActions}
     ${merchantCard}
     ${pickupTimerCard(d)}
-    ${d.status==='pending' ? `<button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="setCourierStatus('${d.track}','approved')">${LANG==='ar'?'موافقة على الطلب':'Accept Order'}</button>` : ''}
+    ${d.status==='pending' ? (canAcceptCourierOrder(d) ? `<button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="setCourierStatus('${d.track}','approved')">${LANG==='ar'?'موافقة على الطلب':'Accept Order'}</button>` : `
+      <div style="margin-top:14px; padding:13px; border-radius:13px; background:var(--danger-tint); border:1.5px solid color-mix(in srgb, var(--danger) 30%, transparent); display:flex; align-items:center; gap:9px;">
+        ${ic('shield',16)}
+        <div style="font-size:12px; font-weight:700; color:var(--danger); line-height:1.6; flex:1;">${LANG==='ar'?'لا يمكن أخذ الطلب لأن الميزانية أقل من قيمة الطلب':'Cannot take order — budget is less than the order amount'}</div>
+      </div>
+      <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="openBudgetInsufficientSheet(COURIER_DELIVERIES.find(x=>x.track==='${d.track}'))">${LANG==='ar'?'التفاصيل / تواصل مع الدعم':'Details / Contact Support'}</button>`) : ''}
     ${d.status==='approved' ? `
       <button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="setCourierStatus('${d.track}','courier')">${LANG==='ar'?'استلام الطلب':'Pick Up Order'}</button>
-      <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="setCourierStatus('${d.track}','pending')">${LANG==='ar'?'الغاء الموافقة':'Cancel Approval'}</button>` : ''}
+      <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="openSupportChat()">${LANG==='ar'?'تواصل مع الدعم لإلغاء الطلب':'Contact Support to Cancel'}</button>` : ''}
     ${d.status==='courier' ? `
       <button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="setCourierStatus('${d.track}','delivered')">${LANG==='ar'?'تم التسليم':'Mark as Delivered'}</button>
       <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="setCourierStatus('${d.track}','returned')">${LANG==='ar'?'راجع':'Mark as Returned'}</button>
-      <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="setCourierStatus('${d.track}','pending')">${LANG==='ar'?'الغاء الطلب':'Cancel Order'}</button>` : ''}
+      <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="openSupportChat()">${LANG==='ar'?'تواصل مع الدعم لإلغاء الطلب':'Contact Support to Cancel'}</button>` : ''}
     ${d.status==='returned' ? `
       <button class="btn btn-primary" style="width:100%; margin-top:14px; background:var(--st-returned); border-color:var(--st-returned);" onclick="returnToMerchant('${d.track}')">${LANG==='ar'?'إرجاع إلى التاجر':'Return to Merchant'}</button>` : ''}
     <button class="btn btn-ghost" style="width:100%; margin-top:8px;" onclick="closeSheet()">${t('close')}</button>
   `);
+}
+
+function openSupportChat(){
+  closeSheet();
+  TAB = 'chat';
+  activeChat = ROLE==='merchant' ? 'support' : 'dispatch';
+  renderTabs();
+  renderTab();
 }
 
 function returnToMerchant(track){
@@ -2555,7 +2682,7 @@ function renderCourierDeliveries(){
   };
 
   el.innerHTML = `
-    <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--ink);">${LANG==='ar'?'توصيلاتي':'My Deliveries'}</div>
+    <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--ink);">${LANG==='ar'?'طلباتي':'My Orders'}</div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;" id="courierStatusCards"></div>
   `;
 
@@ -2706,17 +2833,6 @@ function contactSupportRecharge(){
 }
 
 function openBudgetSheet(){
-  if(hasActiveCourierOrders()){
-    openSheet(`
-      <div style="text-align:center; padding:22px 6px;">
-        <div style="width:52px; height:52px; border-radius:50%; background:var(--warning-tint); color:var(--warning); display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">${ic('shield',24)}</div>
-        <div style="font-weight:800; font-size:14px; margin-bottom:6px;">${LANG==='ar'?'الميزانية مقفلة':'Budget Locked'}</div>
-        <div style="font-size:12px; color:var(--ink-soft); line-height:1.7;">${LANG==='ar'?'لا يمكن إضافة أو تعديل الميزانية عند وجود طلبات نشطة (قيد الانتظار، موافق عليها، أو بحوزة المندوب).':'You cannot add or modify the budget while you have active orders (pending, approved, or with courier).'}</div>
-      </div>
-      <button class="btn btn-ghost" style="width:100%; margin-top:14px;" onclick="closeSheet()">${t('close')}</button>
-    `);
-    return;
-  }
   openSheet(`
     <div style="font-weight:800; font-size:14.5px; margin-bottom:4px;">${LANG==='ar'?'الميزانية':'Budget'}</div>
     <div style="font-size:11px; color:var(--ink-faint); font-weight:600; margin-bottom:14px;">${LANG==='ar'?'المبلغ الحالي':'Current amount'}: <b class="mono" style="color:var(--accent);">${fmt(courierBudget)} ${t('dueLabel')}</b></div>
@@ -2729,7 +2845,6 @@ function openBudgetSheet(){
 function submitBudget(mode){
   const amount = parseFloat(document.getElementById('budgetAmount').value)||0;
   if(amount<=0) return;
-  if(hasActiveCourierOrders()){ closeSheet(); return; }
   if(mode==='add'){ courierBudget += amount; budgetBase += amount; }
   else { courierBudget = amount; budgetBase = amount; }
   saveBudget();
@@ -2801,6 +2916,7 @@ function renderChatThread(chatId){
   const chats = ROLE==='merchant' ? MERCHANT_CHATS : COURIER_CHATS;
   const c = chats.find(x=>x.id===chatId);
   c.unread = 0;
+  renderTabs();
   setTopbar(nm(c.name), '', true, ()=>{ activeChat=null; renderTab(); });
   const el = document.getElementById('appContent');
   el.style.paddingBottom = '16px';
@@ -3455,6 +3571,19 @@ document.querySelector('.install-banner button').addEventListener('click', async
 setLang('ar');
 setTheme('light');
 showInstallBanner();
+
+/* Seed default notifications (if no unread content remains) */
+if(APP_NOTIFS.length===0 || !APP_NOTIFS.some(n=>!n.read)){
+  APP_NOTIFS = [
+    {role:'merchant', icon:'box', title:{ar:'طلب جديد', en:'New order'}, body:{ar:'تم إضافة طلب جديد إلى طلباتك.', en:'A new order was added to your orders.'}, time:'09:40', read:false},
+    {role:'merchant', icon:'bike', title:{ar:'طلبك قيد التوصيل', en:'Your order is on the way'}, body:{ar:'طلبك IQ-204879 خرج للتوصيل.', en:'Your order IQ-204879 is out for delivery.'}, time:'10:05', read:false},
+    {role:'courier', icon:'box', title:{ar:'طلب جديد متاح', en:'New order available'}, body:{ar:'هناك طلب جديد بانتظار قبولك في المنطقة.', en:'A new order is waiting for your approval in your area.'}, time:'10:15', read:false},
+    {role:'courier', icon:'wallet', title:{ar:'تم شحن الميزانية', en:'Budget recharged'}, body:{ar:'تم إضافة 200 إلى ميزانيتك. الرصيد الحالي: 200 دينار.', en:'200 added to your budget. Current balance: 200 JD.'}, time:'الآن', read:false},
+    {role:'courier', icon:'bell', title:{ar:'مرحباً بك في تطبيق المندوب', en:'Welcome to Courier App'}, body:{ar:'جهّز ميزانيتك لتتمكن من استلام الطلبات.', en:'Set your budget to start receiving orders.'}, time:'الآن', read:false},
+  ];
+  saveNotifs();
+}
+updateNotifBadge();
 
 /* Restore session from localStorage */
 (function(){
