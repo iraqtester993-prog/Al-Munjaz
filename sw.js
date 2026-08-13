@@ -3,11 +3,12 @@ const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './assets/logo-white.png',
+  './assets/logo.png',
   './assets/icon-48.png',
   './assets/icon-96.png',
   './assets/icon-192.png',
   './assets/icon-512.png',
+  './assets/icon-maskable-512.png',
   './assets/icon-180.png',
   'https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap'
 ];
