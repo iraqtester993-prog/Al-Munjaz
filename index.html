@@ -2356,15 +2356,6 @@ function renderCourierHome(){
       ${LANG==='ar'?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(11,110,104,.5)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; bottom:10px; right:14px;"><path d="M15 18l-6-6 6-6"/></svg>':'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(11,110,104,.5)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; bottom:10px; right:14px;"><path d="M9 18l6-6-6-6"/></svg>'}
     </div>
 
-    <div style="display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:13px; background:var(--surface); border:1px solid var(--border); margin-bottom:16px;">
-      <div style="width:34px; height:34px; border-radius:10px; background:var(--accent-tint); color:var(--accent); display:flex; align-items:center; justify-content:center; flex:none;">${ic('shield',16)}</div>
-      <div style="flex:1;">
-        <div style="font-size:10.5px; color:var(--ink-soft); font-weight:700; margin-bottom:2px;">${LANG==='ar'?'الميزانية المتبقية':'Remaining Budget'}</div>
-        <div class="mono" style="font-size:15px; font-weight:900; color:var(--accent);">${fmt(courierBudget)} ${t('dueLabel')}</div>
-      </div>
-      <button onclick="openBudgetSheet()" style="font-size:11px; font-weight:800; color:var(--primary); background:var(--primary-tint); border:none; padding:7px 12px; border-radius:9px; cursor:pointer;">${LANG==='ar'?'تعديل':'Edit'}</button>
-    </div>
-
     <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--ink);">${LANG==='ar'?'نتائج التوصيل':'Delivery Results'}</div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;" id="courierResults"></div>
   `;
