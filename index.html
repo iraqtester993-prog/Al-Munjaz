@@ -3,19 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<title>مسار — تطبيق التاجر والمندوب</title>
+<title>المنجز السريع — تطبيق التاجر والمندوب</title>
 <meta name="theme-color" content="#0B6E68">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="مسار">
-<meta name="application-name" content="مسار">
+<meta name="apple-mobile-web-app-title" content="المنجز السريع">
+<meta name="application-name" content="المنجز السريع">
 <meta name="msapplication-TileColor" content="#0B6E68">
-<meta name="msapplication-TileImage" content="المنجز.png">
+<meta name="msapplication-TileImage" content="assets/icon-180.png">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="المنجز.png">
-<link rel="icon" type="image/png" sizes="192x192" href="المنجز.png">
-<link rel="icon" type="image/png" sizes="512x512" href="المنجز.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="icon" type="image/png" sizes="48x48" href="assets/icon-48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="assets/icon-96.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -95,6 +97,7 @@ svg{display:block; flex-shrink:0;}
 .start-brand{display:flex; align-items:center; gap:9px;}
 .start-brand .mark{width:34px; height:34px; border-radius:10px; background:rgba(255,255,255,.16); display:flex; align-items:center; justify-content:center;}
 .start-brand b{font-size:16px; font-weight:800;}
+.mark .brand-logo{width:100%; height:100%; object-fit:contain; padding:5px; box-sizing:border-box; border-radius:inherit;}
 .start-toggles{display:flex; gap:6px;}
 .pill-btn{padding:6px 10px; border-radius:8px; background:rgba(255,255,255,.16); font-size:11px; font-weight:800; color:#fff;}
 .pill-btn.active{background:#fff; color:var(--primary-strong);}
@@ -128,7 +131,7 @@ svg{display:block; flex-shrink:0;}
 #screenOnboard{background:var(--bg);}
 .onboard-top{display:flex; align-items:center; justify-content:space-between; padding:20px 22px 4px;}
 .onboard-brand{display:flex; align-items:center; gap:8px;}
-.onboard-brand .mark{width:30px; height:30px; border-radius:9px; background:var(--primary-tint); color:var(--primary-strong); display:flex; align-items:center; justify-content:center;}
+.onboard-brand .mark{width:30px; height:30px; border-radius:9px; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center;}
 .onboard-brand b{font-size:14.5px; font-weight:800;}
 .onboard-slides{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; flex:1; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
 .onboard-slides::-webkit-scrollbar{display:none;}
@@ -241,17 +244,15 @@ svg{display:block; flex-shrink:0;}
 .order-end{text-align:end; flex:none;}
 .order-end b{font-size:12.5px; font-weight:800; display:block; font-variant-numeric:tabular-nums;}
 
-.order-cards-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:4px;}
-.order-stat-card{background:var(--surface); border-radius:14px; padding:16px 14px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; border:1.5px solid var(--border); transition:all .15s;}
-.order-stat-card:active{transform:scale(.97);}
-.order-stat-card.all-orders{grid-column:1/-1; flex-direction:row; gap:14px; padding:18px 16px;}
-.osc-icon{width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center;}
-.order-stat-card.all-orders .osc-icon{width:48px; height:48px; border-radius:14px;}
-.osc-count{font-size:22px; font-weight:900; line-height:1;}
-.osc-label{font-size:11px; font-weight:700; color:var(--ink-soft);}
+.order-cards-grid{display:grid; grid-template-columns:1fr; gap:10px; margin-bottom:4px;}
+.order-stat-card{background:var(--surface); border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:14px; cursor:pointer; border:1.5px solid var(--border); transition:all .15s; position:relative; overflow:hidden;}
+.order-stat-card:active{transform:scale(.98);}
+.order-stat-card .osc-icon{width:46px; height:46px; border-radius:13px; flex:none; display:flex; align-items:center; justify-content:center;}
+.osc-count{font-size:24px; font-weight:900; line-height:1; font-variant-numeric:tabular-nums;}
+.osc-label{font-size:12px; font-weight:800; margin-bottom:5px;}
 
-.badge{display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px; font-size:10px; font-weight:800;}
-.badge-dot{width:5px; height:5px; border-radius:50%;}
+.badge{display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:.2px; border:1px solid; border-color:color-mix(in srgb, currentColor 30%, transparent);}
+.badge-dot{width:6px; height:6px; border-radius:50%; box-shadow:0 0 0 3px color-mix(in srgb, currentColor 18%, transparent);}
 .b-neutral{background:var(--surface-3); color:var(--ink-soft);}
 .b-primary{background:var(--primary-tint); color:var(--primary-strong);}
 .b-success{background:var(--success-tint); color:var(--success);}
@@ -283,7 +284,7 @@ svg{display:block; flex-shrink:0;}
 .hero-slider-wrap{margin-bottom:14px;}
 .hero-slider{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; border-radius:20px; scrollbar-width:none;}
 .hero-slider::-webkit-scrollbar{display:none;}
-.hero-slide{flex:0 0 100%; scroll-snap-align:start; border-radius:20px; padding:17px 18px; min-height:104px; display:flex; align-items:center; gap:14px; position:relative; overflow:hidden; color:#fff;}
+.hero-slide{flex:0 0 100%; scroll-snap-align:start; border-radius:20px; padding:17px 18px; min-height:150px; display:flex; align-items:center; gap:14px; position:relative; overflow:hidden; color:#fff;}
 .hero-slide-illo{width:58px; height:58px; flex:none;}
 .hero-slide-text h4{font-size:12.5px; font-weight:800; margin-bottom:4px; line-height:1.45;}
 .hero-slide-text p{font-size:10px; font-weight:600; line-height:1.65; opacity:.85; max-width:190px;}
@@ -582,8 +583,8 @@ svg{display:block; flex-shrink:0;}
     <section class="screen" id="screenOnboard">
       <div class="onboard-top">
         <div class="onboard-brand">
-          <div class="mark"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></div>
-          <b>مسار</b>
+          <div class="mark"><img class="brand-logo" src="assets/logo-white.png" alt=""></div>
+          <b>المنجز السريع</b>
         </div>
         <div style="display:flex; align-items:center; gap:6px;">
           <button class="tb-icon-btn js-theme-toggle">
@@ -671,8 +672,8 @@ svg{display:block; flex-shrink:0;}
       <div>
         <div class="start-top">
           <div class="start-brand">
-            <div class="mark"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></div>
-            <b>مسار</b>
+            <div class="mark"><img class="brand-logo" src="assets/logo-white.png" alt=""></div>
+            <b>المنجز السريع</b>
           </div>
           <div style="display:flex; align-items:center; gap:6px;">
             <button class="icon-round js-theme-toggle">
@@ -699,7 +700,7 @@ svg{display:block; flex-shrink:0;}
 
         <div class="install-banner">
           <div class="ii"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><polyline points="7 11 12 16 17 11"/><path d="M4 19h16"/></svg></div>
-          <p data-i18n="installHint">أضِف مسار إلى شاشتك الرئيسية للوصول السريع والعمل دون اتصال جزئياً</p>
+          <p data-i18n="installHint">أضِف المنجز السريع إلى شاشتك الرئيسية للوصول السريع والعمل دون اتصال جزئياً</p>
           <button data-i18n="installBtn">تثبيت</button>
         </div>
       </div>
@@ -712,8 +713,8 @@ svg{display:block; flex-shrink:0;}
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         </button>
         <div class="auth-brand">
-          <div class="mark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></div>
-          <b>مسار</b>
+          <div class="mark"><img class="brand-logo" src="assets/logo-white.png" alt=""></div>
+          <b>المنجز السريع</b>
         </div>
         <div style="display:flex; align-items:center; gap:6px;">
 
@@ -765,8 +766,8 @@ svg{display:block; flex-shrink:0;}
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         </button>
         <div class="auth-brand">
-          <div class="mark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></div>
-          <b>مسار</b>
+          <div class="mark"><img class="brand-logo" src="assets/logo-white.png" alt=""></div>
+          <b>المنجز السريع</b>
         </div>
         <div style="display:flex; align-items:center; gap:6px;">
 
@@ -834,8 +835,8 @@ svg{display:block; flex-shrink:0;}
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         </button>
         <div class="auth-brand">
-          <div class="mark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></div>
-          <b>مسار</b>
+          <div class="mark"><img class="brand-logo" src="assets/logo-white.png" alt=""></div>
+          <b>المنجز السريع</b>
         </div>
         <div style="display:flex; align-items:center; gap:6px;">
 
@@ -940,8 +941,8 @@ svg{display:block; flex-shrink:0;}
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         </button>
         <div class="auth-brand">
-          <div class="mark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></div>
-          <b>مسار</b>
+          <div class="mark"><img class="brand-logo" src="assets/logo-white.png" alt=""></div>
+          <b>المنجز السريع</b>
         </div>
       </div>
       <div class="auth-body">
@@ -978,8 +979,8 @@ svg{display:block; flex-shrink:0;}
     <div class="auth-screen" id="screenReviewPending">
       <div class="auth-header">
         <div class="auth-brand" style="margin:0 auto;">
-          <div class="mark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></div>
-          <b>مسار</b>
+          <div class="mark"><img class="brand-logo" src="assets/logo-white.png" alt=""></div>
+          <b>المنجز السريع</b>
         </div>
       </div>
       <div class="auth-body" style="justify-content:center;">
@@ -1069,6 +1070,12 @@ function ic(name, size){
     x2:`<svg ${S}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
     plus:`<svg ${S}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
     building:`<svg ${S}><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="7" x2="8" y2="7.01"/><line x1="12" y1="7" x2="12" y2="7.01"/><line x1="16" y1="7" x2="16" y2="7.01"/><line x1="8" y1="11" x2="8" y2="11.01"/><line x1="12" y1="11" x2="12" y2="11.01"/></svg>`,
+    hourglass:`<svg ${S}><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>`,
+    thumbsUp:`<svg ${S}><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>`,
+    route:`<svg ${S}><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>`,
+    checkCircle:`<svg ${S}><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg>`,
+    rotateCcw:`<svg ${S}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>`,
+    layers:`<svg ${S}><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>`,
   };
   return M[name] || '';
 }
@@ -1149,14 +1156,14 @@ const COURIER_TX = [
 ];
 
 const MERCHANT_HERO_SLIDES = [
-  {bg:'linear-gradient(135deg, var(--primary-strong), var(--primary))', icon:'illoTrack', title:{ar:'تتبّع كل طلب لحظة بلحظة',en:'Track every order in real time'}, sub:{ar:'اعرف مكان طلبك بالضبط من لوحة الطلبات',en:'Know exactly where your order is from the orders tab'}},
-  {bg:'linear-gradient(135deg, #B96A16, var(--accent))', icon:'illoDiscount', title:{ar:'عمولة أقل على الطلبات الكبيرة',en:'Lower fees on bulk orders'}, sub:{ar:'أضف 20 طلب أو أكثر شهرياً واحصل على خصم تلقائي',en:'Add 20+ orders monthly and get an automatic discount'}},
-  {bg:'linear-gradient(135deg, #1E6E5A, var(--success))', icon:'illoRate', title:{ar:'نسبة تسليمك 96% هذا الشهر',en:'Your delivery rate is 96% this month'}, sub:{ar:'من أفضل 10% من التجار على مسار',en:'You\'re in the top 10% of merchants on Masar'}},
+  {img:'https://picsum.photos/seed/masar-t1/800/300', title:{ar:'تتبّع كل طلب لحظة بلحظة',en:'Track every order in real time'}, sub:{ar:'اعرف مكان طلبك بالضبط من لوحة الطلبات',en:'Know exactly where your order is from the orders tab'}},
+  {img:'https://picsum.photos/seed/masar-t2/800/300', title:{ar:'عمولة أقل على الطلبات الكبيرة',en:'Lower fees on bulk orders'}, sub:{ar:'أضف 20 طلب أو أكثر شهرياً واحصل على خصم تلقائي',en:'Add 20+ orders monthly and get an automatic discount'}},
+  {img:'https://picsum.photos/seed/masar-t3/800/300', title:{ar:'نسبة تسليمك 96% هذا الشهر',en:'Your delivery rate is 96% this month'}, sub:{ar:'من أفضل 10% من التجار على المنجز السريع',en:'You\'re in the top 10% of merchants on Al-Munjaz Al-Saree'}},
 ];
 const COURIER_HERO_SLIDES = [
-  {bg:'linear-gradient(135deg, var(--primary-strong), var(--primary))', icon:'illoGps', title:{ar:'فعّل GPS لتوصيل أدق',en:'Enable GPS for accurate delivery'}, sub:{ar:'يساعد الفرع على تتبع رحلتك لحظياً',en:'Helps the branch track your trip live'}},
-  {bg:'linear-gradient(135deg, #B96A16, var(--accent))', icon:'illoTrophy', title:{ar:'أعلى تحصيل لك هذا الأسبوع',en:'Your best collection week yet'}, sub:{ar:'700,000 د.ع يوم الخميس — استمر بنفس الأداء',en:'700,000 IQD on Thursday — keep it up'}},
-  {bg:'linear-gradient(135deg, #8a5a12, #B9821C)', icon:'illoClock', title:{ar:'سلّم النقدية قبل الساعة 6',en:'Hand over cash before 6 PM'}, sub:{ar:'لضمان إقفال صندوق الفرع بالوقت المحدد',en:'To ensure the branch cashbox closes on time'}},
+  {img:'https://picsum.photos/seed/masar-c1/800/300', title:{ar:'فعّل GPS لتوصيل أدق',en:'Enable GPS for accurate delivery'}, sub:{ar:'يساعد الفرع على تتبع رحلتك لحظياً',en:'Helps the branch track your trip live'}},
+  {img:'https://picsum.photos/seed/masar-c2/800/300', title:{ar:'أعلى تحصيل لك هذا الأسبوع',en:'Your best collection week yet'}, sub:{ar:'700,000 د.ع يوم الخميس — استمر بنفس الأداء',en:'700,000 IQD on Thursday — keep it up'}},
+  {img:'https://picsum.photos/seed/masar-c3/800/300', title:{ar:'سلّم النقدية قبل الساعة 6',en:'Hand over cash before 6 PM'}, sub:{ar:'لضمان إقفال صندوق الفرع بالوقت المحدد',en:'To ensure the branch cashbox closes on time'}},
 ];
 
 function heroIllo(type){
@@ -1210,9 +1217,10 @@ function renderHeroSlider(containerId, slides){
   wrap.innerHTML = `
     <div class="hero-slider" id="${containerId}Track">
       ${slides.map(s=>`
-        <div class="hero-slide" style="background:${s.bg};">
-          ${heroIllo(s.icon)}
-          <div class="hero-slide-text"><h4>${nm(s.title)}</h4><p>${nm(s.sub)}</p></div>
+        <div class="hero-slide">
+          <img src="${s.img}" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;">
+          <div style="position:absolute; inset:0; background:linear-gradient(270deg, rgba(6,20,18,.85) 0%, rgba(6,20,18,.4) 55%, rgba(6,20,18,.1) 100%);"></div>
+          <div class="hero-slide-text" style="position:relative; z-index:1;"><h4>${nm(s.title)}</h4><p>${nm(s.sub)}</p></div>
         </div>`).join('')}
     </div>
     <div class="hero-slider-dots" id="${containerId}Dots">${slides.map((_,i)=>`<div class="hd ${i===0?'active':''}"></div>`).join('')}</div>
@@ -1233,7 +1241,7 @@ function renderHeroSlider(containerId, slides){
     if(clamped!==idx){ idx=clamped; dots.forEach((d,di)=> d.classList.toggle('active', di===idx)); }
   });
   if(heroSliderTimer) clearInterval(heroSliderTimer);
-  heroSliderTimer = setInterval(()=> goTo(idx+1), 4200);
+  heroSliderTimer = setInterval(()=> goTo(idx+1), 2000);
 }
 
 const MERCHANT_CHATS = [
@@ -1268,15 +1276,15 @@ const COURIER_CHATS = [
 /* ================= I18N ================= */
 const T = {
   ar:{
-    startTitle:'اختر تطبيقك', startSub:'نفس حساب شركتك على مسار، بواجهة مخصّصة لدورك.',
+    startTitle:'اختر تطبيقك', startSub:'نفس حساب شركتك على المنجز السريع، بواجهة مخصّصة لدورك.',
     merchantApp:'تطبيق التاجر', merchantAppSub:'طلباتي، كشف حسابي، محفظتي',
     courierApp:'تطبيق المندوب', courierAppSub:'توصيلاتي، تحصيلاتي، محفظتي',
-    installHint:'أضِف مسار إلى شاشتك الرئيسية للوصول السريع والعمل دون اتصال جزئياً', installBtn:'تثبيت',
+    installHint:'أضِف المنجز السريع إلى شاشتك الرئيسية للوصول السريع والعمل دون اتصال جزئياً', installBtn:'تثبيت',
     tabHome:'الرئيسية', tabOrders:'طلباتي', tabDeliveries:'توصيلاتي', tabWallet:'المحفظة', tabChat:'الدردشة', tabProfile:'حسابي',
     greeting:'مساك الله بالخير', merchantSubName:'متجر النور للإلكترونيات', courierSubName:'مندوب توزيع — فرع بغداد',
     myOrdersToday:'طلباتي اليوم', myDueBalance:'رصيدي المستحق', deliveryRate:'نسبة التسليم', monthlyOrders:'طلبات الشهر',
     myDeliveriesToday:'توصيلاتي اليوم', collectedToday:'المحصّل اليوم', onDuty:'أنا متاح للعمل', offDuty:'غير متاح حالياً',
-    recentOrders:'أحدث الطلبات', seeAll:'عرض الكل', newOrder:'طلب جديد',
+    recentOrders:'أحدث الطلبات', seeAll:'عرض الكل', newOrder:'اضافة طلب جديد',
     filterAll:'الكل', filterTransit:'قيد النقل', filterOut:'خرج للتوصيل', filterDelivered:'تم التسليم', filterDelayed:'مؤجل',
     walletBalance:'رصيدي الحالي', walletDue:'مستحقاتي غير المسلمة', cashOnHand:'النقدية بحوزتي', withdraw:'طلب سحب', handover:'تسليم النقدية', history:'سجل الحركات',
     chatSearch:'ابحث في المحادثات', typeMessage:'اكتب رسالتك...',
@@ -1296,7 +1304,7 @@ const T = {
     totalOrdersLabel:'إجمالي الطلبات', viewFullReport:'عرض التقرير الكامل', ordersUnit:'طلب',
     acctTitle:'اختر طريقة الدخول', acctSub:'سجّل حساب جديد أوادخل بحسابك الحالي',
     loginBtn:'تسجيل دخول', loginBtnSub:'لدي حساب موجود',
-    registerBtn:'إنشاء حساب جديد', registerBtnSub:'أول مرة على مسار؟',
+    registerBtn:'إنشاء حساب جديد', registerBtnSub:'أول مرة على المنجز السريع؟',
     loginTitle:'تسجيل الدخول', loginSub:'أدخل بياناتك للدخول إلى حسابك',
     loginUsername:'اسم المستخدم', loginPassword:'كلمة المرور',
     loginUserError:'أدخل اسم المستخدم', loginPassError:'أدخل كلمة المرور',
@@ -1322,15 +1330,15 @@ const T = {
     reviewBadge:'قيد المراجعة', reviewBack:'العودة للرئيسية',
   },
   en:{
-    startTitle:'Choose your app', startSub:'Same company account on Masar, with an interface built for your role.',
+    startTitle:'Choose your app', startSub:'Same company account on Al-Munjaz Al-Saree, with an interface built for your role.',
     merchantApp:'Merchant App', merchantAppSub:'My orders, statement, wallet',
     courierApp:'Courier App', courierAppSub:'My deliveries, collections, wallet',
-    installHint:'Add Masar to your home screen for quick access and partial offline use', installBtn:'Install',
+    installHint:'Add Al-Munjaz Al-Saree to your home screen for quick access and partial offline use', installBtn:'Install',
     tabHome:'Home', tabOrders:'My Orders', tabDeliveries:'My Deliveries', tabWallet:'Wallet', tabChat:'Chat', tabProfile:'Profile',
     greeting:'Good to see you', merchantSubName:'Al-Noor Electronics', courierSubName:'Delivery Courier — Baghdad Branch',
     myOrdersToday:'My Orders Today', myDueBalance:'My Due Balance', deliveryRate:'Delivery Rate', monthlyOrders:'Orders This Month',
     myDeliveriesToday:'My Deliveries Today', collectedToday:'Collected Today', onDuty:'Available for Work', offDuty:'Currently Unavailable',
-    recentOrders:'Recent Orders', seeAll:'See all', newOrder:'New Order',
+    recentOrders:'Recent Orders', seeAll:'See all', newOrder:'Add New Order',
     filterAll:'All', filterTransit:'In Transit', filterOut:'Out for Delivery', filterDelivered:'Delivered', filterDelayed:'Delayed',
     walletBalance:'Current Balance', walletDue:'Undisbursed Dues', cashOnHand:'Cash On Hand', withdraw:'Request Withdrawal', handover:'Hand Over Cash', history:'Transaction History',
     chatSearch:'Search conversations', typeMessage:'Type a message...',
@@ -1350,7 +1358,7 @@ const T = {
     totalOrdersLabel:'Total Orders', viewFullReport:'View Full Report', ordersUnit:'orders',
     acctTitle:'Choose how to sign in', acctSub:'Create a new account or sign in with an existing one',
     loginBtn:'Sign In', loginBtnSub:'I have an existing account',
-    registerBtn:'Create New Account', registerBtnSub:'First time on Masar?',
+    registerBtn:'Create New Account', registerBtnSub:'First time on Al-Munjaz Al-Saree?',
     loginTitle:'Sign In', loginSub:'Enter your credentials to access your account',
     loginUsername:'Username', loginPassword:'Password',
     loginUserError:'Enter your username', loginPassError:'Enter your password',
@@ -1823,6 +1831,7 @@ function renderMerchantHome(){
   setTopbar(t('greeting'), currentUser ? currentUser.name : t('merchantSubName'), false);
   const el = document.getElementById('appContent');
   el.innerHTML = `
+    <div class="hero-slider-wrap" id="merchantHeroSlider"></div>
     <button id="homeNewOrder" style="
       width:100%; padding:16px; border-radius:16px; background:var(--primary); color:#fff;
       display:flex; align-items:center; justify-content:center; gap:10px;
@@ -1848,17 +1857,18 @@ function renderMerchantHome(){
       const d = MERCHANT_ORDERS.filter(o=>o.status==='delivered').length;
       const r = MERCHANT_ORDERS.filter(o=>o.status==='returned').length;
       return donutCard(t('statusDist'), [
-        {label:LANG==='ar'?'قيد الانتظار':'Pending', pct:Math.round(p/total*100), color:'var(--st-pending)'},
-        {label:LANG==='ar'?'تم قبول الطلب':'Accepted', pct:Math.round(ap/total*100), color:'var(--st-approved)'},
-        {label:LANG==='ar'?'بحوزة المندوب':'With Courier', pct:Math.round(c/total*100), color:'var(--st-courier)'},
-        {label:t('filterDelivered'), pct:Math.round(d/total*100), color:'var(--st-delivered)'},
-        {label:LANG==='ar'?'راجع':'Returned', pct:Math.round(r/total*100), color:'var(--st-returned)'},
+        {label:LANG==='ar'?'قيد الانتظار':'Pending', pct:Math.round(p/total*100), count:p, color:'var(--st-pending)'},
+        {label:LANG==='ar'?'تم قبول الطلب':'Accepted', pct:Math.round(ap/total*100), count:ap, color:'var(--st-approved)'},
+        {label:LANG==='ar'?'بحوزة المندوب':'With Courier', pct:Math.round(c/total*100), count:c, color:'var(--st-courier)'},
+        {label:t('filterDelivered'), pct:Math.round(d/total*100), count:d, color:'var(--st-delivered)'},
+        {label:LANG==='ar'?'راجع':'Returned', pct:Math.round(r/total*100), count:r, color:'var(--st-returned)'},
       ], total, t('monthlyOrders'));
     })()}
     <div class="section-title"><h3>${t('recentOrders')}</h3><a data-goto-tab="orders">${t('seeAll')}</a></div>
     <div class="list-card" id="homeOrdersList"></div>
   `;
   document.getElementById('homeNewOrder').addEventListener('click', openOrderSheet);
+  renderHeroSlider('merchantHeroSlider', MERCHANT_HERO_SLIDES);
   const list = document.getElementById('homeOrdersList');
   list.innerHTML = MERCHANT_ORDERS.slice(0,4).map(o=>orderRow(o)).join('');
   bindOrderRows(list, MERCHANT_ORDERS);
@@ -1882,7 +1892,7 @@ function donutCard(title, data, centerValue, centerLabel){
         <div class="donut-hole"><b>${centerValue}</b><span>${centerLabel}</span></div>
       </div>
       <div class="legend-col">
-        ${data.map(s=>`<div class="legend-item" style="color:${s.color} !important; font-weight:800;"><span class="ldot" style="background:${s.color};"></span>${s.label}<b style="color:${s.color} !important;">${s.pct}%</b></div>`).join('')}
+        ${data.map(s=>`<div class="legend-item" style="color:${s.color} !important; font-weight:800;"><span class="ldot" style="background:${s.color};"></span>${s.label}<b style="color:${s.color} !important;">${s.count!=null?s.count:(s.pct+'%')}</b></div>`).join('')}
       </div>
     </div>
   </div>`;
@@ -1987,37 +1997,56 @@ function renderMerchantOrders(){
   };
 
   if(merchantOrderView==='cards'){
+    const chev = (LANG==='ar')?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:.45"><path d="M15 18l-6-6 6-6"/></svg>':'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:.45"><path d="M9 18l6-6-6-6"/></svg>';
     el.innerHTML = `
       <div class="order-cards-grid">
-        <div class="order-stat-card all-orders" onclick="merchantOrderView='list'; merchantFilter='all'; renderMerchantOrders();">
-          <div class="osc-icon" style="background:var(--primary-tint); color:var(--primary-strong);">${ic('box',20)}</div>
-          <div class="osc-count">${total}</div>
-          <div class="osc-label">${LANG==='ar'?'جميع الطلبات':'All Orders'}</div>
+        <div class="order-stat-card" style="background:linear-gradient(135deg, #E2F6F4, #C5ECE8); border-color:rgba(11,110,104,.25);" onclick="merchantOrderView='list'; merchantFilter='all'; renderMerchantOrders();">
+          <div class="osc-icon" style="background:rgba(255,255,255,.8); color:#0B6E68; box-shadow:0 2px 8px rgba(11,110,104,.12);">${ic('layers',22)}</div>
+          <div style="flex:1;">
+            <div class="osc-label" style="color:rgba(11,110,104,.75);">${LANG==='ar'?'جميع الطلبات':'All Orders'}</div>
+            <div class="osc-count" style="color:#0B6E68;">${total}</div>
+          </div>
+          <span style="color:#0B6E68; display:flex;">${chev}</span>
         </div>
-        <div class="order-stat-card" onclick="merchantOrderView='list'; merchantFilter='pending'; renderMerchantOrders();">
-          <div class="osc-icon" style="background:var(--st-pending-tint); color:var(--st-pending);">${ic('clock',20)}</div>
-          <div class="osc-count">${counts.pending}</div>
-          <div class="osc-label">${LANG==='ar'?'قيد الانتظار':'Pending'}</div>
+        <div class="order-stat-card" style="background:linear-gradient(135deg, #FFF3E0, #FFE1B3); border-color:rgba(217,119,6,.28);" onclick="merchantOrderView='list'; merchantFilter='pending'; renderMerchantOrders();">
+          <div class="osc-icon" style="background:rgba(255,255,255,.8); color:#B45309; box-shadow:0 2px 8px rgba(217,119,6,.14);">${ic('hourglass',22)}</div>
+          <div style="flex:1;">
+            <div class="osc-label" style="color:rgba(180,83,9,.75);">${LANG==='ar'?'قيد الانتظار':'Pending'}</div>
+            <div class="osc-count" style="color:#B45309;">${counts.pending}</div>
+          </div>
+          <span style="color:#B45309; display:flex;">${chev}</span>
         </div>
-        <div class="order-stat-card" onclick="merchantOrderView='list'; merchantFilter='approved'; renderMerchantOrders();">
-          <div class="osc-icon" style="background:var(--st-approved-tint); color:var(--st-approved);">${ic('shield',20)}</div>
-          <div class="osc-count">${counts.approved}</div>
-          <div class="osc-label">${LANG==='ar'?'تم قبول الطلب':'Accepted'}</div>
+        <div class="order-stat-card" style="background:linear-gradient(135deg, #E1F4FF, #C3E9FF); border-color:rgba(14,165,233,.28);" onclick="merchantOrderView='list'; merchantFilter='approved'; renderMerchantOrders();">
+          <div class="osc-icon" style="background:rgba(255,255,255,.8); color:#0369A1; box-shadow:0 2px 8px rgba(14,165,233,.14);">${ic('thumbsUp',22)}</div>
+          <div style="flex:1;">
+            <div class="osc-label" style="color:rgba(3,105,161,.75);">${LANG==='ar'?'تم قبول الطلب':'Accepted'}</div>
+            <div class="osc-count" style="color:#0369A1;">${counts.approved}</div>
+          </div>
+          <span style="color:#0369A1; display:flex;">${chev}</span>
         </div>
-        <div class="order-stat-card" onclick="merchantOrderView='list'; merchantFilter='courier'; renderMerchantOrders();">
-          <div class="osc-icon" style="background:var(--st-courier-tint); color:var(--st-courier);">${ic('bike',20)}</div>
-          <div class="osc-count">${counts.courier}</div>
-          <div class="osc-label">${LANG==='ar'?'بحوزة المندوب':'With Courier'}</div>
+        <div class="order-stat-card" style="background:linear-gradient(135deg, #E5EDFF, #CCDCFF); border-color:rgba(37,99,235,.28);" onclick="merchantOrderView='list'; merchantFilter='courier'; renderMerchantOrders();">
+          <div class="osc-icon" style="background:rgba(255,255,255,.8); color:#1D4ED8; box-shadow:0 2px 8px rgba(37,99,235,.14);">${ic('route',22)}</div>
+          <div style="flex:1;">
+            <div class="osc-label" style="color:rgba(29,78,216,.75);">${LANG==='ar'?'بحوزة المندوب':'With Courier'}</div>
+            <div class="osc-count" style="color:#1D4ED8;">${counts.courier}</div>
+          </div>
+          <span style="color:#1D4ED8; display:flex;">${chev}</span>
         </div>
-        <div class="order-stat-card" onclick="merchantOrderView='list'; merchantFilter='delivered'; renderMerchantOrders();">
-          <div class="osc-icon" style="background:var(--st-delivered-tint); color:var(--st-delivered);">${ic('check',20)}</div>
-          <div class="osc-count">${counts.delivered}</div>
-          <div class="osc-label">${t('filterDelivered')}</div>
+        <div class="order-stat-card" style="background:linear-gradient(135deg, #E3F8E9, #C4EFD2); border-color:rgba(22,163,74,.28);" onclick="merchantOrderView='list'; merchantFilter='delivered'; renderMerchantOrders();">
+          <div class="osc-icon" style="background:rgba(255,255,255,.8); color:#15803D; box-shadow:0 2px 8px rgba(22,163,74,.14);">${ic('checkCircle',22)}</div>
+          <div style="flex:1;">
+            <div class="osc-label" style="color:rgba(21,128,61,.75);">${t('filterDelivered')}</div>
+            <div class="osc-count" style="color:#15803D;">${counts.delivered}</div>
+          </div>
+          <span style="color:#15803D; display:flex;">${chev}</span>
         </div>
-        <div class="order-stat-card" onclick="merchantOrderView='list'; merchantFilter='returned'; renderMerchantOrders();">
-          <div class="osc-icon" style="background:var(--st-returned-tint); color:var(--st-returned);">${ic('x2',20)}</div>
-          <div class="osc-count">${counts.returned}</div>
-          <div class="osc-label">${LANG==='ar'?'راجع':'Returned'}</div>
+        <div class="order-stat-card" style="background:linear-gradient(135deg, #FFE9EA, #FFD2D5); border-color:rgba(220,38,38,.28);" onclick="merchantOrderView='list'; merchantFilter='returned'; renderMerchantOrders();">
+          <div class="osc-icon" style="background:rgba(255,255,255,.8); color:#B91C1C; box-shadow:0 2px 8px rgba(220,38,38,.14);">${ic('rotateCcw',22)}</div>
+          <div style="flex:1;">
+            <div class="osc-label" style="color:rgba(185,28,28,.75);">${LANG==='ar'?'راجع':'Returned'}</div>
+            <div class="osc-count" style="color:#B91C1C;">${counts.returned}</div>
+          </div>
+          <span style="color:#B91C1C; display:flex;">${chev}</span>
         </div>
       </div>
     `;
@@ -2116,6 +2145,7 @@ function renderCourierHome(){
   const totalReturned = stats.results.returned.length;
 
   el.innerHTML = `
+    <div class="hero-slider-wrap" id="courierHeroSlider"></div>
     <div style="padding:16px; border-radius:16px; background:linear-gradient(135deg, var(--primary-strong), var(--primary)); color:#fff; margin-bottom:16px; position:relative; overflow:hidden;">
       <div style="position:absolute; top:-20px; right:-20px; width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,.1);"></div>
       <div style="position:relative; z-index:1;">
@@ -2134,6 +2164,7 @@ function renderCourierHome(){
     <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--ink);">${LANG==='ar'?'نتائج التوصيل':'Delivery Results'}</div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;" id="courierResults"></div>
   `;
+  renderHeroSlider('courierHeroSlider', COURIER_HERO_SLIDES);
 
   const newOrdersEl = document.getElementById('courierNewOrders');
   newOrdersEl.innerHTML = stats.newOrders.length ? stats.newOrders.map(o=>{
@@ -3264,14 +3295,58 @@ document.querySelectorAll('#screenStart [data-role]').forEach(b=>{
 document.querySelectorAll('.js-lang-ar').forEach(b=> b.addEventListener('click', ()=>setLang('ar')));
 document.querySelectorAll('.js-lang-en').forEach(b=> b.addEventListener('click', ()=>setLang('en')));
 document.querySelectorAll('.js-theme-toggle').forEach(b=> b.addEventListener('click', ()=> setTheme(THEME==='light'?'dark':'light')));
-document.querySelector('.install-banner button').addEventListener('click', ()=>{
+let deferredInstallPrompt = null;
+
+function hideInstallBanner(){
+  const b = document.querySelector('.install-banner');
+  if(b) b.style.display = 'none';
+}
+function showInstallBanner(){
+  const b = document.querySelector('.install-banner');
+  if(!b) return;
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  b.style.display = standalone ? 'none' : 'flex';
+}
+
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  showInstallBanner();
+});
+
+window.addEventListener('appinstalled', ()=>{
+  deferredInstallPrompt = null;
+  hideInstallBanner();
+});
+
+document.querySelector('.install-banner button').addEventListener('click', async ()=>{
   const banner = document.querySelector('.install-banner');
-  banner.innerHTML = `<div style="text-align:center; width:100%; font-size:11px; font-weight:800; padding:4px 0;">${LANG==='ar'?'تم التثبيت ✓ (محاكاة)':'Installed ✓ (simulated)'}</div>`;
+  if(deferredInstallPrompt){
+    deferredInstallPrompt.prompt();
+    const choice = await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    if(choice && choice.outcome === 'accepted'){
+      banner.innerHTML = `<div style="text-align:center; width:100%; font-size:11px; font-weight:800; padding:4px 0; color:#4ADE80;">${LANG==='ar'?'✓ تم تثبيت التطبيق':'✓ App installed'}</div>`;
+    } else {
+      banner.innerHTML = `<div style="text-align:center; width:100%; font-size:11px; font-weight:800; padding:4px 0;">${LANG==='ar'?'تم الإلغاء':'Installation cancelled'}</div>`;
+    }
+    return;
+  }
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if(standalone){
+    banner.innerHTML = `<div style="text-align:center; width:100%; font-size:11px; font-weight:800; padding:4px 0;">${LANG==='ar'?'✓ التطبيق مثبّت بالفعل':'✓ App already installed'}</div>`;
+    return;
+  }
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  banner.innerHTML = isIOS
+    ? `<div style="text-align:center; width:100%; font-size:11px; font-weight:700; line-height:1.7; padding:4px 0;">${LANG==='ar'?'على آيفون: اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية»':'On iPhone: tap the Share button, then \"Add to Home Screen\"'}</div>`
+    : `<div style="text-align:center; width:100%; font-size:11px; font-weight:700; line-height:1.7; padding:4px 0;">${LANG==='ar'?'التثبيت غير متاح الآن — استخدم خيار التثبيت في قائمة المتصفح':'Install is not available right now — use your browser\'s install option'}</div>`;
 });
 
 /* ================= INIT ================= */
 setLang('ar');
 setTheme('light');
+showInstallBanner();
 
 /* Restore session from localStorage */
 (function(){
