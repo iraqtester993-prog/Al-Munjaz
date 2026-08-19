@@ -2151,7 +2151,11 @@ function renderTabs(){
     </button>`;
   }).join('');
   wrap.querySelectorAll('[data-tab]').forEach(b=>{
-    b.addEventListener('click', ()=>{ TAB=b.dataset.tab; activeChat=null; subPage=null; renderTabs(); renderTab(); });
+    b.addEventListener('click', ()=>{
+      // A navigation change should never leave a sheet from the previous view open.
+      closeSheet();
+      TAB=b.dataset.tab; activeChat=null; subPage=null; renderTabs(); renderTab();
+    });
   });
 }
 
