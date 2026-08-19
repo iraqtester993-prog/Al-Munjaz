@@ -200,6 +200,8 @@ svg{display:block; flex-shrink:0;}
 .notif-badge{position:absolute; top:-4px; inset-inline-end:-4px; min-width:16px; height:16px; border-radius:20px; background:var(--st-returned); color:#fff; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0 4px; border:1.5px solid var(--surface); box-sizing:border-box;}
 @keyframes bobY{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
 .bob-anim{animation:bobY 1.6s ease-in-out infinite;}
+@keyframes fadeSlideOut{from{opacity:1;transform:translateY(0);max-height:200px}to{opacity:0;transform:translateY(-10px);max-height:0;padding:0;margin:0;overflow:hidden}}
+.expiry-card.expiring{animation:fadeSlideOut .5s ease forwards; pointer-events:none;}
 .tb-title{font-size:15.5px; font-weight:800; flex:1;}
 .tb-sub{font-size:10.5px; color:var(--ink-faint); font-weight:700;}
 
@@ -330,8 +332,11 @@ svg{display:block; flex-shrink:0;}
 .tx-amt{font-size:12.5px; font-weight:800; font-variant-numeric:tabular-nums; flex:none;}
 
 /* ---- Chat ---- */
-.chat-row{display:flex; align-items:center; gap:11px; padding:13px 14px; border-bottom:1px solid var(--border);}
+.chat-row{display:flex; align-items:center; gap:11px; padding:13px 14px; border-bottom:1px solid var(--border); cursor:pointer; transition:background .15s;}
+.chat-row:hover{background:var(--surface-2);}
 .chat-row:last-child{border-bottom:none;}
+.chat-tab{flex:1; padding:10px 0; border-radius:12px; border:none; font-size:13px; font-weight:800; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:6px;}
+.chat-tab:hover{opacity:.85; transform:translateY(-1px);}
 .chat-avatar{width:42px; height:42px; border-radius:50%; background:var(--primary-tint); color:var(--primary-strong); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; flex:none;}
 .chat-mid{flex:1; min-width:0;}
 .chat-mid b{font-size:12.5px; font-weight:800; display:block;}
@@ -1197,23 +1202,23 @@ const ALT_STATUSES = [
 const ALT_ORDER_STATUSES = ['pending','approved','courier','delivered','returned'];
 
 const MERCHANT_ORDERS = [
-  {track:'IQ-204871', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, phone:'07701234567', phone2:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:42000, notes:{ar:'الباب الخلفي',en:'Back door'}, status:'pending', date:'2026-08-10', courier:null},
-  {track:'IQ-204879', customer:{ar:'كرم عادل',en:'Karam Adel'}, phone:'07705551234', phone2:'', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}, orderType:{ar:'طلب سريع',en:'Express Order'}, price:28000, notes:'', status:'approved', date:'2026-08-11', courier:{ar:'محمد علي',en:'Mohammed Ali', phone:'07701112233'}},
-  {track:'IQ-204880', customer:{ar:'هدى نعيم',en:'Huda Naeem'}, phone:'07708889999', phone2:'07701112233', address:{ar:'البصرة — الحزام الأخضر',en:'Basra — Green Belt'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, price:21000, notes:{ar:'يتصل قبل الوصول',en:'Call before arrival'}, status:'courier', date:'2026-08-08', courier:{ar:'أحمد كريم',en:'Ahmed Kareem', phone:'07704445566'}},
-  {track:'IQ-204881', customer:{ar:'باسم غالب',en:'Bassem Ghalib'}, phone:'07704445566', phone2:'', address:{ar:'أربيل — شارع 60 متر',en:'Erbil — 60m Street'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:50000, notes:'', status:'returned', date:'2026-08-05', courier:{ar:'عمر حسن',en:'Omar Hassan', phone:'07707778899'}},
-  {track:'IQ-204862', customer:{ar:'ميساء طه',en:'Maysaa Taha'}, phone:'07707778899', phone2:'07703334455', address:{ar:'النجف — الحيدرية',en:'Najaf — Al-Haydariya'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:33000, notes:{ar:'عميل VIP',en:'VIP customer'}, status:'delivered', date:'2026-08-12', courier:{ar:'سعيد محمود',en:'Saeed Mahmoud', phone:'07702223344'}},
-  {track:'IQ-204890', customer:{ar:'نور حسين',en:'Noor Hussein'}, phone:'07702223344', phone2:'', address:{ar:'كربلاء — الحسينية',en:'Karbala — Husseiniya'}, orderType:{ar:'طلب سريع',en:'Express'}, price:15000, notes:'', status:'courier', date:'2026-08-09', courier:{ar:'خالد ياسر',en:'Khalid Yasser', phone:'07705551234'}},
-  {track:'IQ-204891', customer:{ar:'عمر فاطمة',en:'Omar Fatima'}, phone:'07706667788', phone2:'07709990011', address:{ar:'الموصل — التحرير',en:'Mosul — Al-Tahrir'}, orderType:{ar:'طلب عادي',en:'Normal'}, price:37000, notes:'', status:'delivered', date:'2026-08-01', courier:{ar:'حسين جلال',en:'Hussein Jalal', phone:'07708889999'}},
-  {track:'IQ-204892', customer:{ar:'سارة أحمد',en:'Sara Ahmed'}, phone:'07704445566', phone2:'', address:{ar:'البصرة — العشار',en:'Basra — Al-Ashar'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, price:48000, notes:{ar:'يوجد خصم',en:'Discount applied'}, status:'pending', date:'2026-07-28', courier:null},
+  {track:'IQ-204871', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, phone:'07701234567', phone2:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:42000, notes:{ar:'الباب الخلفي',en:'Back door'}, status:'pending', date:'2026-08-10', time:'09:15', courier:null},
+  {track:'IQ-204879', customer:{ar:'كرم عادل',en:'Karam Adel'}, phone:'07705551234', phone2:'', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}, orderType:{ar:'طلب سريع',en:'Express Order'}, price:28000, notes:'', status:'approved', date:'2026-08-11', time:'10:30', courier:{ar:'محمد علي',en:'Mohammed Ali', phone:'07701112233'}},
+  {track:'IQ-204880', customer:{ar:'هدى نعيم',en:'Huda Naeem'}, phone:'07708889999', phone2:'07701112233', address:{ar:'البصرة — الحزام الأخضر',en:'Basra — Green Belt'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, price:21000, notes:{ar:'يتصل قبل الوصول',en:'Call before arrival'}, status:'courier', date:'2026-08-08', time:'11:00', courier:{ar:'أحمد كريم',en:'Ahmed Kareem', phone:'07704445566'}},
+  {track:'IQ-204881', customer:{ar:'باسم غالب',en:'Bassem Ghalib'}, phone:'07704445566', phone2:'', address:{ar:'أربيل — شارع 60 متر',en:'Erbil — 60m Street'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:50000, notes:'', status:'returned', date:'2026-08-05', time:'14:20', courier:{ar:'عمر حسن',en:'Omar Hassan', phone:'07707778899'}},
+  {track:'IQ-204862', customer:{ar:'ميساء طه',en:'Maysaa Taha'}, phone:'07707778899', phone2:'07703334455', address:{ar:'النجف — الحيدرية',en:'Najaf — Al-Haydariya'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:33000, notes:{ar:'عميل VIP',en:'VIP customer'}, status:'delivered', date:'2026-08-12', time:'08:45', courier:{ar:'سعيد محمود',en:'Saeed Mahmoud', phone:'07702223344'}},
+  {track:'IQ-204890', customer:{ar:'نور حسين',en:'Noor Hussein'}, phone:'07702223344', phone2:'', address:{ar:'كربلاء — الحسينية',en:'Karbala — Husseiniya'}, orderType:{ar:'طلب سريع',en:'Express'}, price:15000, notes:'', status:'courier', date:'2026-08-09', time:'13:10', courier:{ar:'خالد ياسر',en:'Khalid Yasser', phone:'07705551234'}},
+  {track:'IQ-204891', customer:{ar:'عمر فاطمة',en:'Omar Fatima'}, phone:'07706667788', phone2:'07709990011', address:{ar:'الموصل — التحرير',en:'Mosul — Al-Tahrir'}, orderType:{ar:'طلب عادي',en:'Normal'}, price:37000, notes:'', status:'delivered', date:'2026-08-01', time:'09:00', courier:{ar:'حسين جلال',en:'Hussein Jalal', phone:'07708889999'}},
+  {track:'IQ-204892', customer:{ar:'سارة أحمد',en:'Sara Ahmed'}, phone:'07704445566', phone2:'', address:{ar:'البصرة — العشار',en:'Basra — Al-Ashar'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, price:48000, notes:{ar:'يوجد خصم',en:'Discount applied'}, status:'pending', date:'2026-07-28', time:'15:30', courier:null},
 ];
 
 const COURIER_DELIVERIES = [
-  {track:'IQ-204873', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, phone:'07701234567', address:{ar:'الكرادة — شارع 60',en:'Karrada — 60m Street'}, price:64000, fee:2500, status:'pending', date:'2026-08-12', merchant:{ar:'متجر النور',en:'Al-Noor Store', phone:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}}},
-  {track:'IQ-204877', customer:{ar:'مروان طارق',en:'Marwan Tariq'}, phone:'07705551234', address:{ar:'الجادرية —شارع 40',en:'Jadriya — 40m Street'}, price:29800, fee:2200, status:'approved', date:'2026-08-12', merchant:{ar:'عالم الإلكترونيات',en:'Electronics World', phone:'07703334455', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}}},
-  {track:'IQ-204882', customer:{ar:'رنا فؤاد',en:'Rana Fouad'}, phone:'07708889999', address:{ar:'المنصور — zona 609',en:'Mansour — Zone 609'}, price:41500, fee:2300, status:'courier', date:'2026-08-11', merchant:{ar:'سوق الجملة',en:'Wholesale Market', phone:'07701112233', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}}},
-  {track:'IQ-204885', customer:{ar:'سيف كامل',en:'Saif Kamel'}, phone:'07704445566', address:{ar:'زيونة —شارع الحسين',en:'Zayouna — Hussain Street'}, price:18000, fee:2000, status:'delivered', date:'2026-08-10', merchant:{ar:'متجر النور',en:'Al-Noor Store', phone:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}}},
-  {track:'IQ-204890', customer:{ar:'نور حسين',en:'Noor Hussein'}, phone:'07702223344', address:{ar:'الكرادة — فيلا 12',en:'Karrada — Villa 12'}, price:52000, fee:2500, status:'returned', date:'2026-08-09', merchant:{ar:'عالم الإلكترونيات',en:'Electronics World', phone:'07703334455', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}}},
-  {track:'IQ-204895', customer:{ar:'عمار حسين',en:'Ammar Hussein'}, phone:'07707778899', address:{ar:'الكاظمية —شارع?',en:'Kadhimiya — Main St'}, price:35000, fee:2200, status:'pending', date:'2026-08-12', merchant:{ar:'سوق الجملة',en:'Wholesale Market', phone:'07701112233', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}}},
+  {track:'IQ-204873', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, phone:'07701234567', address:{ar:'الكرادة — شارع 60',en:'Karrada — 60m Street'}, price:64000, fee:2500, status:'pending', date:'2026-08-19', time:'13:05', createdAt: new Date(Date.now()-4*60000).toISOString(), pickupDeadline: new Date(Date.now()+18*60000).toISOString(), merchant:{ar:'متجر النور',en:'Al-Noor Store', phone:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}}},
+  {track:'IQ-204877', customer:{ar:'مروان طارق',en:'Marwan Tariq'}, phone:'07705551234', address:{ar:'الجادرية —شارع 40',en:'Jadriya — 40m Street'}, price:29800, fee:2200, status:'approved', date:'2026-08-19', time:'10:30', createdAt:'2026-08-19T10:30:00', pickupDeadline:new Date(Date.now()+25*60000).toISOString(), merchant:{ar:'عالم الإلكترونيات',en:'Electronics World', phone:'07703334455', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}}},
+  {track:'IQ-204882', customer:{ar:'رنا فؤاد',en:'Rana Fouad'}, phone:'07708889999', address:{ar:'المنصور — zona 609',en:'Mansour — Zone 609'}, price:41500, fee:2300, status:'courier', date:'2026-08-19', time:'11:15', createdAt:'2026-08-19T11:15:00', merchant:{ar:'سوق الجملة',en:'Wholesale Market', phone:'07701112233', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}}},
+  {track:'IQ-204885', customer:{ar:'سيف كامل',en:'Saif Kamel'}, phone:'07704445566', address:{ar:'زيونة —شارع الحسين',en:'Zayouna — Hussain Street'}, price:18000, fee:2000, status:'delivered', date:'2026-08-19', time:'14:00', createdAt:'2026-08-19T14:00:00', pickupDeadline:null, merchant:{ar:'متجر النور',en:'Al-Noor Store', phone:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}}},
+  {track:'IQ-204890', customer:{ar:'نور حسين',en:'Noor Hussein'}, phone:'07702223344', address:{ar:'الكرادة — فيلا 12',en:'Karrada — Villa 12'}, price:52000, fee:2500, status:'returned', date:'2026-08-19', time:'08:20', createdAt:'2026-08-19T08:20:00', pickupDeadline:null, merchant:{ar:'عالم الإلكترونيات',en:'Electronics World', phone:'07703334455', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}}},
+  {track:'IQ-204895', customer:{ar:'عمار حسين',en:'Ammar Hussein'}, phone:'07707778899', address:{ar:'الكاظمية —شارع?',en:'Kadhimiya — Main St'}, price:35000, fee:2200, status:'pending', date:'2026-08-19', time:'12:45', createdAt: new Date(Date.now()-12*60000).toISOString(), pickupDeadline: new Date(Date.now()+22*60000).toISOString(), merchant:{ar:'سوق الجملة',en:'Wholesale Market', phone:'07701112233', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}}},
 ];
 
 const MERCHANT_PROVINCES = [
@@ -1333,34 +1338,100 @@ function renderHeroSlider(containerId, slides){
   heroSliderTimer = setInterval(()=> goTo(idx+1), 2000);
 }
 
-const MERCHANT_CHATS = [
-  {id:'support', name:{ar:'الدعم الفني',en:'Support Team'}, last:{ar:'تم استلام طلبك، سنرد خلال دقائق',en:'Your request was received, we will reply shortly'}, time:'10:24', unread:2,
+const PLATFORM_KEY = 'masar_platform_data';
+function readJSON(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
+
+const DEFAULT_CHATS = [
+  {id:'admin_merchant', participants:['admin','merchant'], name:{ar:'الإدارة',en:'Management'}, last:{ar:'تم قبول طلب الشحن، سيتم الإضافة خلال دقائق',en:'Recharge approved, will be added shortly'}, time:'10:24', unread:3,
     messages:[
-      {from:'them', text:{ar:'مرحباً، كيف نقدر نساعدك اليوم؟',en:'Hello, how can we help you today?'}, time:'09:50'},
-      {from:'me', text:{ar:'أريد الاستفسار عن الطلب IQ-204871',en:'I want to ask about order IQ-204871'}, time:'09:52'},
-      {from:'them', text:{ar:'الطلب حالياً قيد النقل بين الفروع، وسيصل خلال ساعتين تقريباً',en:'The order is currently in transit between branches, arriving in about two hours'}, time:'09:55'},
-      {from:'them', text:{ar:'هل يوجد أي شيء آخر؟',en:'Is there anything else you need?'}, time:'09:55'},
+      {from:'admin', text:{ar:'مرحباً، كيف نقدر نساعدك اليوم؟',en:'Hello, how can we help you today?'}, time:'09:50'},
+      {from:'merchant', text:{ar:'أريد الاستفسار عن الطلب IQ-204871',en:'I want to ask about order IQ-204871'}, time:'09:52'},
+      {from:'admin', text:{ar:'الطلب حالياً قيد النقل بين الفروع، وسيصل خلال ساعتين تقريباً',en:'The order is currently in transit, arriving in about two hours'}, time:'09:55'},
+      {from:'admin', text:{ar:'هل تحتاج أي شيء آخر؟',en:'Do you need anything else?'}, time:'09:56'},
+      {from:'merchant', text:{ar:'نعم، أريد شحن رصيد المحفظة',en:'Yes, I want to recharge my wallet'}, time:'10:00'},
+      {from:'admin', text:{ar:'تم قبول طلب الشحن، سيتم الإضافة خلال دقائق',en:'Recharge approved, will be added shortly'}, time:'10:24'},
     ]},
-  {id:'branch', name:{ar:'مدير فرع بغداد',en:'Baghdad Branch Manager'}, last:{ar:'تم تأكيد استلام الشحنة',en:'Shipment receipt confirmed'}, time:'أمس', unread:0,
+  {id:'admin_courier', participants:['admin','courier'], name:{ar:'الإدارة',en:'Management'}, last:{ar:'تم احتساب العمولة، مبروك!',en:'Commission calculated, congrats!'}, time:'11:30', unread:2,
     messages:[
-      {from:'me', text:{ar:'هل وصلت شحنة اليوم لفرعكم؟',en:'Did today\'s shipment reach your branch?'}, time:'أمس 16:10'},
-      {from:'them', text:{ar:'نعم، تم استلامها وجاري الفرز',en:'Yes, received and sorting now'}, time:'أمس 16:22'},
+      {from:'admin', text:{ar:'صباح الخير، عندك 4 طلبات اليوم بمنطقتك',en:'Good morning, you have 4 orders today in your area'}, time:'08:30'},
+      {from:'courier', text:{ar:'تمام، بدأت فيهم',en:'Got it, starting now'}, time:'08:31'},
+      {from:'admin', text:{ar:'وصلك طلب جديد بمنطقة الكرادة',en:'A new order was assigned to you in Karrada'}, time:'11:02'},
+      {from:'admin', text:{ar:'أحسنت على التسليم المبكر!',en:'Great job on the early delivery!'}, time:'11:15'},
+      {from:'admin', text:{ar:'تم احتساب العمولة، مبروك!',en:'Commission calculated, congrats!'}, time:'11:30'},
+    ]},
+  {id:'order_IQ-204871', participants:['merchant','courier'], name:{ar:'متجر النور — أحمد كريم',en:'Al-Noor — Ahmad Karim'}, last:{ar:'هل يمكنك تسليم الطلب خلال ساعة؟',en:'Can you deliver within an hour?'}, time:'10:50', unread:2,
+    merchantId:'merchant_1', courierId:'courier_1',
+    messages:[
+      {from:'courier', text:{ar:'مرحباً، وصلت للعنوان المطلوب',en:'Hello, I arrived at the address'}, time:'10:10'},
+      {from:'merchant', text:{ar:'ممتاز، هل العميل متاح؟',en:'Great, is the customer available?'}, time:'10:12'},
+      {from:'courier', text:{ar:'العميل في الطريق، سأنتظره',en:'Customer is on his way, I will wait'}, time:'10:15'},
+      {from:'merchant', text:{ar:'حسناً، أبلغني بالتحديث',en:'Okay, keep me updated'}, time:'10:18'},
+      {from:'courier', text:{ar:'تم التسليم بنجاح! العميل سعيد',en:'Delivered successfully! Customer is happy'}, time:'10:40'},
+      {from:'merchant', text:{ar:'رائع! شكراً على سرعة التسليم',en:'Awesome! Thanks for the quick delivery'}, time:'10:42'},
+      {from:'merchant', text:{ar:'هل يمكنك تسليم الطلب خلال ساعة؟',en:'Can you deliver within an hour?'}, time:'10:50'},
+    ]},
+  {id:'order_IQ-204890', participants:['merchant','courier'], name:{ar:'متجر النور — سعيد محمد',en:'Al-Noor — Saeed Mohamed'}, last:{ar:'سأرسل صورة الموقع الجديد',en:'I will send the new location photo'}, time:'09:35', unread:3,
+    merchantId:'merchant_1', courierId:'courier_1',
+    messages:[
+      {from:'courier', text:{ar:'السلام عليكم، الطلب وصل العنوان لكن لا أحد موجود',en:'Hello, order reached the address but nobody is there'}, time:'09:00'},
+      {from:'merchant', text:{ar:'هل جربت الاتصال بالعميل؟',en:'Did you try calling the customer?'}, time:'09:05'},
+      {from:'courier', text:{ar:'نعم، الرقم لا يجيب',en:'Yes, the number is not responding'}, time:'09:10'},
+      {from:'merchant', text:{ar:'سأحاول الاتصال من طرفي، انتظر لدقيقة',en:'I will try calling from my side, wait a minute'}, time:'09:12'},
+      {from:'merchant', text:{ar:'العميل يقول العنوان غلط، عنوانه الحقيقي الكرادة شارع 42',en:'Customer says wrong address, his real address is Karrada St 42'}, time:'09:20'},
+      {from:'courier', text:{ar:'تمام، رح أروح لهلاك',en:'Ok, I will go there now'}, time:'09:25'},
+      {from:'merchant', text:{ar:'سأرسل صورة الموقع الجديد',en:'I will send the new location photo'}, time:'09:35'},
+    ]},
+  {id:'order_IQ-204915', participants:['merchant','courier'], name:{ar:'متجر النور — علي حسين',en:'Al-Noor — Ali Hussein'}, last:{ar:'تم التسليم بنجاح، شكراً لك',en:'Delivered, thank you'}, time:'أمس', unread:0,
+    merchantId:'merchant_1', courierId:'courier_1',
+    messages:[
+      {from:'courier', text:{ar:'أهلاً، أنا في طريق للعنوان',en:'Hi, I am on my way to the address'}, time:'أمس 15:00'},
+      {from:'merchant', text:{ar:'تمام، الطلب جاهز للاستلام',en:'Perfect, order is ready for pickup'}, time:'أمس 15:02'},
+      {from:'courier', text:{ar:'وصلت واستلمت الطلب',en:'Arrived and picked up the order'}, time:'أمس 15:20'},
+      {from:'merchant', text:{ar:'ممتاز، يارب التسليم يسير على خير',en:'Great, hope delivery goes well'}, time:'أمس 15:22'},
+      {from:'courier', text:{ar:'تم التسليم بنجاح، شكراً لك',en:'Delivered, thank you'}, time:'أمس 16:05'},
     ]},
 ];
 
-const COURIER_CHATS = [
-  {id:'dispatch', name:{ar:'مسؤول العمليات',en:'Dispatch Officer'}, last:{ar:'وصلك طلب جديد بمنطقة الكرادة',en:'A new order was assigned to you in Karrada'}, time:'11:02', unread:1,
-    messages:[
-      {from:'them', text:{ar:'صباح الخير، عندك 4 طلبات اليوم بمنطقتك',en:'Good morning, you have 4 orders today in your area'}, time:'08:30'},
-      {from:'me', text:{ar:'تمام، بدأت فيهم',en:'Got it, starting now'}, time:'08:31'},
-      {from:'them', text:{ar:'وصلك طلب جديد بمنطقة الكرادة',en:'A new order was assigned to you in Karrada'}, time:'11:02'},
-    ]},
-  {id:'branch', name:{ar:'مدير فرع بغداد',en:'Baghdad Branch Manager'}, last:{ar:'الرجاء تسليم النقدية قبل الساعة 6',en:'Please hand over the cash before 6 PM'}, time:'أمس', unread:0,
-    messages:[
-      {from:'them', text:{ar:'الرجاء تسليم النقدية قبل الساعة 6',en:'Please hand over the cash before 6 PM'}, time:'أمس 14:00'},
-      {from:'me', text:{ar:'حاضر، بوصل خلال ساعة',en:'Sure, I will arrive within an hour'}, time:'أمس 14:05'},
-    ]},
-];
+function getAllChats(){
+  const raw = readJSON(PLATFORM_KEY);
+  console.log('getAllChats raw:', raw);
+  console.log('getAllChats raw.chats:', raw && raw.chats);
+  if(raw && Array.isArray(raw.chats) && raw.chats.length && raw.chats[0] && raw.chats[0].participants){
+    console.log('Using stored chats:', raw.chats.length);
+    return raw.chats;
+  }
+  console.log('Using DEFAULT_CHATS');
+  localStorage.setItem(PLATFORM_KEY, JSON.stringify({...raw, chats: DEFAULT_CHATS}));
+  return JSON.parse(JSON.stringify(DEFAULT_CHATS));
+}
+function saveAllChats(chats){
+  const raw = readJSON(PLATFORM_KEY) || {};
+  raw.chats = chats;
+  localStorage.setItem(PLATFORM_KEY, JSON.stringify(raw));
+}
+function getMyChats(){
+  const all = getAllChats();
+  return all.filter(c=>{
+    if(!c.participants) return true;
+    if(c.participants.includes('admin') && c.participants.includes(ROLE)) return true;
+    if(c.participants.includes('merchant') && c.participants.includes('courier')) return true;
+    return false;
+  });
+}
+function findChat(chatId){ return getAllChats().find(x=>x.id===chatId); }
+function sendChatMessage(chatId, from, text){
+  const chats = getAllChats();
+  const c = chats.find(x=>x.id===chatId);
+  if(!c) return;
+  c.messages.push({from, text:{ar:text,ku:text,en:text}, time:new Date().toLocaleTimeString(LANG==='ar'?'ar-IQ':LANG==='ku'?'ku-IQ':'en-US',{hour:'2-digit',minute:'2-digit'})});
+  c.last = {ar:text,ku:text,en:text};
+  c.time = c.messages[c.messages.length-1].time;
+  saveAllChats(chats);
+}
+
+/* backward compat aliases */
+const MERCHANT_CHATS = DEFAULT_CHATS;
+const COURIER_CHATS = DEFAULT_CHATS;
 
 /* ================= I18N ================= */
 const T = {
@@ -1471,6 +1542,60 @@ const T = {
     reviewTitle:'Your application is under review',
     reviewSub:'Your registration has been received successfully. Our team will review your details and you will be notified once the review is complete.',
     reviewBadge:'Under Review', reviewBack:'Back to Home',
+  },
+  ku:{
+    startTitle:'Apêşan beşên xwe bibin', startSub:'Hesabê hevkarî li ser Al-Munjaz Al-Saree, bi navçeyekî wekî beşa we.',
+    merchantApp:'Sepana Karbêran', merchantAppSub:'Daxwazên min, hesabnâmê, porsête min',
+    courierApp:'Sepana Kuryêr', courierAppSub:'Derakarînên min, bidanîn, porsête min',
+    installHint:'Al-Munjaz Al-Saree ser ekrana sêwirana xwe zêde bike ji bo gihîştina bilez û kariyê bêtorî offline', installBtn:'Sabit bike',
+    tabHome:'Sêwirana', tabOrders:'Daxwazên min', tabDeliveries:'Daxwazên min', tabWallet:'Porsêt', tabChat:'Axivistin', tabProfile:'Profîlê min',
+    greeting:'Ba xêr hatî', merchantSubName:'Dikanê Al-Noor', courierSubName:'Kuryêr — Feleha Bagdadê',
+    myOrdersToday:'Daxwazên min ê rojê', myDueBalance:'Bakiya min', deliveryRate:'Rewşa derakarînê', monthlyOrders:'Daxwazên mehê',
+    myDeliveriesToday:'Derakarînên min ê rojê', collectedToday:'Wêrgirtî rojê', onDuty:'Di awayi kare re', offDuty:'Niha ne li kare',
+    recentOrders:'Daxwazên dawî', seeAll:'Hemû binêre', newOrder:'Daxwazeke nû zêde bike',
+    filterAll:'Hemû', filterTransit:'Di rehberî de', filterOut:'Derketiye ji bo derakarînê', filterDelivered:'Wê derakiriye', filterDelayed:'Deferred',
+    walletBalance:'Bakiya niha', walletDue:'Daxwazên min ên nedarakirî', cashOnHand:'Nexdîr di dastra min de', withdraw:'Daxwaza daxistinê', handover:'Nexdîrê bifroşîne', history:'Dîrokê şewitî',
+    chatSearch:'Li axivistinên de bigere', typeMessage:'Peyamê xwe binivîse...',
+    profileTitle:'Profîlê min', settingsLang:'Ziman', settingsTheme:'Xuyang', light:'Roj', dark:'Şev',
+    settingsNotif:'Hişyariyên', settingsSupport:'Alîkariyê', settingsAbout:'Der barê sepanê de', settingsLogout:'Derkeve',
+    orderDetail:'Kûrteya daxwazê', activityLog:'Dîrokê çalakiyê', close:'Bigre',
+    actionDeliver:'Bifroşîne', actionCollect:'Bidane', actionDelay:'Deferred', actionReturn:'Vegere', actionCall:'Bang Bike',
+    withdrawTitle:'Daxwaza daxistinê', handoverTitle:'Nexdîrê bifroşîne', amountLabel:'Meblaş', noteLabel:'Têkilî (ixtiyarî)', submitRequest:'Daxwazê embodied',
+    availableBalance:'Bakiya bilez', backToApps:'Beşa guherîne', dueLabel:'IQD',
+    ob1Title:'Daxwazên xwe dem bi dem bifiroşîne', ob1Sub:'Her daxwazê binêre ku di nav felehan de diçî heta gayî bika, bi rûnamiyeke zayend û facer.',
+    ob2Title:'Porsêt û bidanînên xwe di derfetek de', ob2Sub:'Bakiya xwe binêre, daxwaza daxistinê bidaxe, û her çalakiya maldariyê binêre di dîrokêkê de.',
+    ob3Title:'Bi têkîliyê re bixwe bi tîma operasyonê axivin', ob3Sub:'Li alîkariyê yanî ferzên feleha peyam bidin, û bersivên wan di demê de binêrin.',
+    obSkip:'Derbas bike', obStart:'Dest pê bike',
+    statusDist:'Belavbûna rewşa daxwazên', weeklyOrders:'Daxwazên hefteyê', weeklyCollections:'Bidanînên hefteyê', deliveryOutcomes:'Encamên derakarînê',
+    allStatuses:'Hemû rewş', inProgressStatuses:'Di pêşveçûna de', finalStatuses:'Rewşa dawî',
+    reportsTitle:'Arşîf', archiveTotal:'Meblaşa giştî', archiveOrders:'Daxwazên arşîfî', provinceReport:'Daxwazên bo parêzgehan', ordersByProvince:'Belavbûna daxwazên bo parêzgehan',
+    totalOrdersLabel:'Cûma daxwazên', viewFullReport:'Rapora têkamûn binêre', ordersUnit:'daxwaz',
+    acctTitle:'Avêtina xwe bi kîjan re bibin', acctSub:'Hesabeke nû çê bike yanî bi hesabê mevcûdê xwe têkeve',
+    loginBtn:'Têkeve', loginBtnSub:'Hesabê min heye',
+    registerBtn:'Hesabeke nû çê bike', registerBtnSub:'Yekem car li ser Al-Munjaz Al-Saree?',
+    loginTitle:'Têkeve', loginSub:'Agahiyên xwe binivîse ji bo têkiliya hesabê xwe',
+    loginUsername:'Navê bikarhêner', loginPassword:'Gotinê şîfreyê',
+    loginUserError:'Navê bikarhêner binivîse', loginPassError:'Gotinê şîfreyê binivîse',
+    loginNoAccount:'Hesabê te niiye?', loginHaveAccount:'Hesabê te mevcûd e?',
+    loginPassWrong:'Navê bikarhêner yanî gotinê şîfreyê ne rast e',
+    regMerchantTitle:'Hesaba karbêran', regMerchantSub:'Agahiyên dikanê xwe binivîse ji bo çêkirina hesabê',
+    regMerchantName:'Navê karbêran', regShopName:'Navê dikanê / kompanî',
+    regAddress:'Navnîşan', regPhone:'Hejmara telefonê',
+    regPassword:'Gotinê şîfreyê', regPasswordConfirm:'Gotinê şîfreyê piştrast bike',
+    regPassMismatch:'Gotinên şîfreyê hev nagirin', regPassShort:'Gotinê şîfreyê kurt e (6 tîp her kam)',
+    regSubmit:'Hesabê çê bike', regPhoneExists:'Ev hejmara li qeydkirî ye',
+    regCourierTitle:'Hesaba kuryêr', regCourierSub:'Agahiyên şexsî û midia derakarînê xwe binivîse',
+    regCourierName:'Navê kuryêr', regVehicle:'Cîhaza derakarînê', regVehicleChoose:'Cîhazê hilbijêre', regVehSedan:'Otomobil', regVehSuv:'SUV', regVehTruck:'Otomobila barrî', regVehBike:'Motorsîkel',
+    regResidenceCard:'Kartên rawestanê', regNationalID:'Karta Nasyonel', regDrivingLicense:'Destkira şoforî',
+    regUploadResidence:'Girtîye ji bo barkirina karta rawestanê',
+    regUploadFront:'Pêşve', regUploadBack:'Paşve',
+    regUploadTap:'Girtîye ji bo barkirinê', regUploaded:'Barkirî ✓',
+    otpTitle:'Pêşkîşina telefona', otpSub:'Koda 6 hejmaran li',
+    otpVerify:'Koda piştrast bike', otpWrong:'Koda ne rast e, dîsa biceribîne',
+    otpResend:'Kod ne hatiye wergirtin?', otpResendBtn:'Dîsa bişîne',
+    reviewTitle:'Daxwaza te di nav nazarê de',
+    reviewSub:'Daxwaza qeydkirina te bi serbestî hat. Tîma me agahiyên te dîtine û tu hişyarkerê dibî heta nazarê temam bibe.',
+    reviewBadge:'Di nazarê de', reviewBack:'Vegere sêwirana',
   }
 };
 
@@ -1478,6 +1603,7 @@ let LANG='ar', THEME='light', ROLE='merchant', TAB='home', activeChat=null, AUTH
 
 function t(k){ return T[LANG][k] || k; }
 function nm(o){ return o[LANG] || o.ar; }
+function l(ar,ku,en){ return LANG==='ku'?(ku||ar):LANG==='en'?en:ar; }
 function fmt(n){ return Math.abs(n).toLocaleString('en-US'); }
 
 const TABS = {
@@ -1507,7 +1633,7 @@ function applyI18n(){
 function setLang(lang){
   LANG = lang;
   document.documentElement.lang = lang;
-  document.documentElement.dir = lang==='ar' ? 'rtl' : 'ltr';
+  document.documentElement.dir = (lang==='ar'||lang==='ku') ? 'rtl' : 'ltr';
   document.querySelectorAll('.js-lang-ar').forEach(b=>b.classList.toggle('active', lang==='ar'));
   document.querySelectorAll('.js-lang-en').forEach(b=>b.classList.toggle('active', lang==='en'));
   applyI18n();
@@ -1571,7 +1697,7 @@ function enterApp(role){
   const roleLabel = document.getElementById('loginRoleLabel');
   const roleIcon = document.getElementById('loginRoleIcon');
   if(roleLabel){
-    roleLabel.textContent = role==='merchant' ? (LANG==='ar'?'تطبيق التاجر':'Merchant App') : (LANG==='ar'?'تطبيق المندوب':'Courier App');
+    roleLabel.textContent = role==='merchant' ? l('تطبيق التاجر','Sepana Karbêran','Merchant App') : l('تطبيق المندوب','Sepana Kuryêr','Courier App');
   }
   if(roleIcon){
     if(role==='merchant'){
@@ -1635,7 +1761,7 @@ let APP_NOTIFS = [];
 })();
 function saveNotifs(){ try{ localStorage.setItem('masar_notifs', JSON.stringify(APP_NOTIFS)); }catch(e){} }
 function pushNotif(role, icon, title, body){
-  APP_NOTIFS.unshift({id:Date.now()+Math.floor(Math.random()*9999), role, icon, title, body, time:LANG==='ar'?'الآن':'Now', read:false});
+  APP_NOTIFS.unshift({id:Date.now()+Math.floor(Math.random()*9999), role, icon, title, body, time:l('الآن','Niha','Now'), read:false});
   saveNotifs();
   updateNotifBadge();
 }
@@ -1662,8 +1788,8 @@ function openNotificationsSheet(){
   const iconMap = {box:'box', truck:'truck', check:'check', bike:'bike', shield:'shield', wallet:'wallet', x2:'x2', chat:'chat', bell:'bell', clock:'clock'};
   openSheet(`
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
-      <div style="font-weight:800; font-size:14.5px;">${LANG==='ar'?'الإشعارات':'Notifications'}</div>
-      <span style="font-size:10.5px; color:var(--ink-soft); font-weight:700;">${list.length} ${LANG==='ar'?'إشعار':'notifs'}</span>
+      <div style="font-weight:800; font-size:14.5px;">${l('الإشعارات','Hişyariyên','Notifications')}</div>
+      <span style="font-size:10.5px; color:var(--ink-soft); font-weight:700;">${list.length} ${l('إشعار','Hişyariyê','notifs')}</span>
     </div>
     ${list.length ? list.map(n=>`
       <div style="display:flex; gap:11px; padding:13px; border-radius:13px; background:${n.read?'var(--surface)':'var(--primary-tint)'}; border:1px solid var(--border); margin-bottom:9px; align-items:flex-start;">
@@ -1674,7 +1800,7 @@ function openNotificationsSheet(){
           <div style="font-size:9.5px; color:var(--ink-faint); margin-top:4px;">${n.time}</div>
         </div>
         ${n.read?'':'<span style="width:8px; height:8px; border-radius:50%; background:var(--primary); flex:none; margin-top:4px;"></span>'}
-      </div>`).join('') : `<div style="padding:30px 0; text-align:center; color:var(--ink-faint); font-size:12px;">${LANG==='ar'?'لا توجد إشعارات':'No notifications'}</div>`}
+      </div>`).join('') : `<div style="padding:30px 0; text-align:center; color:var(--ink-faint); font-size:12px;">${l('لا توجد إشعارات','Niha hişyariyek niiye','No notifications')}</div>`}
     <button class="btn btn-ghost" style="width:100%; margin-top:12px;" onclick="closeSheet()">${t('close')}</button>
   `);
   list.forEach(n=>{ n.read = true; });
@@ -1684,9 +1810,10 @@ function openNotificationsSheet(){
 document.getElementById('btnNotifications').addEventListener('click', openNotificationsSheet);
 
 /* ---- Pickup countdown (time to reach merchant) ---- */
-const PICKUP_DEADLINE_MS = 3600000; // ساعة واحدة — يُعدَّل لاحقاً
+const PICKUP_DEADLINE_MS_DEFAULT = 30*60000; // 30 دقيقة افتراضي
+function getPickupDeadlineMs(){ return (parseInt(localStorage.getItem('pickupMinutes')||'30',10))*60000; }
 function ensurePickupDeadline(d){
-  if(d.status==='approved' && !d.pickupDeadline) d.pickupDeadline = Date.now() + PICKUP_DEADLINE_MS;
+  if(d.status==='approved' && !d.pickupDeadline) d.pickupDeadline = Date.now() + getPickupDeadlineMs();
 }
 function pickupTimerCard(d){
   if(d.status!=='approved') return '';
@@ -1695,7 +1822,7 @@ function pickupTimerCard(d){
     <div style="margin-top:12px; padding:14px; border-radius:14px; background:var(--warning-tint); border:1.5px solid color-mix(in srgb, var(--warning) 30%, transparent);">
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
         ${ic('clock',15)}
-        <div style="font-size:12px; font-weight:800; color:var(--ink);">${LANG==='ar'?'الوقت المحدد للوصول إلى التاجر':'Time to reach the merchant'}</div>
+        <div style="font-size:12px; font-weight:800; color:var(--ink);">${l('الوقت المحدد للوصول إلى التاجر','Demê daxwazkirî ji bo gihiştina karbêranê','Time to reach the merchant')}</div>
       </div>
       <div class="pickup-timer mono" data-deadline="${d.pickupDeadline}" style="font-size:24px; font-weight:900; color:var(--warning); letter-spacing:1px; text-align:center; line-height:1.2;"></div>
     </div>`;
@@ -1703,7 +1830,7 @@ function pickupTimerCard(d){
 function pickupTimerLine(d){
   if(d.status!=='approved') return '';
   ensurePickupDeadline(d);
-  return `<div style="display:flex; align-items:center; gap:5px; font-size:10.5px; font-weight:800; color:var(--warning); margin-top:6px;">${ic('clock',11)} ${LANG==='ar'?'الوقت المتبقي':'Time left'}: <b class="pickup-timer mono" data-deadline="${d.pickupDeadline}" style="font-size:11px;"></b></div>`;
+  return `<div style="display:flex; align-items:center; gap:5px; font-size:10.5px; font-weight:800; color:var(--warning); margin-top:6px;">${ic('clock',11)} ${l('الوقت المتبقي','Demê maye','Time left')}: <b class="pickup-timer mono" data-deadline="${d.pickupDeadline}" style="font-size:11px;"></b></div>`;
 }
 let courierTickerStarted = false;
 function startCourierTimerTicker(){
@@ -1713,7 +1840,7 @@ function startCourierTimerTicker(){
     document.querySelectorAll('.pickup-timer').forEach(el=>{
       const rem = parseInt(el.dataset.deadline||'0', 10) - Date.now();
       if(rem<=0){
-        el.innerHTML = `<span style="color:var(--danger); font-size:13px;">${LANG==='ar'?'انتهى الوقت':'Time expired'}</span>`;
+        el.innerHTML = `<span style="color:var(--danger); font-size:13px;">${l('انتهى الوقت','Dem dawiya','Time expired')}</span>`;
         return;
       }
       const pad = n=> String(n).padStart(2,'0');
@@ -1721,6 +1848,12 @@ function startCourierTimerTicker(){
       const m = Math.floor(rem%3600000/60000);
       const s = Math.floor(rem%60000/1000);
       el.innerHTML = `${pad(h)}:${pad(m)}:${pad(s)}`;
+    });
+    document.querySelectorAll('.pickup-bar').forEach(bar=>{
+      const rem = parseInt(bar.dataset.deadline||'0', 10) - Date.now();
+      const pct = Math.max(0, Math.min(100, (rem/(30*60000))*100));
+      bar.style.width = pct+'%';
+      bar.style.background = pct>50?'var(--success)':pct>20?'var(--warning)':'var(--danger)';
     });
   },1000);
 }
@@ -1844,7 +1977,7 @@ document.getElementById('authBackFromOTP').addEventListener('click', ()=>{
 document.getElementById('btnVerifyOTP').addEventListener('click', handleVerifyOTP);
 document.getElementById('otpResendLink').addEventListener('click', ()=>{
   resetOTPInputs();
-  setAuthToast(LANG==='ar'?'تم إعادة إرسال الرمز':'Code resent');
+  setAuthToast(l('تم إعادة إرسال الرمز','Koda hatiye dîsa bişîne','Code resent'));
 });
 
 function resetOTPInputs(){
@@ -1958,9 +2091,9 @@ function renderApp(){
 
 function renderTabs(){
   const wrap = document.getElementById('bottomTabs');
+  const allChats = getAllChats();
   wrap.innerHTML = TABS[ROLE].map(tb=>{
-    const chats = ROLE==='merchant' ? MERCHANT_CHATS : COURIER_CHATS;
-    const unread = chats.reduce((a,c)=>a+c.unread,0);
+    const unread = tb.id==='chat' ? allChats.reduce((a,c)=>a+(c.unread||0),0) : 0;
     return `
     <button class="tab-btn ${TAB===tb.id?'active':''}" data-tab="${tb.id}">
       ${ic(tb.ic,20)}
@@ -1985,7 +2118,7 @@ function statusBadge(status){
   const map={pending:'st-pending', approved:'st-approved', courier:'st-courier', delivered:'st-delivered', returned:'st-returned'};
   const tint={pending:'var(--st-pending-tint)', approved:'var(--st-approved-tint)', courier:'var(--st-courier-tint)', delivered:'var(--st-delivered-tint)', returned:'var(--st-returned-tint)'};
   const solid={pending:'var(--st-pending)', approved:'var(--st-approved)', courier:'var(--st-courier)', delivered:'var(--st-delivered)', returned:'var(--st-returned)'};
-  const label={pending:LANG==='ar'?'قيد الانتظار':'Pending', approved:LANG==='ar'?'تم قبول الطلب':'Order Accepted', courier:LANG==='ar'?'بحوزة المندوب':'With Courier', delivered:t('filterDelivered'), returned:LANG==='ar'?'راجع':'Returned'};
+  const label={pending:LANG==='ar'?'قيد الانتظار':LANG==='ku'?'Di.nav barî de':'Pending', approved:LANG==='ar'?'تم قبول الطلب':LANG==='ku'?'Daxwaz qebûl kirî':'Order Accepted', courier:LANG==='ar'?'بحوزة المندوب':LANG==='ku'?'Di dastra kuryêrê de':'With Courier', delivered:t('filterDelivered'), returned:LANG==='ar'?'راجع':LANG==='ku'?'Vegerî':'Returned'};
   const k = map[status] || 'st-courier';
   return `<span class="badge" style="background:${tint[status]}; color:${solid[status]};"><span class="badge-dot" style="background:${solid[status]}"></span>${label[status]||status}</span>`;
 }
@@ -1995,6 +2128,7 @@ let subPage = null;
 function renderTab(){
   document.getElementById('fabBtn').style.display = 'none';
   document.getElementById('fabBtn').onclick = null;
+  if(orderExpiryTimer){ clearInterval(orderExpiryTimer); orderExpiryTimer = null; }
   if(subPage==='reports') return renderReportsPage();
   if(TAB==='home') return ROLE==='merchant' ? renderMerchantHome() : renderCourierHome();
   if(TAB==='orders') return renderMerchantOrders();
@@ -2036,11 +2170,11 @@ function renderMerchantHome(){
       const d = MERCHANT_ORDERS.filter(o=>o.status==='delivered').length;
       const r = MERCHANT_ORDERS.filter(o=>o.status==='returned').length;
       return donutCard(t('statusDist'), [
-        {label:LANG==='ar'?'قيد الانتظار':'Pending', pct:Math.round(p/total*100), count:p, color:'var(--st-pending)'},
-        {label:LANG==='ar'?'تم قبول الطلب':'Accepted', pct:Math.round(ap/total*100), count:ap, color:'var(--st-approved)'},
-        {label:LANG==='ar'?'بحوزة المندوب':'With Courier', pct:Math.round(c/total*100), count:c, color:'var(--st-courier)'},
+        {label:l('قيد الانتظار','Di nav barî de','Pending'), pct:Math.round(p/total*100), count:p, color:'var(--st-pending)'},
+        {label:l('تم قبول الطلب','Daxwaz qebûl kirî','Accepted'), pct:Math.round(ap/total*100), count:ap, color:'var(--st-approved)'},
+        {label:l('بحوزة المندوب','Di dastra kuryêrê de','With Courier'), pct:Math.round(c/total*100), count:c, color:'var(--st-courier)'},
         {label:t('filterDelivered'), pct:Math.round(d/total*100), count:d, color:'var(--st-delivered)'},
-        {label:LANG==='ar'?'راجع':'Returned', pct:Math.round(r/total*100), count:r, color:'var(--st-returned)'},
+        {label:l('راجع','Vegerî','Returned'), pct:Math.round(r/total*100), count:r, color:'var(--st-returned)'},
       ], total, t('monthlyOrders'));
     })()}
     <div class="section-title"><h3>${t('recentOrders')}</h3><a data-goto-tab="orders">${t('seeAll')}</a></div>
@@ -2093,11 +2227,17 @@ function weekChartCard(title, values, labels, alt){
 }
 
 function orderRow(o){
+  const showComplaint = ['approved','courier'].includes(o.status);
+  const showPickupTimer = o.status==='approved' && ROLE==='merchant';
   return `
-  <div class="order-row" data-track="${o.track}">
-    <div class="order-ic">${ic('box',17)}</div>
-    <div class="order-mid"><b>${nm(o.customer)}</b><span class="mono">${o.track}</span></div>
-    <div class="order-end"><b class="mono">${fmt(o.price)}</b>${statusBadge(o.status)}</div>
+  <div class="order-row" data-track="${o.track}" style="flex-direction:column; align-items:stretch; padding-bottom:${showComplaint?'8':'14'}px;">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div class="order-ic">${ic('box',17)}</div>
+      <div class="order-mid"><b>${nm(o.customer)}</b><span class="mono">${o.track}</span></div>
+      <div class="order-end"><div style="font-size:10px; color:var(--ink-faint); font-weight:700;">${o.date} ${o.time || ''}</div><b class="mono">${fmt(o.price)}</b>${statusBadge(o.status)}</div>
+    </div>
+    ${showPickupTimer?pickupTimerLine(o):''}
+    ${showComplaint?`<button onclick="event.stopPropagation(); openComplaintChat('${o.track}')" style="margin-top:6px; align-self:flex-start; padding:5px 10px; border-radius:8px; background:rgba(220,38,38,.08); border:1px solid rgba(220,38,38,.2); color:var(--danger); font-size:10px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:4px;">${ic('x2',11)} ${l('شكوى / تأخر','Şikayet / Geç','Complaint / Delay')}</button>`:''}
   </div>`;
 }
 function bindOrderRows(container, orders){
@@ -2182,7 +2322,7 @@ function renderMerchantOrders(){
         <div class="order-stat-card" style="background:linear-gradient(135deg, #E2F6F4, #C5ECE8); border-color:rgba(11,110,104,.25);" onclick="merchantOrderView='list'; merchantFilter='all'; renderMerchantOrders();">
           <div class="osc-icon" style="background:rgba(255,255,255,.8); color:#0B6E68; box-shadow:0 2px 8px rgba(11,110,104,.12);">${ic('layers',22)}</div>
           <div style="flex:1;">
-            <div class="osc-label" style="color:rgba(11,110,104,.75);">${LANG==='ar'?'جميع الطلبات':'All Orders'}</div>
+            <div class="osc-label" style="color:rgba(11,110,104,.75);">${l('جميع الطلبات','Hemû daxwaz','All Orders')}</div>
             <div class="osc-count" style="color:#0B6E68;">${total}</div>
           </div>
           <span style="color:#0B6E68; display:flex;">${chev}</span>
@@ -2190,7 +2330,7 @@ function renderMerchantOrders(){
         <div class="order-stat-card" style="background:linear-gradient(135deg, #FFF3E0, #FFE1B3); border-color:rgba(217,119,6,.28);" onclick="merchantOrderView='list'; merchantFilter='pending'; renderMerchantOrders();">
           <div class="osc-icon" style="background:rgba(255,255,255,.8); color:#B45309; box-shadow:0 2px 8px rgba(217,119,6,.14);">${ic('hourglass',22)}</div>
           <div style="flex:1;">
-            <div class="osc-label" style="color:rgba(180,83,9,.75);">${LANG==='ar'?'قيد الانتظار':'Pending'}</div>
+            <div class="osc-label" style="color:rgba(180,83,9,.75);">${l('قيد الانتظار','Di nav barî de','Pending')}</div>
             <div class="osc-count" style="color:#B45309;">${counts.pending}</div>
           </div>
           <span style="color:#B45309; display:flex;">${chev}</span>
@@ -2198,7 +2338,7 @@ function renderMerchantOrders(){
         <div class="order-stat-card" style="background:linear-gradient(135deg, #E1F4FF, #C3E9FF); border-color:rgba(14,165,233,.28);" onclick="merchantOrderView='list'; merchantFilter='approved'; renderMerchantOrders();">
           <div class="osc-icon" style="background:rgba(255,255,255,.8); color:#0369A1; box-shadow:0 2px 8px rgba(14,165,233,.14);">${ic('thumbsUp',22)}</div>
           <div style="flex:1;">
-            <div class="osc-label" style="color:rgba(3,105,161,.75);">${LANG==='ar'?'تم قبول الطلب':'Accepted'}</div>
+            <div class="osc-label" style="color:rgba(3,105,161,.75);">${l('تم قبول الطلب','Daxwaz qebûl kirî','Accepted')}</div>
             <div class="osc-count" style="color:#0369A1;">${counts.approved}</div>
           </div>
           <span style="color:#0369A1; display:flex;">${chev}</span>
@@ -2206,7 +2346,7 @@ function renderMerchantOrders(){
         <div class="order-stat-card" style="background:linear-gradient(135deg, #E5EDFF, #CCDCFF); border-color:rgba(37,99,235,.28);" onclick="merchantOrderView='list'; merchantFilter='courier'; renderMerchantOrders();">
           <div class="osc-icon" style="background:rgba(255,255,255,.8); color:#1D4ED8; box-shadow:0 2px 8px rgba(37,99,235,.14);">${ic('route',22)}</div>
           <div style="flex:1;">
-            <div class="osc-label" style="color:rgba(29,78,216,.75);">${LANG==='ar'?'بحوزة المندوب':'With Courier'}</div>
+            <div class="osc-label" style="color:rgba(29,78,216,.75);">${l('بحوزة المندوب','Di dastra kuryêrê de','With Courier')}</div>
             <div class="osc-count" style="color:#1D4ED8;">${counts.courier}</div>
           </div>
           <span style="color:#1D4ED8; display:flex;">${chev}</span>
@@ -2222,7 +2362,7 @@ function renderMerchantOrders(){
         <div class="order-stat-card" style="background:linear-gradient(135deg, #FFE9EA, #FFD2D5); border-color:rgba(220,38,38,.28);" onclick="merchantOrderView='list'; merchantFilter='returned'; renderMerchantOrders();">
           <div class="osc-icon" style="background:rgba(255,255,255,.8); color:#B91C1C; box-shadow:0 2px 8px rgba(220,38,38,.14);">${ic('rotateCcw',22)}</div>
           <div style="flex:1;">
-            <div class="osc-label" style="color:rgba(185,28,28,.75);">${LANG==='ar'?'راجع':'Returned'}</div>
+            <div class="osc-label" style="color:rgba(185,28,28,.75);">${l('راجع','Vegerî','Returned')}</div>
             <div class="osc-count" style="color:#B91C1C;">${counts.returned}</div>
           </div>
           <span style="color:#B91C1C; display:flex;">${chev}</span>
@@ -2231,11 +2371,11 @@ function renderMerchantOrders(){
     `;
   } else {
     const rows = merchantFilter==='all' ? MERCHANT_ORDERS : MERCHANT_ORDERS.filter(o=> o.status===merchantFilter);
-    const filterLabel = merchantFilter==='all' ? (LANG==='ar'?'جميع الطلبات':'All Orders') :
-      (merchantFilter==='pending'? (LANG==='ar'?'قيد الانتظار':'Pending') :
-       merchantFilter==='approved'? (LANG==='ar'?'تم قبول الطلب':'Order Accepted') :
-       merchantFilter==='courier'? (LANG==='ar'?'بحوزة المندوب':'With Courier') :
-       merchantFilter==='delivered'? t('filterDelivered') : (LANG==='ar'?'راجع':'Returned'));
+    const filterLabel = merchantFilter==='all' ? l('جميع الطلبات','Hemû daxwaz','All Orders') :
+      (merchantFilter==='pending'? l('قيد الانتظار','Di nav barî de','Pending') :
+       merchantFilter==='approved'? l('تم قبول الطلب','Daxwaz qebûl kirî','Order Accepted') :
+       merchantFilter==='courier'? l('بحوزة المندوب','Di dastra kuryêrê de','With Courier') :
+       merchantFilter==='delivered'? t('filterDelivered') : l('راجع','Vegerî','Returned'));
     el.innerHTML = `
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
         <button onclick="merchantOrderView='cards'; renderMerchantOrders();" style="width:36px; height:36px; border-radius:10px; background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none;">
@@ -2259,6 +2399,76 @@ function renderMerchantOrders(){
 let onDuty = true;
 let courierHomeView = 'main';
 let courierHomeStatus = '';
+let orderExpiryMinutes = parseInt(localStorage.getItem('orderExpiryMinutes')||'30',10);
+let orderExpiryTimer = null;
+
+function getOrderRemainingMs(d){
+  if(!d.createdAt) return null;
+  const created = new Date(d.createdAt);
+  const expires = new Date(created.getTime() + orderExpiryMinutes*60000);
+  return expires - new Date();
+}
+function formatRemaining(ms){
+  if(ms<=0) return {ar:'منتهي', ku:'Dawiya', en:'Expired'};
+  const m = Math.floor(ms/60000);
+  const s = Math.floor((ms%60000)/1000);
+  const val = m+':'+String(s).padStart(2,'0');
+  return {ar:val+' د', ku:val+' xul', en:val+' m'};
+}
+function getExpiryColorPct(ms){
+  const total = orderExpiryMinutes*60000;
+  const pct = Math.max(0, Math.min(100, (ms/total)*100));
+  if(pct>50) return {color:'var(--success)', bg:'rgba(52,211,153,.15)'};
+  if(pct>20) return {color:'var(--warning)', bg:'rgba(251,191,36,.15)'};
+  return {color:'var(--danger)', bg:'rgba(248,113,113,.15)'};
+}
+function complaintBtn(order){
+  const showComplaint = ['approved','courier'].includes(order.status);
+  if(!showComplaint) return '';
+  return `<button onclick="event.stopPropagation(); openComplaintChat('${order.track}')" style="margin-top:8px; padding:6px 12px; border-radius:8px; background:rgba(220,38,38,.08); border:1px solid rgba(220,38,38,.2); color:var(--danger); font-size:10px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:4px; width:fit-content;">
+    ${ic('x2',12)}
+    ${l('شكوى / تأخر','Şikayet / Geç','Complaint / Delay')}
+  </button>`;
+}
+function openComplaintChat(track){
+  const chatId = 'complaint_' + track;
+  const chats = getAllChats();
+  let chat = chats.find(x=>x.id===chatId);
+  if(!chat){
+    chat = {
+      id: chatId,
+      participants: ['admin', ROLE],
+      name: {ar:'شكوى — '+track, ku:'Şikayet — '+track, en:'Complaint — '+track},
+      last: {ar:'', ku:'', en:''},
+      time: '',
+      unread: 0,
+      messages: [
+        {from: ROLE, text:{ar:`شكوى بخصوص الطلب ${track} — ${l('المندوب متأخر / قصر في التسليم','Kuryêrê gech e / kêm kirîye','Courier is late / fell short on delivery')}`, ku:`Şikayet di ser daxwaz ${track} de`, en:`Complaint about order ${track} — Courier is late / fell short on delivery`}, time:'الآن'},
+      ]
+    };
+    chats.push(chat);
+    saveAllChats(chats);
+  }
+  TAB = 'chat';
+  chatSubTab = 'admin';
+  activeChat = chatId;
+  renderTabs();
+  renderTab();
+}
+
+function hideExpiredOrders(){
+  let changed = false;
+  COURIER_DELIVERIES.forEach(d=>{
+    if(d.status==='pending' && !d.hidden){
+      const rem = getOrderRemainingMs(d);
+      if(rem !== null && rem <= 0){
+        d.hidden = true;
+        changed = true;
+      }
+    }
+  });
+  return changed;
+}
 
 function getCourierStats(){
   const all = COURIER_DELIVERIES;
@@ -2281,7 +2491,7 @@ function renderCourierHome(){
 
   if(courierHomeView==='list'){
     const items = COURIER_DELIVERIES.filter(o=>o.status===courierHomeStatus);
-    const label = {pending:LANG==='ar'?'طلبات جديدة متاحة':'Available New Orders', approved:LANG==='ar'?'تم قبول الطلب':'Accepted', courier:LANG==='ar'?'بحوزتي':'With Me', delivered:t('filterDelivered'), returned:LANG==='ar'?'راجع':'Returned'}[courierHomeStatus] || '';
+    const label = {pending:LANG==='ar'?'طلبات جديدة متاحة':LANG==='ku'?'Daxwazên nû veşartî':'Available New Orders', approved:LANG==='ar'?'تم قبول الطلب':LANG==='ku'?'Daxwaz qebûl kirî':'Accepted', courier:LANG==='ar'?'بحوزتي':LANG==='ku'?'Di dastra min':'With Me', delivered:t('filterDelivered'), returned:LANG==='ar'?'راجع':LANG==='ku'?'Vegerî':'Returned'}[courierHomeStatus] || '';
     el.innerHTML = `
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
         <button onclick="courierHomeView='main'; renderCourierHome();" style="width:36px; height:36px; border-radius:10px; background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none;">
@@ -2315,21 +2525,19 @@ function renderCourierHome(){
           </div>
         </div>
       </div>`;
-    }).join('') : `<div class="empty-hint">${LANG==='ar'?'لا طلبات':'No orders'}</div>`;
+    }).join('') : `<div class="empty-hint">${l('لا طلبات','Daxwaz tune','No orders')}</div>`;
     return;
   }
 
   const stats = getCourierStats();
-  const newCount = stats.newOrders.length;
   const totalDelivered = stats.results.delivered.length;
-  const totalReturned = stats.results.returned.length;
 
   el.innerHTML = `
     <div class="hero-slider-wrap" id="courierHeroSlider"></div>
     <div style="padding:16px; border-radius:16px; background:linear-gradient(135deg, var(--primary-strong), var(--primary)); color:#fff; margin-bottom:16px; position:relative; overflow:hidden;">
       <div style="position:absolute; top:-20px; right:-20px; width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,.1);"></div>
       <div style="position:relative; z-index:1;">
-        <div style="font-size:11px; opacity:.8; margin-bottom:4px;">${LANG==='ar'?'المتحصل اليوم':'Today\'s Collection'}</div>
+        <div style="font-size:11px; opacity:.8; margin-bottom:4px;">${l('المتحصل اليوم','Bidanîna rojê','Today\'s Collection')}</div>
         <div style="font-size:28px; font-weight:900; line-height:1;" class="mono">${fmt(stats.collected)} <span style="font-size:13px; opacity:.8;">${t('dueLabel')}</span></div>
         <div style="display:flex; gap:8px; margin-top:10px;">
           <div style="padding:5px 10px; border-radius:8px; background:rgba(255,255,255,.15); font-size:11px; font-weight:700;">${ic('bike',13)} ${t('myDeliveriesToday')}: ${totalDelivered}</div>
@@ -2338,46 +2546,103 @@ function renderCourierHome(){
       </div>
     </div>
 
-    <div onclick="courierHomeView='list'; courierHomeStatus='pending'; renderCourierHome();" style="margin-bottom:16px; padding:18px; border-radius:18px; cursor:pointer; position:relative; overflow:hidden; background:linear-gradient(135deg, #F1FAF8, #DDF1ED); color:#0B6E68; box-shadow:0 0 0 2.5px rgba(11,110,104,.55), 0 8px 22px -10px rgba(11,110,104,.35); border:none;">
-      <div style="position:absolute; top:-28px; right:-18px; width:110px; height:110px; border-radius:50%; background:rgba(11,110,104,.07);"></div>
-      <div style="position:absolute; bottom:-34px; left:-20px; width:90px; height:90px; border-radius:50%; background:rgba(11,110,104,.05);"></div>
-      <div style="position:absolute; top:16px; right:52px; width:18px; height:18px; border-radius:50%; background:rgba(11,110,104,.08);"></div>
-      <div style="position:relative; z-index:1; display:flex; align-items:center; gap:14px;">
-        <div style="width:56px; height:56px; border-radius:16px; background:rgba(255,255,255,.8); display:flex; align-items:center; justify-content:center; flex:none; color:#0B6E68; box-shadow:inset 0 0 0 1px rgba(11,110,104,.12);">${ic('clock',28)}</div>
-        <div style="flex:1; min-width:0;">
-          <div style="font-size:16px; font-weight:900;">${LANG==='ar'?'طلبات جديدة متاحة':'Available New Orders'}</div>
-          <div style="font-size:11.5px; opacity:.7; margin-top:3px;">${LANG==='ar'?'اضغط لعرض الطلبات الجديدة':'Tap to view new orders'}</div>
-        </div>
-        <div style="text-align:center; flex:none;">
-          <div class="mono bob-anim" style="min-width:44px; height:44px; border-radius:50%; background:#0B6E68; color:#fff; display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:900; box-shadow:0 4px 12px rgba(11,110,104,.28);">${newCount}</div>
-          <div style="font-size:9.5px; font-weight:800; opacity:.6; margin-top:5px;">${LANG==='ar'?'طلب':'order'}</div>
-        </div>
-      </div>
-      ${LANG==='ar'?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(11,110,104,.5)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; bottom:10px; right:14px;"><path d="M15 18l-6-6 6-6"/></svg>':'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(11,110,104,.5)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; bottom:10px; right:14px;"><path d="M9 18l6-6-6-6"/></svg>'}
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+      <div style="font-size:13px; font-weight:800; color:var(--ink);">${LANG==='ar'?'طلبات جديدة متاحة':LANG==='ku'?'Daxwazên nû veşartî':'Available New Orders'}</div>
+      <div style="font-size:11px; font-weight:700; color:var(--ink-faint); background:var(--surface-2); padding:3px 10px; border-radius:20px;">${LANG==='ar'?'الوقت المتاح: '+orderExpiryMinutes+' دقيقة':LANG==='ku'?'Demê şûnde: '+orderExpiryMinutes+' xulek':'Accept window: '+orderExpiryMinutes+' min'}</div>
     </div>
-
-    <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--ink);">${LANG==='ar'?'نتائج التوصيل':'Delivery Results'}</div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;" id="courierResults"></div>
+    <div id="courierPendingList"></div>
   `;
   renderHeroSlider('courierHeroSlider', COURIER_HERO_SLIDES);
 
-  const resultsEl = document.getElementById('courierResults');
-  const resultCards = [
-    {key:'approved', label:LANG==='ar'?'تم قبول الطلب':'Accepted', color:'var(--st-approved)', tint:'var(--st-approved-tint)', icon:'shield', items:stats.results.approved},
-    {key:'courier', label:LANG==='ar'?'بحوزتي':'With Me', color:'var(--st-courier)', tint:'var(--st-courier-tint)', icon:'bike', items:stats.results.courier},
-    {key:'delivered', label:LANG==='ar'?'تم التسليم':'Delivered', color:'var(--st-delivered)', tint:'var(--st-delivered-tint)', icon:'check', items:stats.results.delivered},
-    {key:'returned', label:LANG==='ar'?'راجع':'Returned', color:'var(--st-returned)', tint:'var(--st-returned-tint)', icon:'x2', items:stats.results.returned},
-  ];
-  resultsEl.innerHTML = resultCards.map(r=>`
-    <div class="list-card" onclick="courierHomeView='list'; courierHomeStatus='${r.key}'; renderCourierHome();" style="padding:14px; cursor:pointer; display:flex; align-items:center; gap:10px;">
-      <div style="width:38px; height:38px; border-radius:10px; background:${r.tint}; color:${r.color}; display:flex; align-items:center; justify-content:center; flex:none;">${ic(r.icon,18)}</div>
-      <div style="flex:1;">
-        <div style="font-size:12px; font-weight:800;">${r.label}</div>
-        <div style="font-size:10px; color:var(--ink-faint);">${r.items.length} ${LANG==='ar'?'طلبات':'orders'}</div>
-      </div>
-      <div class="mono" style="font-size:14px; font-weight:900; color:${r.color};">${fmt(r.items.reduce((a,o)=>a+o.price,0))}</div>
-    </div>
-  `).join('');
+  function renderPendingCards(){
+    hideExpiredOrders();
+    const listEl = document.getElementById('courierPendingList');
+    if(!listEl) return;
+    const orders = COURIER_DELIVERIES.filter(o=>o.status==='pending' && !o.hidden);
+    if(!orders.length){
+      listEl.innerHTML = '<div style="text-align:center; padding:40px 20px;">'+
+        '<div style="width:60px; height:60px; border-radius:50%; background:var(--surface-2); display:flex; align-items:center; justify-content:center; margin:0 auto 12px; color:var(--ink-faint);">'+ic('check',28)+'</div>'+
+        '<div style="font-size:13px; font-weight:800; color:var(--ink-soft);">'+(LANG==='ar'?'لا توجد طلبات جديدة حالياً':LANG==='ku'?'Niha daxwazeke nû niiye':'No new orders right now')+'</div>'+
+        '<div style="font-size:11px; color:var(--ink-faint); margin-top:4px;">'+(LANG==='ar'?'ستظهر الطلبات الجديدة هنا':LANG==='ku'?'Daxwazên nû li vir dê xuyabîn':'New orders will appear here')+'</div>'+
+      '</div>';
+      return;
+    }
+    listEl.innerHTML = orders.sort((a,b)=> (b.createdAt||'').localeCompare(a.createdAt||'')).map(d=>{
+      const rem = getOrderRemainingMs(d);
+      const expired = rem !== null && rem <= 0;
+      const ec = rem !== null ? getExpiryColorPct(rem) : {color:'var(--ink-faint)',bg:'var(--surface-2)'};
+      const remFmt = rem !== null ? formatRemaining(rem) : {ar:'—',en:'—'};
+      const totalMs = orderExpiryMinutes*60000;
+      const pct = rem !== null ? Math.max(0, Math.min(100,(rem/totalMs)*100)) : 0;
+      const canTake = d.price <= courierBudget;
+      const timeStr = d.time || '';
+      return '<div class="list-card expiry-card" style="margin-bottom:12px; padding:0; overflow:hidden; cursor:pointer;" data-track="'+d.track+'" onclick="openCourierDetailSheet(COURIER_DELIVERIES.find(x=>x.track===\''+d.track+'\'))">'+
+        '<div style="padding:14px 14px 10px;">'+
+          '<div style="display:flex; align-items:flex-start; gap:12px;">'+
+            '<div style="width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg, '+ec.bg+', transparent); color:'+ec.color+'; display:flex; align-items:center; justify-content:center; flex:none; position:relative;">'+
+              ic('clock',20)+
+            '</div>'+
+            '<div style="flex:1; min-width:0;">'+
+              '<div style="font-size:13px; font-weight:800; color:var(--ink); margin-bottom:2px;">'+nm(d.customer)+'</div>'+
+              '<div style="font-size:10.5px; color:var(--ink-faint); margin-bottom:2px;">'+d.track+'</div>'+
+              '<div style="font-size:10.5px; color:var(--ink-faint);">'+nm(d.address)+'</div>'+
+            '</div>'+
+            '<div style="text-align:end; flex:none;">'+
+              '<div class="mono" style="font-size:16px; font-weight:900; color:var(--ink);">'+fmt(d.price)+'</div>'+
+              '<div style="font-size:9.5px; color:var(--ink-faint); font-weight:700;">'+t('dueLabel')+'</div>'+
+            '</div>'+
+          '</div>'+
+          (!canTake ? '<div style="margin-top:8px; padding:6px 10px; border-radius:8px; background:rgba(248,113,113,.1); font-size:10px; font-weight:800; color:var(--danger);">'+(LANG==='ar'?'لا يمكن أخذ الطلب — الميزانية أقل':'Cannot take — budget less than order')+'</div>' : '')+
+        '</div>'+
+        '<div style="display:flex; align-items:center; justify-content:space-between; padding:8px 14px; background:var(--surface-2); border-top:1px solid var(--border);">'+
+          '<div style="display:flex; align-items:center; gap:6px;">'+
+            '<div style="width:8px; height:8px; border-radius:50%; background:'+ec.color+'; box-shadow:0 0 6px '+ec.color+';"></div>'+
+            '<div style="font-size:11px; font-weight:800; color:'+ec.color+';" class="countdown-text" data-track="'+d.track+'">'+(LANG==='ar'?'الوقت المتاح للاستلام':LANG==='ku'?'Demê şûnde bo qebûl kirinê':'Time to accept')+': <span style="font-family:monospace;">'+(LANG==='ar'?remFmt.ar:LANG==='ku'?remFmt.ku||remFmt.ar:remFmt.en)+'</span></div>'+
+          '</div>'+
+          '<div style="display:flex; align-items:center; gap:6px;">'+
+            (canTake?'<button onclick="event.stopPropagation(); openCourierDetailSheet(COURIER_DELIVERIES.find(x=>x.track===\''+d.track+'\'));" style="padding:6px 16px; border-radius:10px; background:var(--primary); color:#fff; border:none; font-size:11px; font-weight:800; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.15);">'+(LANG==='ar'?'التفاصيل':LANG==='ku'?'Kûrtî':'Details')+'</button>':'')+
+          '</div>'+
+        '</div>'+
+        '<div style="height:4px; background:var(--surface-2); position:relative; overflow:hidden;">'+
+          '<div class="expiry-bar" data-track="'+d.track+'" style="height:100%; width:'+pct+'%; background:'+ec.color+'; border-radius:0 2px 2px 0; transition:width 1s linear, background .5s; box-shadow:0 0 8px '+ec.color+';"></div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  renderPendingCards();
+
+  if(orderExpiryTimer) clearInterval(orderExpiryTimer);
+  orderExpiryTimer = setInterval(()=>{
+    const listEl = document.getElementById('courierPendingList');
+    if(!listEl){ clearInterval(orderExpiryTimer); return; }
+    const hadChange = hideExpiredOrders();
+    if(hadChange){
+      renderPendingCards();
+      return;
+    }
+    const orders = COURIER_DELIVERIES.filter(o=>o.status==='pending' && !o.hidden);
+    if(!orders.length){ clearInterval(orderExpiryTimer); return; }
+    orders.forEach(d=>{
+      const rem = getOrderRemainingMs(d);
+      if(rem===null) return;
+      const ec = getExpiryColorPct(rem);
+      const remFmt = formatRemaining(rem);
+      const totalMs = orderExpiryMinutes*60000;
+      const pct = Math.max(0, Math.min(100,(rem/totalMs)*100));
+      const txt = listEl.querySelector('.countdown-text[data-track="'+d.track+'"]');
+      const bar = listEl.querySelector('.expiry-bar[data-track="'+d.track+'"]');
+      if(txt){
+        txt.innerHTML = (LANG==='ar'?'الوقت المتاح للاستلام':LANG==='ku'?'Demê şûnde bo qebûl kirinê':'Time to accept')+': <span style="font-family:monospace;">'+(LANG==='ar'?remFmt.ar:LANG==='ku'?remFmt.ku||remFmt.ar:remFmt.en)+'</span>';
+        txt.style.color = ec.color;
+      }
+      if(bar){
+        bar.style.width = pct+'%';
+        bar.style.background = ec.color;
+        bar.style.boxShadow = '0 0 8px '+ec.color;
+      }
+    });
+  }, 1000);
 }
 
 function canAcceptCourierOrder(d){
@@ -2388,12 +2653,12 @@ function openBudgetInsufficientSheet(d){
   openSheet(`
     <div style="text-align:center; padding:22px 6px;">
       <div style="width:52px; height:52px; border-radius:50%; background:var(--danger-tint); color:var(--danger); display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">${ic('shield',24)}</div>
-      <div style="font-weight:800; font-size:14px; margin-bottom:6px;">${LANG==='ar'?'لا يمكن أخذ الطلب':'Cannot Take Order'}</div>
+      <div style="font-weight:800; font-size:14px; margin-bottom:6px;">${l('لا يمكن أخذ الطلب','Nikarî daxwazê bicerîvîne','Cannot Take Order')}</div>
       <div style="font-size:12px; color:var(--ink-soft); line-height:1.7;">
-        ${LANG==='ar' ? `لا يمكن أخذ الطلب لأن الميزانية أقل من قيمة الطلب.<br>قيمة الطلب: <b class="mono" style="color:var(--danger);">${fmt(d.price)} ${t('dueLabel')}</b><br>رصيد الميزانية المتبقي: <b class="mono" style="color:var(--danger);">${fmt(courierBudget)} ${t('dueLabel')}</b>. تواصل مع الدعم لزيادة الميزانية.` : `You cannot take this order because the budget is less than the order amount.<br>Order amount: <b class="mono" style="color:var(--danger);">${fmt(d.price)} ${t('dueLabel')}</b><br>Remaining budget: <b class="mono" style="color:var(--danger);">${fmt(courierBudget)} ${t('dueLabel')}</b>. Contact support to increase it.`}
+        ${l(`لا يمكن أخذ الطلب لأن الميزانية أقل من قيمة الطلب.<br>قيمة الطلب: <b class="mono" style="color:var(--danger);">${fmt(d.price)} ${t('dueLabel')}</b><br>رصيد الميزانية المتبقي: <b class="mono" style="color:var(--danger);">${fmt(courierBudget)} ${t('dueLabel')}</b>. تواصل مع الدعم لزيادة الميزانية.`, `Nikarî daxwazê bicerîvîne ji bo ku bajetê ji biha daxwazê kêm e.<br>Biha daxwazê: <b class="mono" style="color:var(--danger);">${fmt(d.price)} ${t('dueLabel')}</b><br>Bakiya bajetê: <b class="mono" style="color:var(--danger);">${fmt(courierBudget)} ${t('dueLabel')}</b>. Bi alîkariyê re reja ji bo zêdekirina bajetê.`, `You cannot take this order because the budget is less than the order amount.<br>Order amount: <b class="mono" style="color:var(--danger);">${fmt(d.price)} ${t('dueLabel')}</b><br>Remaining budget: <b class="mono" style="color:var(--danger);">${fmt(courierBudget)} ${t('dueLabel')}</b>. Contact support to increase it.`)}
       </div>
     </div>
-    <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="openSupportChat()">${LANG==='ar'?'تواصل مع الدعم':'Contact Support'}</button>
+    <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="openSupportChat()">${l('تواصل مع الدعم','Bi alîkariyê re reja','Contact Support')}</button>
     <button class="btn btn-ghost" style="width:100%; margin-top:8px;" onclick="closeSheet()">${t('close')}</button>
   `);
 }
@@ -2453,12 +2718,12 @@ function setCourierStatus(track, status){
     openSheet(`
       <div style="text-align:center; padding:20px 0;">
         <div style="width:52px; height:52px; border-radius:50%; background:var(--success-tint); color:var(--success); display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">${ic('check',24)}</div>
-        <div style="font-weight:800; font-size:14px; margin-bottom:8px;">${LANG==='ar'?'تم أخذ الطلب':'Order Taken'}</div>
+        <div style="font-weight:800; font-size:14px; margin-bottom:8px;">${l('تم أخذ الطلب','Daxwaz qebûl kirî','Order Taken')}</div>
         <div style="font-size:12px; color:var(--ink-soft); line-height:1.8;">
           ${LANG==='ar' ? `تم خصم <b class="mono" style="color:var(--danger);">${fmt(budgetDeducted)} ${t('dueLabel')}</b> من الميزانية.<br>الرصيد المتبقي: <b class="mono" style="color:var(--primary);">${fmt(courierBudget)} ${t('dueLabel')}</b>` : `Deducted <b class="mono" style="color:var(--danger);">${fmt(budgetDeducted)} ${t('dueLabel')}</b> from the budget.<br>Remaining budget: <b class="mono" style="color:var(--primary);">${fmt(courierBudget)} ${t('dueLabel')}</b>`}
         </div>
       </div>
-      <button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="closeSheet()">${t('ok') || (LANG==='ar'?'حسناً':'OK')}</button>
+      <button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="closeSheet()">${t('ok') || l('حسناً','Baş','OK')}</button>
     `);
   }
   renderTab();
@@ -2486,7 +2751,7 @@ function openCourierDetailSheet(d){
 
   const merchantCard = d.merchant ? `
     <div style="margin-top:14px; padding:14px; border-radius:14px; background:var(--primary-tint); border:1.5px solid color-mix(in srgb, var(--primary) 25%, transparent);">
-      <div style="font-size:11px; font-weight:800; color:var(--primary-strong); margin-bottom:10px;">${LANG==='ar'?'التاجر':'Merchant'}</div>
+          <div style="font-size:11px; font-weight:800; color:var(--primary-strong); margin-bottom:10px;">${l('التاجر','Karbêran','Merchant')}</div>
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
         <div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:15px; flex:none;">${nm(d.merchant).charAt(0)}</div>
         <div style="flex:1;">
@@ -2498,11 +2763,13 @@ function openCourierDetailSheet(d){
       <div style="display:flex; gap:6px;">
         <a href="https://wa.me/${d.merchant.phone.replace(/[^0-9]/g,'')}" target="_blank" style="flex:1; display:flex; align-items:center; justify-content:center; gap:5px; padding:8px; border-radius:8px; background:rgba(25,135,84,.12); color:#198754; text-decoration:none; font-size:11px; font-weight:700;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          ${LANG==='ar'?'واتساب':'WhatsApp'}
+          ${l('واتساب','WhatsApp','WhatsApp')}
+
+
         </a>
         <button onclick="startMerchantChat('${d.track}', '${nm(d.merchant)}')" style="flex:1; display:flex; align-items:center; justify-content:center; gap:5px; padding:8px; border-radius:8px; background:var(--primary); color:#fff; border:none; font-size:11px; font-weight:700; cursor:pointer;">
           ${ic('chat',14)}
-          ${LANG==='ar'?'دردشة':'Chat'}
+          ${l('دردشة','Axivistin','Chat')}
         </button>
       </div>
     </div>
@@ -2512,7 +2779,7 @@ function openCourierDetailSheet(d){
     <div style="display:flex; gap:6px; margin-top:10px;">
       <a href="https://wa.me/${d.phone.replace(/[^0-9]/g,'')}" target="_blank" style="flex:1; display:flex; align-items:center; justify-content:center; gap:5px; padding:8px; border-radius:8px; background:rgba(25,135,84,.12); color:#198754; text-decoration:none; font-size:11px; font-weight:700;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        ${LANG==='ar'?'واتساب الزبون':'Customer WhatsApp'}
+        ${l('واتساب الزبون','WhatsAppê mirospêrê','Customer WhatsApp')}
       </a>
     </div>
   `;
@@ -2528,38 +2795,88 @@ function openCourierDetailSheet(d){
     <div class="sheet-route">${route}</div>
     <div class="divider"></div>
     <div style="margin-bottom:12px;">
-      <div style="font-size:12.5px; font-weight:800; margin-bottom:10px; color:var(--ink);">${LANG==='ar'?'تفاصيل الطلب':'Order Details'}</div>
-      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${LANG==='ar'?'الزبون':'Customer'}</span><span>${nm(d.customer)}</span></div>
-      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${LANG==='ar'?'الهاتف':'Phone'}</span><span class="mono">${d.phone}</span></div>
-      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${LANG==='ar'?'العنوان':'Address'}</span><span>${nm(d.address)}</span></div>
-      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${LANG==='ar'?'سعر الطلب':'Price'}</span><span class="mono" style="font-weight:900; color:var(--primary);">${fmt(d.price)} ${t('dueLabel')}</span></div>
+      <div style="font-size:12.5px; font-weight:800; margin-bottom:10px; color:var(--ink);">${l('تفاصيل الطلب','Kûrteya daxwazê','Order Details')}</div>
+      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${l('الزبون','Mirospêr','Customer')}</span><span>${nm(d.customer)}</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${l('الهاتف','Telefon','Phone')}</span><span class="mono">${d.phone}</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${l('العنوان','Navnîşan','Address')}</span><span>${nm(d.address)}</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${l('سعر الطلب','Bihna daxwazê','Price')}</span><span class="mono" style="font-weight:900; color:var(--primary);">${fmt(d.price)} ${t('dueLabel')}</span></div>
     </div>
     ${customerActions}
     ${merchantCard}
     ${pickupTimerCard(d)}
-    ${d.status==='pending' ? (canAcceptCourierOrder(d) ? `<button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="setCourierStatus('${d.track}','approved')">${LANG==='ar'?'موافقة على الطلب':'Accept Order'}</button>` : `
+    ${d.status==='pending' ? (canAcceptCourierOrder(d) ? `<button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="setCourierStatus('${d.track}','approved')">${l('موافقة على الطلب','Daxwazê qebûl bike','Accept Order')}</button>` : `
       <div style="margin-top:14px; padding:13px; border-radius:13px; background:var(--danger-tint); border:1.5px solid color-mix(in srgb, var(--danger) 30%, transparent); display:flex; align-items:center; gap:9px;">
         ${ic('shield',16)}
-        <div style="font-size:12px; font-weight:700; color:var(--danger); line-height:1.6; flex:1;">${LANG==='ar'?'لا يمكن أخذ الطلب لأن الميزانية أقل من قيمة الطلب':'Cannot take order — budget is less than the order amount'}</div>
+        <div style="font-size:12px; font-weight:700; color:var(--danger); line-height:1.6; flex:1;">${l('لا يمكن أخذ الطلب لأن الميزانية أقل من قيمة الطلب','Nikarî daxwazê bicerîvîne — bajetê ji biha daxwazê kêm e','Cannot take order — budget is less than the order amount')}</div>
       </div>
-      <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="openBudgetInsufficientSheet(COURIER_DELIVERIES.find(x=>x.track==='${d.track}'))">${LANG==='ar'?'التفاصيل / تواصل مع الدعم':'Details / Contact Support'}</button>`) : ''}
+      <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="openBudgetInsufficientSheet(COURIER_DELIVERIES.find(x=>x.track==='${d.track}'))">${l('التفاصيل / تواصل مع الدعم','Kûrtî / bi alîkariyê re reja','Details / Contact Support')}</button>`) : ''}
     ${d.status==='approved' ? `
-      <button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="setCourierStatus('${d.track}','courier')">${LANG==='ar'?'استلام الطلب':'Pick Up Order'}</button>
-      <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="openSupportChat()">${LANG==='ar'?'تواصل مع الدعم لإلغاء الطلب':'Contact Support to Cancel'}</button>` : ''}
+      <button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="setCourierStatus('${d.track}','courier')">${l('استلام الطلب','Daxwazê bistîne','Pick Up Order')}</button>
+      <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="openSupportChat()">${l('تواصل مع الدعم لإلغاء الطلب','Bi alîkariyê re reja ji bo betalkirinê','Contact Support to Cancel')}</button>` : ''}
     ${d.status==='courier' ? `
-      <button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="setCourierStatus('${d.track}','delivered')">${LANG==='ar'?'تم التسليم':'Mark as Delivered'}</button>
-      <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="setCourierStatus('${d.track}','returned')">${LANG==='ar'?'راجع':'Mark as Returned'}</button>
-      <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="openSupportChat()">${LANG==='ar'?'تواصل مع الدعم لإلغاء الطلب':'Contact Support to Cancel'}</button>` : ''}
+      <button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="setCourierStatus('${d.track}','delivered')">${l('تم التسليم','Daxwazê derakirî','Mark as Delivered')}</button>
+      <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="openReturnSheet('${d.track}')">${l('راجع','Vegerî','Mark as Returned')}</button>
+      <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:var(--danger); border-color:var(--danger);" onclick="openSupportChat()">${l('تواصل مع الدعم لإلغاء الطلب','Bi alîkariyê re reja ji bo betalkirinê','Contact Support to Cancel')}</button>` : ''}
     ${d.status==='returned' ? `
-      <button class="btn btn-primary" style="width:100%; margin-top:14px; background:var(--st-returned); border-color:var(--st-returned);" onclick="returnToMerchant('${d.track}')">${LANG==='ar'?'إرجاع إلى التاجر':'Return to Merchant'}</button>` : ''}
+      <button class="btn btn-primary" style="width:100%; margin-top:14px; background:var(--st-returned); border-color:var(--st-returned);" onclick="returnToMerchant('${d.track}')">${l('إرجاع إلى التاجر','Vegerîne bo karbêranê','Return to Merchant')}</button>` : ''}
     <button class="btn btn-ghost" style="width:100%; margin-top:8px;" onclick="closeSheet()">${t('close')}</button>
   `);
+}
+
+function openReturnSheet(track){
+  openSheet(`
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div style="width:28px; height:28px; border-radius:8px; background:var(--danger-tint); color:var(--danger); display:flex; align-items:center; justify-content:center;">${ic('x2',14)}</div>
+        <div style="font-weight:800; font-size:14px;">${l('إرجاع الطلب','Vegerîna daxwazê','Return Order')}</div>
+      </div>
+      <button onclick="closeSheet()" style="width:28px; height:28px; border-radius:8px; background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">${ic('x',14)}</button>
+    </div>
+    <div style="font-size:12px; color:var(--ink-soft); margin-bottom:14px; line-height:1.6;">
+      ${l('هل تريد إضافة أجرة توصيل لهذه الطلبية؟ إذا وضعت مبلغاً سيتم استقطاعه من رصيدك.','Dixwazî bihayê şandina vê daxwazê zêde bikî? Heke remanê bivalî, dê ji başayiyê te were derxistin.','Do you want to add a delivery fee for this order? If you enter an amount, it will be deducted from your balance.')}
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="display:block; font-size:12px; font-weight:800; color:var(--ink); margin-bottom:6px;">${l('أجرة التوصيل (اختياري)','Biha şandina (hişyarî)','Delivery Fee (optional)')}</label>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <input id="returnFeeInput" type="number" min="0" max="50000" placeholder="0" style="flex:1; padding:10px 14px; border-radius:10px; border:1.5px solid var(--border); background:var(--surface); font-size:14px; font-weight:800; font-family:inherit; color:var(--ink); outline:none;">
+        <span style="font-size:12px; font-weight:700; color:var(--ink-soft);">${t('dueLabel')}</span>
+      </div>
+      <div style="display:flex; gap:6px; margin-top:8px;">
+        ${[0,1000,2000,3000,5000].map(v=>`<button class="return-fee-preset" data-v="${v}" style="padding:5px 10px; border-radius:8px; background:var(--surface-2); color:var(--ink); border:none; font-size:11px; font-weight:700; cursor:pointer;">${v===0?l('بدون','Bê','None'):fmt(v)}</button>`).join('')}
+      </div>
+    </div>
+    <button class="btn btn-ghost" style="width:100%; margin-bottom:8px; color:var(--danger); border-color:var(--danger);" onclick="confirmReturn('${track}')">
+      ${l('تأكيد الإرجاع','Ewlekirina vegerînê','Confirm Return')}
+    </button>
+    <button class="btn btn-ghost" style="width:100%;" onclick="closeSheet()">${t('close')}</button>
+  `);
+  setTimeout(()=>{
+    document.querySelectorAll('.return-fee-preset').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        document.getElementById('returnFeeInput').value = btn.dataset.v;
+      });
+    });
+  },50);
+}
+function confirmReturn(track){
+  const fee = parseInt(document.getElementById('returnFeeInput').value||'0',10);
+  if(fee>0){
+    walletCredit -= fee;
+    saveCredit();
+    COURIER_TX.unshift({
+      icon:'upload', color:'warning',
+      label:{ar:`أجرة توصيل (راجع) — ${track}`, en:`Delivery fee (returned) — ${track}`},
+      ref:track, date:new Date().toISOString().slice(0,10),
+      amount:fee, dir:-1
+    });
+  }
+  setCourierStatus(track,'returned');
 }
 
 function openSupportChat(){
   closeSheet();
   TAB = 'chat';
-  activeChat = ROLE==='merchant' ? 'support' : 'dispatch';
+  activeChat = ROLE==='merchant' ? 'admin_merchant' : 'admin_courier';
   renderTabs();
   renderTab();
 }
@@ -2570,12 +2887,12 @@ function returnToMerchant(track){
   openSheet(`
     <div style="text-align:center; padding:20px 0;">
       <div style="width:52px; height:52px; border-radius:50%; background:var(--st-returned-tint); color:var(--st-returned); display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">${ic('x2',24)}</div>
-      <div style="font-weight:800; font-size:14px; margin-bottom:6px;">${LANG==='ar'?'إرجاع إلى التاجر':'Return to Merchant'}</div>
-      <div style="font-size:12px; color:var(--ink-soft); line-height:1.7;">${LANG==='ar'?'سيتم إرجاع الطلب إلى التاجر وإزالته من قائمة طلباتك.':'The order will be returned to the merchant and removed from your orders.'}</div>
+      <div style="font-weight:800; font-size:14px; margin-bottom:6px;">${l('إرجاع إلى التاجر','Vegerîne bo karbêranê','Return to Merchant')}</div>
+      <div style="font-size:12px; color:var(--ink-soft); line-height:1.7;">${l('سيتم إرجاع الطلب إلى التاجر وإزالته من قائمة طلباتك.','Daxwaz dê vegere bo karbêranê û rakirî bibe ji lîsteya daxwazên te.','The order will be returned to the merchant and removed from your orders.')}</div>
     </div>
     <div style="display:flex; gap:8px; margin-top:14px;">
-      <button class="btn btn-ghost" style="flex:1;" onclick="closeSheet()">${LANG==='ar'?'إلغاء':'Cancel'}</button>
-      <button class="btn btn-primary" style="flex:1; background:var(--st-returned); border-color:var(--st-returned);" onclick="confirmReturnToMerchant('${track}')">${LANG==='ar'?'تأكيد الإرجاع':'Confirm'}</button>
+      <button class="btn btn-ghost" style="flex:1;" onclick="closeSheet()">${l('إلغاء','Betal bike','Cancel')}</button>
+      <button class="btn btn-primary" style="flex:1; background:var(--st-returned); border-color:var(--st-returned);" onclick="confirmReturnToMerchant('${track}')">${l('تأكيد الإرجاع','Ewlekirina vegertinê','Confirm')}</button>
     </div>
   `);
 }
@@ -2588,21 +2905,26 @@ function confirmReturnToMerchant(track){
 }
 
 function startMerchantChat(track, name){
-  const chatId = 'merchant_' + track;
-  const chats = COURIER_CHATS;
+  const chatId = 'order_' + track;
+  const chats = getAllChats();
   let chat = chats.find(x=>x.id===chatId);
   if(!chat){
+    const d = COURIER_DELIVERIES.find(x=>x.track===track);
     chat = {
       id: chatId,
-      name: {ar:name, en:name},
-      last: {ar:'', en:''},
+      participants: ['merchant','courier'],
+      merchantId: d ? d.merchantId : null,
+      courierId: d ? d.courierId : null,
+      name: {ar:name, ku:name, en:name},
+      last: {ar:'', ku:'', en:''},
       time: '',
       unread: 0,
       messages: [
-        {from:'them', text:{ar:`مرحباً، بخصوص الطلب ${track}`,en:`Hello, regarding order ${track}`}, time:'الآن'},
+        {from:'courier', text:{ar:`مرحباً، بخصوص الطلب ${track}`, ku:`Slav, di serdankirina ${track} de`, en:`Hello, regarding order ${track}`}, time:'الآن'},
       ]
     };
     chats.push(chat);
+    saveAllChats(chats);
   }
   closeSheet();
   TAB = 'chat';
@@ -2622,11 +2944,11 @@ function renderCourierDeliveries(){
 
   if(courierView==='list'){
     const filtered = courierStatusFilter==='all' ? COURIER_DELIVERIES : COURIER_DELIVERIES.filter(o=>o.status===courierStatusFilter);
-    const filterLabel = courierStatusFilter==='all' ? (LANG==='ar'?'جميع الطلبات':'All Orders') :
-      (courierStatusFilter==='pending'? (LANG==='ar'?'قيد الانتظار':'Pending') :
-       courierStatusFilter==='approved'? (LANG==='ar'?'تم قبول الطلب':'Accepted') :
-       courierStatusFilter==='courier'? (LANG==='ar'?'بحوزتي':'With Me') :
-       courierStatusFilter==='delivered'? (LANG==='ar'?'تم التسليم':'Delivered') : (LANG==='ar'?'راجع':'Returned'));
+    const filterLabel = courierStatusFilter==='all' ? l('جميع الطلبات','Hemû daxwaz','All Orders') :
+      (courierStatusFilter==='pending'? l('قيد الانتظار','Di nav barî de','Pending') :
+       courierStatusFilter==='approved'? l('تم قبول الطلب','Daxwaz qebûl kirî','Accepted') :
+       courierStatusFilter==='courier'? l('بحوزتي','Di dastra min','With Me') :
+       courierStatusFilter==='delivered'? l('تم التسليم','Daxwaz derakirî','Delivered') : l('راجع','Vegerî','Returned'));
     el.innerHTML = `
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
         <button onclick="courierView='cards'; renderCourierDeliveries();" style="width:36px; height:36px; border-radius:10px; background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none;">
@@ -2661,7 +2983,7 @@ function renderCourierDeliveries(){
           </div>
         </div>
       </div>`;
-    }).join('') : `<div class="empty-hint">${LANG==='ar'?'لا طلبات':'No orders'}</div>`;
+    }).join('') : `<div class="empty-hint">${l('لا طلبات','Daxwaz tune','No orders')}</div>`;
     return;
   }
 
@@ -2675,16 +2997,16 @@ function renderCourierDeliveries(){
   };
 
   el.innerHTML = `
-    <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--ink);">${LANG==='ar'?'طلباتي':'My Orders'}</div>
+    <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--ink);">${l('طلباتي','Daxwazên min','My Orders')}</div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;" id="courierStatusCards"></div>
   `;
 
   const cards = [
-    {key:'pending', label:LANG==='ar'?'قيد الانتظار':'Pending', color:'var(--st-pending)', tint:'var(--st-pending-tint)', icon:'clock'},
-    {key:'approved', label:LANG==='ar'?'تم قبول الطلب':'Accepted', color:'var(--st-approved)', tint:'var(--st-approved-tint)', icon:'shield'},
-    {key:'courier', label:LANG==='ar'?'بحوزتي':'With Me', color:'var(--st-courier)', tint:'var(--st-courier-tint)', icon:'bike'},
-    {key:'delivered', label:LANG==='ar'?'تم التسليم':'Delivered', color:'var(--st-delivered)', tint:'var(--st-delivered-tint)', icon:'check'},
-    {key:'returned', label:LANG==='ar'?'راجع':'Returned', color:'var(--st-returned)', tint:'var(--st-returned-tint)', icon:'x2'},
+        {key:'pending', label:l('قيد الانتظار','Di nav barî de','Pending'), color:'var(--st-pending)', tint:'var(--st-pending-tint)', icon:'clock'},
+        {key:'approved', label:l('تم قبول الطلب','Daxwaz qebûl kirî','Accepted'), color:'var(--st-approved)', tint:'var(--st-approved-tint)', icon:'shield'},
+        {key:'courier', label:l('بحوزتي','Di dastra min','With Me'), color:'var(--st-courier)', tint:'var(--st-courier-tint)', icon:'bike'},
+        {key:'delivered', label:l('تم التسليم','Daxwaz derakirî','Delivered'), color:'var(--st-delivered)', tint:'var(--st-delivered-tint)', icon:'check'},
+        {key:'returned', label:l('راجع','Vegerî','Returned'), color:'var(--st-returned)', tint:'var(--st-returned-tint)', icon:'x2'},
   ];
 
   document.getElementById('courierStatusCards').innerHTML = cards.map(c=>`
@@ -2698,7 +3020,7 @@ function renderCourierDeliveries(){
 
 /* ---- Wallets ---- */
 function prettyDate(d){
-  try{ return new Date(d+'T00:00:00').toLocaleDateString(LANG==='ar'?'ar-IQ':'en-US', {weekday:'long', day:'numeric', month:'long', year:'numeric'}); }
+  try{ return new Date(d+'T00:00:00').toLocaleDateString(LANG==='ar'?'ar-IQ':LANG==='ku'?'ku-IQ':'en-US', {weekday:'long', day:'numeric', month:'long', year:'numeric'}); }
   catch(e){ return d; }
 }
 const MERCHANT_TX_COLORS = {
@@ -2760,7 +3082,7 @@ function renderMerchantWallet(){
             <div class="mono" style="font-size:15.5px; font-weight:800;">${fmt(862000)}</div>
           </div>
           <div style="padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1);">
-            <div style="font-size:10px; font-weight:700; opacity:.7; margin-bottom:4px;">${LANG==='ar'?'آخر تسوية':'Last Settlement'}</div>
+            <div style="font-size:10px; font-weight:700; opacity:.7; margin-bottom:4px;">${l('آخر تسوية','Dawî serdankirî','Last Settlement')}</div>
             <div class="mono" style="font-size:15.5px; font-weight:800;">${fmt(3350000)}</div>
           </div>
         </div>
@@ -2772,12 +3094,12 @@ function renderMerchantWallet(){
     </div>
     <div class="section-title">
       <h3>${t('history')}</h3>
-      <span style="font-size:10px; color:var(--ink-faint); font-weight:700;">${LANG==='ar'?'الحركات الأخيرة':'Recent Transactions'}</span>
+      <span style="font-size:10px; color:var(--ink-faint); font-weight:700;">${l('الحركات الأخيرة','Çalakiyên dawî','Recent Transactions')}</span>
     </div>
     <div class="list-card">${MERCHANT_TX.map(walletTxRow).join('')}</div>
   `;
   document.getElementById('btnWithdraw').addEventListener('click', ()=> openWithdrawSheet('merchant'));
-  document.getElementById('btnChatFinance').addEventListener('click', ()=>{ TAB='chat'; activeChat='support'; renderTabs(); renderTab(); });
+  document.getElementById('btnChatFinance').addEventListener('click', ()=>{ TAB='chat'; activeChat=ROLE==='merchant'?'admin_merchant':'admin_courier'; renderTabs(); renderTab(); });
 }
 
 function renderCourierWallet(){
@@ -2788,7 +3110,7 @@ function renderCourierWallet(){
     <div style="display:flex; align-items:center; gap:13px; padding:18px 20px; border-radius:18px; background:var(--surface); border:1px solid var(--border); margin-bottom:14px;">
       <div style="width:44px; height:44px; border-radius:13px; background:var(--primary-tint); color:var(--primary-strong); display:flex; align-items:center; justify-content:center; flex:none;">${ic('wallet',19)}</div>
       <div style="flex:1; min-width:0;">
-        <div style="font-size:11px; color:var(--ink-soft); font-weight:700; margin-bottom:3px;">${LANG==='ar'?'الرصيد المتاح في محفظتي':'My Available Wallet Balance'}</div>
+        <div style="font-size:11px; color:var(--ink-soft); font-weight:700; margin-bottom:3px;">${l('الرصيد المتاح في محفظتي','Bakiya bilez di porsête min de','My Available Wallet Balance')}</div>
         <div class="mono" style="font-size:21px; font-weight:900;">${fmt(walletCredit)} <span style="font-size:11px; color:var(--ink-faint); font-weight:700;">${t('dueLabel')}</span></div>
       </div>
     </div>
@@ -2799,19 +3121,19 @@ function renderCourierWallet(){
       <div style="position:relative; z-index:1;">
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:18px;">
           <div style="width:34px; height:34px; border-radius:11px; background:rgba(255,255,255,.16); display:flex; align-items:center; justify-content:center;">${ic('shield',16)}</div>
-          <span style="font-size:13px; font-weight:800;">${LANG==='ar'?'الميزانية':'Budget'}</span>
+          <span style="font-size:13px; font-weight:800;">${l('الميزانية','Bajetê','Budget')}</span>
         </div>
-        <div style="font-size:10.5px; opacity:.75; font-weight:700; margin-bottom:4px;">${LANG==='ar'?'مبلغ الميزانية':'Budget Amount'}</div>
+        <div style="font-size:10.5px; opacity:.75; font-weight:700; margin-bottom:4px;">${l('مبلغ الميزانية','Meblaşa bajetê','Budget Amount')}</div>
         <div class="mono" style="font-size:28px; font-weight:900; letter-spacing:.3px;">${fmt(budgetBase)} <span style="font-size:13px; opacity:.7;">${t('dueLabel')}</span></div>
         <div style="height:1px; background:rgba(255,255,255,.14); margin:16px 0 14px;"></div>
-        <div style="font-size:10.5px; opacity:.75; font-weight:700; margin-bottom:4px;">${LANG==='ar'?'الرصيد المتبقي':'Remaining Balance'}</div>
+        <div style="font-size:10.5px; opacity:.75; font-weight:700; margin-bottom:4px;">${l('الرصيد المتبقي','Bakiya maye','Remaining Balance')}</div>
         <div class="mono" style="font-size:24px; font-weight:900; letter-spacing:.3px;">${fmt(courierBudget)} <span style="font-size:12px; opacity:.7;">${t('dueLabel')}</span></div>
       </div>
     </div>
 
     <div class="section-title">
       <h3>${t('history')}</h3>
-      <span style="font-size:10px; color:var(--ink-faint); font-weight:700;">${LANG==='ar'?'الحركات الأخيرة':'Recent Transactions'}</span>
+      <span style="font-size:10px; color:var(--ink-faint); font-weight:700;">${l('الحركات الأخيرة','Çalakiyên dawî','Recent Transactions')}</span>
     </div>
     <div class="list-card" style="overflow:hidden;">${walletTxsHTML(COURIER_TX, COURIER_TX_COLORS)}</div>
   `;
@@ -2820,18 +3142,18 @@ function renderCourierWallet(){
 function contactSupportRecharge(){
   closeSheet();
   TAB='chat';
-  activeChat = ROLE==='merchant' ? 'support' : 'dispatch';
+  activeChat = ROLE==='merchant' ? 'admin_merchant' : 'admin_courier';
   renderTabs();
   renderTab();
 }
 
 function openBudgetSheet(){
   openSheet(`
-    <div style="font-weight:800; font-size:14.5px; margin-bottom:4px;">${LANG==='ar'?'الميزانية':'Budget'}</div>
-    <div style="font-size:11px; color:var(--ink-faint); font-weight:600; margin-bottom:14px;">${LANG==='ar'?'المبلغ الحالي':'Current amount'}: <b class="mono" style="color:var(--accent);">${fmt(courierBudget)} ${t('dueLabel')}</b></div>
+    <div style="font-weight:800; font-size:14.5px; margin-bottom:4px;">${l('الميزانية','Bajetê','Budget')}</div>
+    <div style="font-size:11px; color:var(--ink-faint); font-weight:600; margin-bottom:14px;">${l('المبلغ الحالي','Meblaşa niha','Current amount')}: <b class="mono" style="color:var(--accent);">${fmt(courierBudget)} ${t('dueLabel')}</b></div>
     <div class="field"><label>${t('amountLabel')}</label><input id="budgetAmount" type="number" placeholder="0 ${t('dueLabel')}"></div>
-    <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitBudget('add')">${LANG==='ar'?'إضافة مبلغ':'Add Amount'}</button>
-    <button class="btn btn-ghost" style="width:100%; margin-top:8px;" onclick="submitBudget('set')">${LANG==='ar'?'تعديل المبلغ (استبدال)':'Set Amount (Replace)'}</button>
+    <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitBudget('add')">${l('إضافة مبلغ','Meblaşek zêde bike','Add Amount')}</button>
+    <button class="btn btn-ghost" style="width:100%; margin-top:8px;" onclick="submitBudget('set')">${l('تعديل المبلغ (استبدال)','Meblaşê biguherîne (serd bike)','Set Amount (Replace)')}</button>
   `);
 }
 
@@ -2845,7 +3167,7 @@ function submitBudget(mode){
   openSheet(`
     <div style="text-align:center; padding:20px 0;">
       <div style="width:52px; height:52px; border-radius:50%; background:var(--success-tint); color:var(--success); display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">${ic('check',24)}</div>
-      <div style="font-weight:800; font-size:14px; margin-bottom:6px;">${LANG==='ar'?'تم تحديث الميزانية':'Budget Updated'}</div>
+      <div style="font-weight:800; font-size:14px; margin-bottom:6px;">${l('تم تحديث الميزانية','Bajetê hat nvekirin','Budget Updated')}</div>
       <div class="mono" style="font-size:12px; color:var(--ink-soft); font-weight:700;">${fmt(courierBudget)} ${t('dueLabel')}</div>
     </div>
     <button class="btn btn-ghost" style="width:100%; margin-top:14px;" onclick="closeSheet()">${t('close')}</button>
@@ -2853,35 +3175,88 @@ function submitBudget(mode){
   if(TAB==='wallet' || TAB==='profile') renderTab();
 }
 
+let RECHARGE_QI_NUMBER = '07801234567';
+
 function openRechargeSheet(){
   openSheet(`
-    <div style="font-weight:800; font-size:14.5px; margin-bottom:4px;">${LANG==='ar'?'شحن الرصيد':'Recharge Balance'}</div>
-    <div style="font-size:11px; color:var(--ink-faint); font-weight:600; margin-bottom:14px;">${LANG==='ar'?'الرصيد الحالي':'Current balance'}: <b class="mono" style="color:var(--primary);">${fmt(walletCredit)} ${t('dueLabel')}</b></div>
-    <div class="field"><label>${t('amountLabel')}</label><input id="rechargeAmount" type="number" placeholder="0 ${t('dueLabel')}"></div>
-    <div class="field"><label>${LANG==='ar'?'بوابة الدفع':'Payment Gateway'}</label>
-      <select id="rechargeGateway" style="width:100%; padding:11px 13px; border:1px solid var(--border); border-radius:11px; background:var(--surface-2); color:var(--ink); font-size:13px; outline:none; font-family:inherit;">
-        <option value="zaincash">${LANG==='ar'?'زي كاش':'Zain Cash'}</option>
-        <option value="fastpay">${LANG==='ar'?'فاست باي':'FastPay'}</option>
-        <option value="mastercard">${LANG==='ar'?'ماستر كارد':'MasterCard'}</option>
-        <option value="support">${LANG==='ar'?'شحن عبر الدعم':'Charge via Support'}</option>
-      </select>
+    <div style="font-weight:800; font-size:14.5px; margin-bottom:4px;">${l('شحن الرصيد عبر QI','Bakiya bidane bi QI','Recharge via QI')}</div>
+    <div style="font-size:11px; color:var(--ink-faint); font-weight:600; margin-bottom:16px;">${l('الرصيد الحالي','Bakiya niha','Current balance')}: <b class="mono" style="color:var(--primary);">${fmt(walletCredit)} ${t('dueLabel')}</b></div>
+
+    <div style="background:linear-gradient(135deg, var(--primary-tint), rgba(11,110,104,.06)); border:1.5px solid color-mix(in srgb, var(--primary) 30%, transparent); border-radius:14px; padding:14px; margin-bottom:14px;">
+      <div style="font-size:11px; font-weight:800; color:var(--primary); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+        ${ic('info',14)}
+        ${l('خطوات الشحن','Gavên bidanînê','Recharge Steps')}
+      </div>
+      <ol style="margin:0; padding:0 0 0 16px; font-size:11.5px; color:var(--ink-soft); line-height:2; font-weight:600;">
+        <li>${l('انقل المبلغ إلى رقم الQI التالي','Meblaşê bişîne bo vê_semreya QI','Transfer amount to the QI number below')}</li>
+        <li>${l('أدخل رقم العملية (المعاملة) من تطبيق QI','Hejmara meala QI binivîse','Enter the QI transaction number')}</li>
+        <li>${l('اضغط إرسال — سيتم مراجعة الطلب من الإدارة','Bişîne — daxwazê ji rêberiyê tê şînîn','Submit — admin will review')}</li>
+      </ol>
     </div>
-    <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitRecharge()">${LANG==='ar'?'شحن الآن':'Recharge Now'}</button>
-    <div style="text-align:center; margin-top:12px; font-size:11px; color:var(--ink-faint); font-weight:700;">${LANG==='ar'?'مشكلة في الشحن؟':'Problem recharging?'} <a style="color:var(--primary); font-weight:800; cursor:pointer;" onclick="contactSupportRecharge()">${LANG==='ar'?'تواصل مع الدعم':'Contact Support'}</a></div>
+
+    <div style="background:var(--surface-2); border-radius:12px; padding:12px 14px; margin-bottom:14px; display:flex; align-items:center; gap:10px;">
+      <div style="width:40px; height:40px; border-radius:10px; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; flex:none;">
+        ${ic('wallet',18)}
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:10px; font-weight:700; color:var(--ink-faint); margin-bottom:2px;">${l('رقم الQI للتحويل','Semreya QI','QI Number')}</div>
+        <div style="font-size:17px; font-weight:900; color:var(--ink); font-family:monospace; letter-spacing:1px; direction:ltr; text-align:center;" id="qiNumDisplay">${RECHARGE_QI_NUMBER}</div>
+      </div>
+      <button onclick="copyQiNumber()" style="padding:6px 10px; border-radius:8px; background:var(--primary-tint); color:var(--primary); border:none; font-size:10px; font-weight:800; cursor:pointer; flex:none;">${l('نسخ','Kopî bike','Copy')}</button>
+    </div>
+
+    <div class="field">
+      <label>${l('المبلغ المحوّل (د.ع)','Meblaş','Amount')}</label>
+      <input id="rechargeAmount" type="number" placeholder="0 ${t('dueLabel')}" style="font-size:16px; font-weight:800;">
+    </div>
+    <div class="field">
+      <label>${l('رقم عملية QI (المعاملة)','Hejmara meala QI','QI Transaction Number')}</label>
+      <input id="rechargeTxId" type="text" placeholder="${l('مثال: 123456789','Mîna: 123456789','e.g. 123456789')}" style="font-family:monospace; letter-spacing:1px;">
+    </div>
+
+    <button class="btn btn-primary" style="width:100%; margin-top:8px;" onclick="submitRecharge()">${l('إرسال طلب الشحن','Daxwazê bişîne','Submit Request')}</button>
+    <div style="text-align:center; margin-top:12px; font-size:11px; color:var(--ink-faint); font-weight:700;">${l('مشكلة في الشحن؟','Pirsgirêkê di bidanînê de?','Problem recharging?')} <a style="color:var(--primary); font-weight:800; cursor:pointer;" onclick="contactSupportRecharge()">${l('تواصل مع الدعم','Bi alîkariyê re reja','Contact Support')}</a></div>
   `);
+}
+
+function copyQiNumber(){
+  navigator.clipboard.writeText(RECHARGE_QI_NUMBER).then(()=>{
+    const btn = event.target;
+    btn.textContent = l('تم النسخ ✓','Kopî kirî ✓','Copied ✓');
+    setTimeout(()=>{ btn.textContent = l('نسخ','Kopî bike','Copy'); }, 1500);
+  }).catch(()=>{
+    const el = document.getElementById('qiNumDisplay');
+    if(el) el.select();
+  });
 }
 
 function submitRecharge(){
   const amount = parseFloat(document.getElementById('rechargeAmount').value)||0;
-  if(amount<=0) return;
-  walletCredit += amount;
-  saveCredit();
+  const txId = (document.getElementById('rechargeTxId').value||'').trim();
+  if(amount<=0) return openToast(l('أدخل المبلغ','Meblaşê binivîse','Enter amount'));
+  if(!txId) return openToast(l('أدخل رقم عملية QI','Hejmara meala QI binivîse','Enter QI transaction number'));
+
+  const raw = readJSON(PLATFORM_KEY) || {};
+  if(!Array.isArray(raw.rechargeRequests)) raw.rechargeRequests = [];
+  raw.rechargeRequests.unshift({
+    id: Date.now(),
+    userId: currentUser ? currentUser.id : null,
+    username: currentUser ? currentUser.username : '',
+    amount: amount,
+    txId: txId,
+    gateway: 'qi',
+    status: 'pending',
+    date: new Date().toISOString()
+  });
+  localStorage.setItem(PLATFORM_KEY, JSON.stringify(raw));
+
   closeSheet();
   openSheet(`
     <div style="text-align:center; padding:20px 0;">
-      <div style="width:52px; height:52px; border-radius:50%; background:var(--success-tint); color:var(--success); display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">${ic('check',24)}</div>
-      <div style="font-weight:800; font-size:14px; margin-bottom:6px;">${LANG==='ar'?'تم شحن الرصيد بنجاح':'Balance Recharged'}</div>
-      <div class="mono" style="font-size:12px; color:var(--ink-soft); font-weight:700;">+${fmt(amount)} ${t('dueLabel')}</div>
+      <div style="width:52px; height:52px; border-radius:50%; background:var(--warning-tint); color:var(--warning); display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">${ic('clock',24)}</div>
+      <div style="font-weight:800; font-size:14px; margin-bottom:6px;">${l('تم إرسال طلب الشحن','Daxwazê hat bişîne','Request Submitted')}</div>
+      <div style="font-size:12px; color:var(--ink-soft); line-height:1.7; max-width:280px; margin:0 auto;">${l('سيتم مراجعة طلبك من قبل الإدارة وإضافة الرصيد خلال دقائق.','Daxwazê te dê ji heyal riwayetê were şînîn û bakiya te di navkaniyê de were zêdekirin.','Your request will be reviewed and balance will be added shortly.')}</div>
+      <div style="margin-top:10px; font-size:12px; color:var(--ink-faint); font-weight:700;">${l('رقم العملية:','Hejmara meala:','Tx ID:')} <span class="mono" style="color:var(--primary); font-weight:900;">${txId}</span></div>
     </div>
     <button class="btn btn-ghost" style="width:100%; margin-top:14px;" onclick="closeSheet()">${t('close')}</button>
   `);
@@ -2889,37 +3264,80 @@ function submitRecharge(){
 }
 
 /* ---- Chat ---- */
+let chatSubTab = 'admin';
+
 function renderChatList(){
   setTopbar(t('tabChat'), '', false);
-  const chats = ROLE==='merchant' ? MERCHANT_CHATS : COURIER_CHATS;
+  const allChats = getAllChats();
+  const myChats = getMyChats();
   const el = document.getElementById('appContent');
-  el.innerHTML = `<div class="list-card" id="chatListWrap"></div>`;
-  document.getElementById('chatListWrap').innerHTML = chats.map(c=>`
-    <div class="chat-row" data-chat="${c.id}">
-      <div class="chat-avatar">${nm(c.name).charAt(0)}</div>
-      <div class="chat-mid"><b>${nm(c.name)}</b><span>${nm(c.last)}</span></div>
-      <div class="chat-end"><time>${c.time}</time>${c.unread>0?`<span class="unread-badge">${c.unread}</span>`:''}</div>
-    </div>`).join('');
+
+  const isAdmin = chatSubTab === 'admin';
+  const isOther = chatSubTab === 'other';
+  const otherRole = ROLE==='courier' ? 'merchant' : 'courier';
+
+  const filteredChats = myChats.filter(c => {
+    if(isAdmin) return c.participants && c.participants.includes('admin');
+    if(isOther) return c.participants && c.participants.includes(otherRole) && !c.participants.includes('admin');
+    return false;
+  });
+
+  const otherLabel = otherRole==='merchant' ? l('التاجر','Karbêran','Merchant') : l('المندوب','Kuryêr','Courier');
+  const adminLabel = l('الإدارة','Rêberî','Management');
+
+  const adminUnread = allChats.filter(c => c.participants && c.participants.includes('admin')).reduce((a,c) => a+(c.unread||0), 0);
+  const otherUnread = allChats.filter(c => c.participants && c.participants.includes(otherRole) && !c.participants.includes('admin')).reduce((a,c) => a+(c.unread||0), 0);
+
+  const tabHtml = `
+    <div style="display:flex; gap:6px; margin-bottom:14px;">
+      <button class="chat-tab" onclick="chatSubTab='admin'; renderChatList();" style="background:${isAdmin?'var(--primary)':'var(--surface-2)'}; color:${isAdmin?'#fff':'var(--ink-soft)'}; box-shadow:${isAdmin?'0 4px 12px rgba(11,110,104,.25)':'none'};">
+        ${ic('shield',16)}
+        ${adminLabel}
+        ${adminUnread>0?`<span style="min-width:20px; height:20px; border-radius:10px; background:${isAdmin?'rgba(255,255,255,.3)':'var(--danger)'}; color:${isAdmin?'#fff':'#fff'}; font-size:10px; font-weight:900; display:flex; align-items:center; justify-content:center; padding:0 5px;">${adminUnread}</span>`:''}
+      </button>
+      <button class="chat-tab" onclick="chatSubTab='other'; renderChatList();" style="background:${isOther?'var(--primary)':'var(--surface-2)'}; color:${isOther?'#fff':'var(--ink-soft)'}; box-shadow:${isOther?'0 4px 12px rgba(11,110,104,.25)':'none'};">
+        ${ROLE==='courier' ? ic('store',16) : ic('bike',16)}
+        ${otherLabel}
+        ${otherUnread>0?`<span style="min-width:20px; height:20px; border-radius:10px; background:${isOther?'rgba(255,255,255,.3)':'var(--danger)'}; color:#fff; font-size:10px; font-weight:900; display:flex; align-items:center; justify-content:center; padding:0 5px;">${otherUnread}</span>`:''}
+      </button>
+    </div>`;
+
+  el.innerHTML = tabHtml + `<div class="list-card" id="chatListWrap"></div>`;
+  document.getElementById('chatListWrap').innerHTML = filteredChats.length ? filteredChats.map(c=>{
+    const avatarText = nm(c.name).charAt(0);
+    const unread = c.unread || 0;
+    return `<div class="chat-row" data-chat="${c.id}">
+      <div class="chat-avatar">${avatarText}</div>
+      <div class="chat-mid"><b>${nm(c.name)}</b><span style="display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:200px;">${nm(c.last)}</span></div>
+      <div class="chat-end"><time>${c.time}</time>${unread>0?`<span class="unread-badge">${unread}</span>`:''}</div>
+    </div>`;
+  }).join('') : `<div style="text-align:center; padding:40px 20px; color:var(--ink-faint); font-size:12px;">${l('لا توجد محادثات بعد','Axivistin tune','No conversations yet')}</div>`;
   document.querySelectorAll('[data-chat]').forEach(row=>{
     row.addEventListener('click', ()=>{ activeChat = row.dataset.chat; renderTab(); });
   });
 }
 
 function renderChatThread(chatId){
-  const chats = ROLE==='merchant' ? MERCHANT_CHATS : COURIER_CHATS;
+  const chats = getAllChats();
   const c = chats.find(x=>x.id===chatId);
+  if(!c) return renderChatList();
   c.unread = 0;
+  saveAllChats(chats);
   renderTabs();
   setTopbar(nm(c.name), '', true, ()=>{ activeChat=null; renderTab(); });
   const el = document.getElementById('appContent');
   el.style.paddingBottom = '16px';
   el.innerHTML = `<div class="thread" id="threadWrap"></div>`;
   const wrap = document.getElementById('threadWrap');
-  wrap.innerHTML = c.messages.map(m=>`
-    <div class="bubble ${m.from==='me'?'bubble-me':'bubble-them'}">${nm(m.text)}<span class="bubble-time">${m.time}</span></div>
-  `).join('');
+  const myFrom = ROLE;
+  wrap.innerHTML = c.messages.map(m=>{
+    const isMe = m.from===myFrom || m.from==='me';
+    const senderLabel = m.from==='admin' ? (LANG==='ar'?'الإدارة':'Management') : m.from==='merchant' ? (LANG==='ar'?'التاجر':'Merchant') : m.from==='courier' ? (LANG==='ar'?'المندوب':'Courier') : '';
+    return `<div class="bubble ${isMe?'bubble-me':'bubble-them'}">`+
+      (!isMe && c.participants.includes('merchant') && c.participants.includes('courier') ? `<div style="font-size:9px; font-weight:700; color:var(--primary); margin-bottom:2px;">${senderLabel}</div>` : '')+
+      `${nm(m.text)}<span class="bubble-time">${m.time}</span></div>`;
+  }).join('');
 
-  // inject input bar right after content, inside app shell (not scrollable content)
   let bar = document.getElementById('chatInputBar');
   if(!bar){
     bar = document.createElement('div');
@@ -2939,7 +3357,7 @@ function renderChatThread(chatId){
   document.getElementById('chatSendBtn').onclick = ()=>{
     const input = document.getElementById('chatInput');
     if(!input.value.trim()) return;
-    c.messages.push({from:'me', text:{ar:input.value, en:input.value}, time:'الآن'});
+    sendChatMessage(chatId, myFrom, input.value.trim());
     input.value='';
     renderChatThread(chatId);
     wrap.scrollTop = wrap.scrollHeight;
@@ -3070,7 +3488,7 @@ function renderReportsDetail(el){
 
   const listEl = document.getElementById('rptOrdersList');
   listEl.innerHTML = filtered.length ? filtered.map(o=>{
-    const date = new Date(o.date).toLocaleDateString(LANG==='ar'?'ar-IQ':'en-US', {year:'numeric', month:'short', day:'numeric'});
+    const date = new Date(o.date).toLocaleDateString(LANG==='ar'?'ar-IQ':LANG==='ku'?'ku-IQ':'en-US', {year:'numeric', month:'short', day:'numeric'});
     return `
     <div class="order-row" data-track="${o.track}" style="cursor:pointer;">
       <div class="order-ic" style="background:${statusDef.tint}; color:${statusDef.color};">${ic(statusDef.icon,17)}</div>
@@ -3083,7 +3501,7 @@ function renderReportsDetail(el){
         ${statusBadge(o.status)}
       </div>
     </div>`;
-  }).join('') : `<div class="empty-hint">${LANG==='ar'?'لا طلبات في هذه الفترة':'No orders in this period'}</div>`;
+  }).join('') : `<div class="empty-hint">${l('لا طلبات في هذه الفترة','Daxwaz tune di vê demê de','No orders in this period')}</div>`;
 
   listEl.querySelectorAll('[data-track]').forEach(row=>{
     row.addEventListener('click', ()=>{
@@ -3110,6 +3528,7 @@ function renderProfile(){
         <div class="srt">${t('settingsLang')}</div>
         <div class="seg">
           <button id="segLangAr" class="${LANG==='ar'?'active':''}">عربي</button>
+          <button id="segLangKu" class="${LANG==='ku'?'active':''}">کوردی</button>
           <button id="segLangEn" class="${LANG==='en'?'active':''}">English</button>
         </div>
       </div>
@@ -3145,6 +3564,7 @@ function renderProfile(){
     <button class="btn btn-ghost" style="width:100%; color:var(--danger);" id="btnLogout">${ic('logout',16)}<span>${t('settingsLogout')}</span></button>
   `;
   document.getElementById('segLangAr').addEventListener('click', ()=>{ setLang('ar'); renderProfile(); });
+  document.getElementById('segLangKu').addEventListener('click', ()=>{ setLang('ku'); renderProfile(); });
   document.getElementById('segLangEn').addEventListener('click', ()=>{ setLang('en'); renderProfile(); });
   const rowBudget = document.getElementById('rowBudget');
   if(rowBudget) rowBudget.addEventListener('click', openBudgetSheet);
@@ -3152,7 +3572,7 @@ function renderProfile(){
   if(rowRecharge) rowRecharge.addEventListener('click', openRechargeSheet);
   document.getElementById('segLight').addEventListener('click', ()=>{ setTheme('light'); renderProfile(); });
   document.getElementById('segDark').addEventListener('click', ()=>{ setTheme('dark'); renderProfile(); });
-  document.getElementById('rowSupport').addEventListener('click', ()=>{ TAB='chat'; activeChat = ROLE==='merchant'?'support':'dispatch'; renderTabs(); renderTab(); });
+  document.getElementById('rowSupport').addEventListener('click', ()=>{ TAB='chat'; activeChat = ROLE==='merchant'?'admin_merchant':'admin_courier'; renderTabs(); renderTab(); });
   const rowVerify = document.getElementById('rowVerify');
   if(rowVerify) rowVerify.addEventListener('click', openVerifySheet);
   const rowReports = document.getElementById('rowReports');
@@ -3322,7 +3742,7 @@ function openOrderDetailSheet(o){
     <div class="sheet-route">${route}</div>
     <div class="divider"></div>
     <div style="margin-bottom:12px;">
-      <div style="font-size:12.5px; font-weight:800; margin-bottom:10px; color:var(--ink);">${LANG==='ar'?'تفاصيل الطلب':'Order Details'}</div>
+      <div style="font-size:12.5px; font-weight:800; margin-bottom:10px; color:var(--ink);">${l('تفاصيل الطلب','Kûrteya daxwazê','Order Details')}</div>
       <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${LANG==='ar'?'الزبون':'Customer'}</span><span>${nm(o.customer)}</span></div>
       <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${LANG==='ar'?'الهاتف':'Phone'}</span><span class="mono">${o.phone||''}</span></div>
       ${phone2}
@@ -3332,6 +3752,8 @@ function openOrderDetailSheet(o){
       ${notes}
     </div>
     ${courierCard}
+    ${ROLE==='merchant' ? pickupTimerCard(o) : ''}
+    ${complaintBtn(o)}
     ${o.status==='pending' ? `<button class="btn btn-primary" style="width:100%; margin-bottom:8px;" onclick="openEditOrderSheet('${o.track}')">${LANG==='ar'?'تعديل الطلب':'Edit Order'}</button>` : ''}
     <button class="btn btn-ghost" style="width:100%;" onclick="closeSheet()">${t('close')}</button>
   `);

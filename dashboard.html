@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة تحكم المنجز السريع</title>
+<style>
+:root{
+  --bg:#0F172A; --bg-2:#0B1220; --surface:#16213A; --surface-2:#1D2A47; --border:rgba(255,255,255,.08);
+  --ink:#E6EDF7; --ink-soft:#9AA8BF; --ink-faint:#64748B;
+  --primary:#22D3EE; --primary-2:#0EA5E9; --success:#34D399; --warning:#FBBF24; --danger:#F87171;
+  --st-pending:#FBBF24; --st-approved:#38BDF8; --st-courier:#A78BFA; --st-delivered:#34D399; --st-returned:#F87171;
+}
+*{margin:0; padding:0; box-sizing:border-box;}
+html,body{height:100%;}
+body{font-family:'Segoe UI', Tahoma, Arial, sans-serif; background:var(--bg); color:var(--ink); font-size:14px; overflow:hidden;}
+
+/* ---------- LOGIN ---------- */
+#loginScreen{position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; background:radial-gradient(1000px 600px at 20% 10%, rgba(34,211,238,.12), transparent 60%), radial-gradient(800px 500px at 80% 90%, rgba(167,139,250,.12), transparent 60%), var(--bg);}
+#loginScreen.active{display:flex;}
+.login-box{width:400px; background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:36px 32px; box-shadow:0 30px 60px rgba(0,0,0,.5);}
+.login-logo{width:54px; height:54px; border-radius:15px; background:linear-gradient(135deg, var(--primary), var(--primary-2)); display:flex; align-items:center; justify-content:center; margin:0 auto 16px; color:#062033;}
+.login-box h1{font-size:19px; text-align:center; font-weight:900; margin-bottom:6px;}
+.login-box p{font-size:12px; color:var(--ink-soft); text-align:center; margin-bottom:26px; line-height:1.7;}
+.field{margin-bottom:14px;}
+.field label{display:block; font-size:11.5px; font-weight:800; color:var(--ink-soft); margin-bottom:6px;}
+.field input{width:100%; padding:12px 14px; border:1px solid var(--border); border-radius:11px; background:var(--surface-2); color:var(--ink); font-size:13.5px; outline:none; font-family:inherit; direction:ltr; text-align:left;}
+.field input:focus{border-color:var(--primary);}
+.login-err{display:none; background:rgba(248,113,113,.12); border:1px solid rgba(248,113,113,.35); color:var(--danger); font-size:12px; font-weight:700; border-radius:10px; padding:10px 12px; margin-bottom:14px; text-align:center;}
+.login-err.show{display:block;}
+.login-box .btn{width:100%; padding:13px; border:none; border-radius:11px; background:linear-gradient(135deg, var(--primary), var(--primary-2)); color:#062033; font-size:14px; font-weight:900; cursor:pointer; font-family:inherit;}
+.login-box .btn:hover{filter:brightness(1.08);}
+.login-hint{margin-top:16px; text-align:center; font-size:11px; color:var(--ink-faint);}
+
+/* ---------- SHELL ---------- */
+#app{display:none; height:100vh;}
+#app.active{display:flex;}
+.sidebar{width:242px; flex:none; background:var(--bg-2); border-inline-end:1px solid var(--border); display:flex; flex-direction:column;}
+.side-brand{display:flex; align-items:center; gap:10px; padding:20px 18px; border-bottom:1px solid var(--border);}
+.side-brand .sb-ico{width:38px; height:38px; border-radius:11px; background:linear-gradient(135deg, var(--primary), var(--primary-2)); display:flex; align-items:center; justify-content:center; color:#062033; flex:none;}
+.side-brand b{font-size:14px; font-weight:900;}
+.side-brand span{display:block; font-size:10.5px; color:var(--ink-faint); font-weight:700; margin-top:2px;}
+.side-nav{flex:1; padding:14px 10px; overflow-y:auto;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:11px 13px; border-radius:11px; color:var(--ink-soft); font-weight:800; font-size:13px; cursor:pointer; margin-bottom:4px; transition:background .15s, color .15s;}
+.nav-item:hover{background:var(--surface); color:var(--ink);}
+.nav-item.active{background:linear-gradient(90deg, rgba(34,211,238,.16), rgba(34,211,238,.04)); color:var(--primary);}
+.nav-item .badge{background:var(--danger); color:#fff; font-size:10px; font-weight:900; border-radius:20px; padding:1px 7px; margin-inline-start:auto;}
+.side-foot{padding:14px; border-top:1px solid var(--border);}
+.side-foot button{width:100%; display:flex; align-items:center; justify-content:center; gap:8px; padding:10px; border-radius:10px; border:1px solid var(--border); background:transparent; color:var(--ink-soft); font-weight:800; font-size:12.5px; cursor:pointer; font-family:inherit;}
+.side-foot button:hover{color:var(--danger); border-color:rgba(248,113,113,.4);}
+
+.main{flex:1; display:flex; flex-direction:column; min-width:0;}
+.topbar{height:62px; flex:none; display:flex; align-items:center; gap:14px; padding:0 24px; border-bottom:1px solid var(--border); background:var(--bg-2);}
+.topbar h2{font-size:16px; font-weight:900;}
+.topbar .spacer{flex:1;}
+.live-dot{display:flex; align-items:center; gap:6px; font-size:11px; color:var(--ink-soft); font-weight:700;}
+.live-dot i{width:8px; height:8px; border-radius:50%; background:var(--success); animation:pulse 1.6s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+.content{flex:1; overflow-y:auto; padding:24px;}
+.content::-webkit-scrollbar{width:9px;}
+.content::-webkit-scrollbar-thumb{background:var(--surface-2); border-radius:20px;}
+
+/* ---------- CARDS ---------- */
+.kpi-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:22px;}
+.kpi{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px; display:flex; align-items:center; gap:14px;}
+.kpi .ki{width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center; flex:none;}
+.kpi .kval{font-size:19px; font-weight:900; letter-spacing:-.2px;}
+.kpi .klab{font-size:11px; color:var(--ink-soft); font-weight:700; margin-top:2px;}
+.panel{background:var(--surface); border:1px solid var(--border); border-radius:16px; margin-bottom:18px; overflow:hidden;}
+.panel-head{display:flex; align-items:center; gap:10px; padding:15px 18px; border-bottom:1px solid var(--border);}
+.panel-head h3{font-size:13.5px; font-weight:900; flex:1;}
+.panel-body{padding:16px 18px;}
+.two-col{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+
+/* ---------- TABLES ---------- */
+table.tbl{width:100%; border-collapse:collapse;}
+.tbl th{text-align:right; font-size:11px; font-weight:800; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.4px; padding:10px 12px; border-bottom:1px solid var(--border); white-space:nowrap;}
+.tbl td{padding:12px; border-bottom:1px solid var(--border); font-size:12.5px; vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tbody tr:hover{background:var(--surface-2);}
+.mono{font-family:Consolas, monospace; direction:ltr;}
+.chip{display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:800; white-space:nowrap;}
+.chip i{width:6px; height:6px; border-radius:50%;}
+.src-tag{font-size:10px; font-weight:800; padding:2px 8px; border-radius:6px; background:var(--surface-2); color:var(--ink-soft);}
+
+/* ---------- FILTERS ---------- */
+.filter-bar{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; align-items:center;}
+.fbtn{padding:8px 16px; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--ink-soft); font-size:12px; font-weight:800; cursor:pointer; font-family:inherit;}
+.fbtn.active{background:linear-gradient(135deg, var(--primary), var(--primary-2)); border-color:transparent; color:#062033;}
+.fbtn .cnt{opacity:.7; font-size:11px;}
+.search{flex:1; min-width:200px; max-width:320px; position:relative;}
+.search input{width:100%; padding:9px 14px; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--ink); font-size:12.5px; outline:none; font-family:inherit;}
+.search input:focus{border-color:var(--primary);}
+
+/* ---------- CHAT ---------- */
+.chat-layout{display:grid; grid-template-columns:320px 1fr; gap:18px; height:calc(100vh - 150px);}
+.chat-list{overflow-y:auto; background:var(--surface); border:1px solid var(--border); border-radius:16px;}
+.chat-item{display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--border); cursor:pointer;}
+.chat-item:hover{background:var(--surface-2);}
+.chat-item.active{background:rgba(34,211,238,.08);}
+.avatar{width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg, var(--primary), var(--primary-2)); color:#062033; display:flex; align-items:center; justify-content:center; font-weight:900; flex:none;}
+.chat-mid{flex:1; min-width:0;}
+.chat-mid b{display:block; font-size:13px; font-weight:800;}
+.chat-mid span{display:block; font-size:11px; color:var(--ink-faint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;}
+.chat-end{text-align:left; flex:none;}
+.chat-end time{display:block; font-size:10px; color:var(--ink-faint);}
+.chat-end .ubadge{display:inline-block; background:var(--danger); color:#fff; font-size:10px; font-weight:900; border-radius:20px; padding:1px 7px; margin-top:4px;}
+.chat-thread{display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden;}
+.thread-head{display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid var(--border);}
+.thread-head b{font-size:13.5px; font-weight:900;}
+.thread-head .spacer{flex:1;}
+.thread-head .src-tag{margin:0;}
+.thread-body{flex:1; overflow-y:auto; padding:18px; display:flex; flex-direction:column; gap:10px;}
+.bubble{max-width:62%; padding:10px 14px; border-radius:14px; font-size:13px; line-height:1.7; position:relative;}
+.bubble-them{background:var(--surface-2); border-bottom-right-radius:4px; align-self:flex-start; border-inline-start:3px solid var(--primary);}
+.bubble-me{background:linear-gradient(135deg, var(--primary), var(--primary-2)); color:#062033; font-weight:700; border-bottom-left-radius:4px; align-self:flex-end;}
+.bubble time{display:block; font-size:9.5px; opacity:.65; margin-top:4px;}
+.chat-empty{display:flex; align-items:center; justify-content:center; color:var(--ink-faint); font-weight:700; font-size:13px;}
+
+/* ---------- STATUS DIST ---------- */
+.dist-row{display:flex; align-items:center; gap:12px; margin-bottom:12px;}
+.dist-row .dlab{width:88px; font-size:12px; font-weight:800; color:var(--ink-soft);}
+.dist-row .dtrack{flex:1; height:9px; border-radius:20px; background:var(--surface-2); overflow:hidden;}
+.dist-row .dfill{height:100%; border-radius:20px; transition:width .4s;}
+.dist-row .dval{width:46px; text-align:left; font-size:12px; font-weight:900;}
+
+/* ---------- MISC ---------- */
+.empty{text-align:center; color:var(--ink-faint); font-weight:700; padding:28px; font-size:12.5px;}
+.muted{color:var(--ink-faint); font-size:11px;}
+.up{color:var(--success);} .dn{color:var(--danger);}
+a{color:var(--primary);}
+
+/* ---------- HERO SLIDER ---------- */
+.hero-slider{position:relative; height:200px; border-radius:18px; overflow:hidden; margin-bottom:22px; border:1px solid var(--border);}
+.hero-slide{position:absolute; inset:0; opacity:0; transition:opacity .6s ease; display:flex; align-items:center; padding:0 70px 0 28px;}
+.hero-slide.active{opacity:1;}
+.hero-inner{position:relative; z-index:1;}
+.hero-tag{display:inline-flex; align-items:center; gap:6px; width:fit-content; padding:3px 11px; border-radius:20px; font-size:10.5px; font-weight:900; margin-bottom:8px; background:rgba(255,255,255,.16); color:#fff;}
+.hero-title{font-size:20px; font-weight:900; color:#fff; margin-bottom:6px; line-height:1.4;}
+.hero-sub{font-size:12.5px; color:rgba(255,255,255,.85); font-weight:600; max-width:420px; line-height:1.7;}
+.hero-arrow{position:absolute; top:50%; transform:translateY(-50%); width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.16); color:#fff; border:none; cursor:pointer; font-size:20px; line-height:1; display:flex; align-items:center; justify-content:center; z-index:3; transition:background .2s;}
+.hero-arrow:hover{background:rgba(255,255,255,.3);}
+.hero-prev{left:14px;}
+.hero-next{right:14px;}
+.hero-dots{position:absolute; bottom:14px; right:28px; z-index:2; display:flex; gap:6px;}
+.hero-dot{width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.4); cursor:pointer; transition:all .2s;}
+.hero-dot.active{width:22px; border-radius:20px; background:#fff;}
+
+/* ---------- NOTIFICATIONS ---------- */
+.notif-item{display:flex; gap:14px; padding:15px 18px; border-bottom:1px solid var(--border); align-items:flex-start;}
+.notif-item:last-child{border-bottom:none;}
+.notif-item.unread{background:rgba(34,211,238,.05);}
+.notif-item.unread .notif-body b::before{content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--danger); margin-inline-end:7px;}
+.notif-ic{width:40px; height:40px; border-radius:12px; flex:none; display:flex; align-items:center; justify-content:center;}
+.notif-body{flex:1; min-width:0;}
+.notif-body b{display:block; font-size:13px; font-weight:900;}
+.notif-body span{display:block; font-size:12px; color:var(--ink-soft); margin-top:3px; line-height:1.7;}
+.notif-time{flex:none; text-align:left; font-size:10.5px; color:var(--ink-faint); font-weight:700;}
+
+/* ---------- USER CARDS / ROSTER ---------- */
+.roster-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:16px;}
+.user-card{border:1px solid var(--border); border-radius:16px; background:var(--surface); padding:18px; display:flex; flex-direction:column; gap:14px;}
+.user-card:hover{border-color:var(--primary-2);}
+.uc-top{display:flex; align-items:center; gap:12px;}
+.uc-id{flex:1; min-width:0;}
+.uc-id b{display:block; font-size:13.5px; font-weight:900;}
+.uc-meta{display:grid; grid-template-columns:1fr 1fr; gap:10px; background:var(--surface-2); border-radius:12px; padding:12px 14px;}
+.uc-meta span{display:block; font-size:11.5px; color:var(--ink-soft); font-weight:700;}
+.uc-meta label{display:block; font-size:10px; color:var(--ink-faint); font-weight:700; margin-top:2px;}
+.uc-stats{display:grid; grid-template-columns:repeat(4,1fr); gap:8px;}
+.uc-stat{text-align:center; background:var(--surface-2); border-radius:10px; padding:10px 4px;}
+.uc-stat b{display:block; font-size:14px; font-weight:900;}
+.uc-stat span{font-size:9.5px; color:var(--ink-faint); font-weight:700;}
+.uc-flag{display:inline-flex; align-items:center; gap:6px; width:fit-content; padding:4px 12px; border-radius:20px; font-size:10.5px; font-weight:900; background:var(--surface-2); color:var(--ink-faint);}
+.uc-flag.active{background:rgba(52,211,153,.12); color:var(--success);}
+.vtag{padding:3px 10px; border-radius:8px; background:var(--surface-2); color:var(--ink-soft); font-size:10px; font-weight:800; flex:none;}
+.user-cell{display:flex; align-items:center; gap:10px;}
+.user-cell div{min-width:0;}
+.user-cell b{display:block; font-size:12.5px; font-weight:900;}
+.fbtn.mini{padding:4px 10px; font-size:10.5px;}
+.spacer{flex:1;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="active">
+  <div class="login-box">
+    <div class="login-logo">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>
+    </div>
+    <h1>لوحة تحكم المنجز السريع</h1>
+    <p>الوصول إلى إدارة المنصة: الطلبات، المندوبون، المالية، والدردشة الموحّدة</p>
+    <div class="login-err" id="loginErr">اسم المستخدم أو كلمة المرور غير صحيحة</div>
+    <div class="field"><label>اسم المستخدم</label><input id="dashUser" type="text" placeholder="admin"></div>
+    <div class="field"><label>كلمة المرور</label><input id="dashPass" type="password" placeholder="••••••"></div>
+    <button class="btn" id="dashLoginBtn">تسجيل الدخول</button>
+    <div class="login-hint">الوصول التجريبي: admin / 123456</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <aside class="sidebar">
+    <div class="side-brand">
+      <div class="sb-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>
+      </div>
+      <div><b>المنجز السريع</b><span>لوحة تحكم المنصة</span></div>
+    </div>
+    <nav class="side-nav" id="sideNav"></nav>
+    <div class="side-foot">
+      <button id="dashLogoutBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>تسجيل الخروج</span>
+      </button>
+    </div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <h2 id="pageTitle">لوحة التحكم</h2>
+      <div class="spacer"></div>
+      <div class="live-dot"><i></i> بيانات حية من التطبيق</div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<script>
+/* ================= STATE ================= */
+const DASH_USER='admin', DASH_PASS='123456', AUTH_KEY='masar_dash_auth';
+const PLATFORM_KEY='masar_platform_data';
+let LANG='ar', VIEW='home', ordersFilter='all', ordersSearch='', activeChat=null;
+let allOrders=[];
+
+/* ================= SEED FALLBACK ================= */
+function seedOrders(){ return [
+  {track:'IQ-204871', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, phone:'07701234567', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}, price:42000, status:'pending', date:'2026-08-10', src:'merchant'},
+  {track:'IQ-204879', customer:{ar:'كرم عادل',en:'Karam Adel'}, phone:'07705551234', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}, price:28000, status:'approved', date:'2026-08-11', src:'merchant'},
+  {track:'IQ-204880', customer:{ar:'هدى نعيم',en:'Huda Naeem'}, phone:'07708889999', address:{ar:'البصرة — الحزام الأخضر',en:'Basra — Green Belt'}, price:21000, status:'courier', date:'2026-08-08', src:'merchant'},
+  {track:'IQ-204881', customer:{ar:'باسم غالب',en:'Bassem Ghalib'}, phone:'07704445566', address:{ar:'أربيل — شارع 60 متر',en:'Erbil — 60m Street'}, price:50000, status:'returned', date:'2026-08-05', src:'merchant'},
+  {track:'IQ-204862', customer:{ar:'ميساء طه',en:'Maysaa Taha'}, phone:'07707778899', address:{ar:'النجف — الحيدرية',en:'Najaf — Al-Haydariya'}, price:33000, status:'delivered', date:'2026-08-12', src:'merchant'},
+  {track:'IQ-204890', customer:{ar:'نور حسين',en:'Noor Hussein'}, phone:'07702223344', address:{ar:'كربلاء — الحسينية',en:'Karbala — Husseiniya'}, price:15000, status:'courier', date:'2026-08-09', src:'merchant'},
+  {track:'IQ-204891', customer:{ar:'عمر فاطمة',en:'Omar Fatima'}, phone:'07706667788', address:{ar:'الموصل — التحرير',en:'Mosul — Al-Tahrir'}, price:37000, status:'delivered', date:'2026-08-01', src:'merchant'},
+  {track:'IQ-204892', customer:{ar:'سارة أحمد',en:'Sara Ahmed'}, phone:'07704445566', address:{ar:'البصرة — العشار',en:'Basra — Al-Ashar'}, price:48000, status:'pending', date:'2026-07-28', src:'merchant'},
+];}
+function seedDeliveries(){ return [
+  {track:'IQ-204873', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, phone:'07701234567', address:{ar:'الكرادة — شارع 60',en:'Karrada — 60m Street'}, price:64000, fee:2500, status:'pending', date:'2026-08-12', src:'courier', courier:'أحمد كريم'},
+  {track:'IQ-204877', customer:{ar:'مروان طارق',en:'Marwan Tariq'}, phone:'07705551234', address:{ar:'الجادرية —شارع 40',en:'Jadriya — 40m Street'}, price:29800, fee:2200, status:'approved', date:'2026-08-12', src:'courier', courier:'محمد علي'},
+  {track:'IQ-204882', customer:{ar:'رنا فؤاد',en:'Rana Fouad'}, phone:'07708889999', address:{ar:'المنصور — zona 609',en:'Mansour — Zone 609'}, price:41500, fee:2300, status:'courier', date:'2026-08-11', src:'courier', courier:'أحمد كريم'},
+  {track:'IQ-204885', customer:{ar:'سيف كامل',en:'Saif Kamel'}, phone:'07704445566', address:{ar:'زيونة —شارع الحسين',en:'Zayouna — Hussain Street'}, price:18000, fee:2000, status:'delivered', date:'2026-08-10', src:'courier', courier:'سعيد محمود'},
+  {track:'IQ-204890', customer:{ar:'نور حسين',en:'Noor Hussein'}, phone:'07702223344', address:{ar:'الكرادة — فيلا 12',en:'Karrada — Villa 12'}, price:52000, fee:2500, status:'returned', date:'2026-08-09', src:'courier', courier:'عمر حسن'},
+  {track:'IQ-204895', customer:{ar:'عمار حسين',en:'Ammar Hussein'}, phone:'07707778899', address:{ar:'الكاظمية —شارع?',en:'Kadhimiya — Main St'}, price:35000, fee:2200, status:'pending', date:'2026-08-12', src:'courier', courier:'خالد ياسر'},
+];}
+function seedMerchantTx(){ return [
+  {label:{ar:'تسوية مستلمة',en:'Settlement received'}, ref:'STL-3391', date:'2026-07-01', amount:4210000, dir:1},
+  {label:{ar:'أجور توصيل — IQ-204879',en:'Delivery fee — IQ-204879'}, ref:'IQ-204879', date:'2026-07-05', amount:-2200, dir:-1},
+  {label:{ar:'طلب سحب',en:'Withdrawal request'}, ref:'WD-0118', date:'2026-06-28', amount:-1500000, dir:-1},
+  {label:{ar:'أجور توصيل — IQ-204862',en:'Delivery fee — IQ-204862'}, ref:'IQ-204862', date:'2026-06-24', amount:-1800, dir:-1},
+  {label:{ar:'تحصيل زبون',en:'Customer collection'}, ref:'IQ-204862', date:'2026-06-24', amount:31000, dir:1},
+];}
+function seedCourierTx(){ return [
+  {label:{ar:'تحصيل — IQ-204885',en:'Collected — IQ-204885'}, ref:'IQ-204885', date:'2026-08-10', amount:18000, dir:1},
+  {label:{ar:'تحصيل — IQ-204882',en:'Collected — IQ-204882'}, ref:'IQ-204882', date:'2026-08-11', amount:41500, dir:1},
+  {label:{ar:'إرجاع — IQ-204890',en:'Returned — IQ-204890'}, ref:'IQ-204890', date:'2026-08-09', amount:-52000, dir:-1},
+  {label:{ar:'إضافة نقدي',en:'Cash added'}, ref:'CASH-001', date:'2026-08-08', amount:100000, dir:1},
+  {label:{ar:'دفع سعر الطلب — IQ-204885',en:'Paid order — IQ-204885'}, ref:'IQ-204885', date:'2026-08-10', amount:-18000, dir:-1},
+  {label:{ar:'عمولة توصيل',en:'Delivery commission'}, ref:'IQ-204866', date:'2026-07-05', amount:3200, dir:1},
+];}
+function seedChats(){ return [
+  {id:'support', name:{ar:'الدعم الفني',en:'Support Team'}, last:{ar:'تم استلام طلبك، سنرد خلال دقائق',en:'Your request was received'}, time:'10:24', unread:2, src:'merchant', messages:[
+    {from:'them', text:{ar:'مرحباً، كيف نقدر نساعدك اليوم؟',en:'Hello, how can we help you?'}, time:'09:50'},
+    {from:'me', text:{ar:'أريد الاستفسار عن الطلب IQ-204871',en:'I want to ask about order IQ-204871'}, time:'09:52'},
+    {from:'them', text:{ar:'الطلب حالياً قيد النقل بين الفروع، وسيصل خلال ساعتين تقريباً',en:'The order is in transit, arriving in about two hours'}, time:'09:55'},
+  ]},
+  {id:'branch-m', name:{ar:'مدير فرع بغداد',en:'Baghdad Branch Manager'}, last:{ar:'تم تأكيد استلام الشحنة',en:'Shipment receipt confirmed'}, time:'أمس', unread:0, src:'merchant', messages:[
+    {from:'me', text:{ar:'هل وصلت شحنة اليوم لفرعكم؟',en:'Did today\'s shipment reach you?'}, time:'أمس 16:10'},
+    {from:'them', text:{ar:'نعم، تم استلامها وجاري الفرز',en:'Yes, received and sorting'}, time:'أمس 16:22'},
+  ]},
+  {id:'dispatch', name:{ar:'مسؤول العمليات',en:'Dispatch Officer'}, last:{ar:'وصلك طلب جديد بمنطقة الكرادة',en:'A new order in Karrada'}, time:'11:02', unread:1, src:'courier', messages:[
+    {from:'them', text:{ar:'صباح الخير، عندك 4 طلبات اليوم بمنطقتك',en:'Good morning, you have 4 orders today'}, time:'08:30'},
+    {from:'me', text:{ar:'تمام، بدأت فيهم',en:'Got it, starting now'}, time:'08:31'},
+    {from:'them', text:{ar:'وصلك طلب جديد بمنطقة الكرادة',en:'A new order was assigned to you in Karrada'}, time:'11:02'},
+  ]},
+];}
+
+function seedUsers(){ return [
+  {username:'تاجر', role:'merchant', name:'متجر النور للإلكترونيات', shop:'متجر النور', address:'بغداد — الكرادة', phone:'07701234567'},
+  {username:'مندوب', role:'courier', name:'أحمد كريم', address:'بغداد — الجادرية', phone:'07709876543', vehicle:'sedan'},
+];}
+function seedMerchantHero(){ return [
+  {img:'https://picsum.photos/seed/masar-t1/800/300', title:{ar:'تتبّع كل طلب لحظة بلحظة',en:'Track every order in real time'}, sub:{ar:'اعرف مكان طلبك بالضبط من لوحة الطلبات',en:'Know exactly where your order is from the orders tab'}},
+  {img:'https://picsum.photos/seed/masar-t2/800/300', title:{ar:'عمولة أقل على الطلبات الكبيرة',en:'Lower fees on bulk orders'}, sub:{ar:'أضف 20 طلب أو أكثر شهرياً واحصل على خصم تلقائي',en:'Add 20+ orders monthly and get an automatic discount'}},
+  {img:'https://picsum.photos/seed/masar-t3/800/300', title:{ar:'نسبة تسليمك 96% هذا الشهر',en:'Your delivery rate is 96% this month'}, sub:{ar:'من أفضل 10% من التجار على المنجز السريع',en:'You\'re in the top 10% of merchants on Al-Munjaz Al-Saree'}},
+];}
+function seedCourierHero(){ return [
+  {img:'https://picsum.photos/seed/masar-c1/800/300', title:{ar:'فعّل GPS لتوصيل أدق',en:'Enable GPS for accurate delivery'}, sub:{ar:'يساعد الفرع على تتبع رحلتك لحظياً',en:'Helps the branch track your trip live'}},
+  {img:'https://picsum.photos/seed/masar-c2/800/300', title:{ar:'أعلى تحصيل لك هذا الأسبوع',en:'Your best collection week yet'}, sub:{ar:'700,000 د.ع يوم الخميس — استمر بنفس الأداء',en:'700,000 IQD on Thursday — keep it up'}},
+  {img:'https://picsum.photos/seed/masar-c3/800/300', title:{ar:'سلّم النقدية قبل الساعة 6',en:'Hand over cash before 6 PM'}, sub:{ar:'لضمان إقفال صندوق الفرع بالوقت المحدد',en:'To ensure the branch cashbox closes on time'}},
+];}
+function seedNotifs(){ return [
+  {role:'merchant', icon:'box', title:{ar:'طلب جديد',en:'New order'}, body:{ar:'تم إضافة طلب جديد إلى طلباتك.',en:'A new order was added to your orders.'}, time:'09:40', read:false},
+  {role:'merchant', icon:'bike', title:{ar:'طلبك قيد التوصيل',en:'Your order is on the way'}, body:{ar:'طلبك IQ-204879 خرج للتوصيل.',en:'Your order IQ-204879 is out for delivery.'}, time:'10:05', read:false},
+  {role:'courier', icon:'box', title:{ar:'طلب جديد متاح',en:'New order available'}, body:{ar:'هناك طلب جديد بانتظار قبولك في المنطقة.',en:'A new order is waiting for your approval in your area.'}, time:'10:15', read:false},
+  {role:'courier', icon:'wallet', title:{ar:'تم شحن الميزانية',en:'Budget recharged'}, body:{ar:'تم إضافة 200 إلى ميزانيتك.',en:'200 added to your budget.'}, time:'الآن', read:false},
+  {role:'courier', icon:'bell', title:{ar:'مرحباً بك في تطبيق المندوب',en:'Welcome to Courier App'}, body:{ar:'جهّز ميزانيتك لتتمكن من استلام الطلبات.',en:'Set your budget to start receiving orders.'}, time:'الآن', read:false},
+];}
+
+/* ================= DATA LOAD ================= */
+function fmt(n){ try{ return (Math.round(n)||0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }catch(e){ return '0'; } }
+function nm(o){ if(typeof o==='string') return o; if(!o) return ''; return o[LANG]||o.ar||o.en||''; }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function readJSON(key){ try{ return JSON.parse(localStorage.getItem(key)); }catch(e){ return null; } }
+
+const ST_COLORS={ pending:['#FBBF24','rgba(251,191,36,.12)'], approved:['#38BDF8','rgba(56,189,248,.12)'], courier:['#A78BFA','rgba(167,139,250,.12)'], delivered:['#34D399','rgba(52,211,153,.12)'], returned:['#F87171','rgba(248,113,113,.12)'] };
+const ST_LABELS={ pending:{ar:'قيد الانتظار',en:'Pending'}, approved:{ar:'تم قبوله',en:'Approved'}, courier:{ar:'بحوزة المندوب',en:'With Courier'}, delivered:{ar:'تم التسليم',en:'Delivered'}, returned:{ar:'راجع',en:'Returned'} };
+const NOTIF_COLORS={ box:'#38BDF8', bike:'#A78BFA', wallet:'#FBBF24', bell:'#F87171', check:'#34D399', shield:'#34D399', x2:'#F87171' };
+const NOTIF_ICONS={ box:'<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>', bike:'<circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17l4-8h4l3 8"/><path d="M10 9h4"/>', wallet:'<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/>', bell:'<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>', check:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>', shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>', x2:'<line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v.01"/><path d="M9 15v.01"/><path d="M15 9v.01"/><path d="M15 15v.01"/>' };
+
+let users=[], merchants=[], couriers=[], heroSlides=[], notifs=[], notifsFilter='all';
+
+function loadData(){
+  const raw = readJSON(PLATFORM_KEY);
+  let orders, deliveries, merchantTx, courierTx, chats;
+  if(raw && typeof raw==='object'){
+    orders = Array.isArray(raw.orders)&&raw.orders.length ? raw.orders : seedOrders();
+    deliveries = Array.isArray(raw.deliveries)&&raw.deliveries.length ? raw.deliveries : seedDeliveries();
+    merchantTx = Array.isArray(raw.merchantTx)&&raw.merchantTx.length ? raw.merchantTx : seedMerchantTx();
+    courierTx = Array.isArray(raw.courierTx)&&raw.courierTx.length ? raw.courierTx : seedCourierTx();
+    chats = Array.isArray(raw.chats)&&raw.chats.length ? raw.chats : (Array.isArray(raw.merchantChats)&&Array.isArray(raw.courierChats) ? raw.merchantChats.map(c=>Object.assign({src:'merchant'},c)).concat(raw.courierChats.map(c=>Object.assign({src:'courier'},c))) : seedChats());
+    users = Array.isArray(raw.users)&&raw.users.length ? raw.users : seedUsers();
+    const mh = Array.isArray(raw.merchantHero)&&raw.merchantHero.length ? raw.merchantHero : seedMerchantHero();
+    const ch = Array.isArray(raw.courierHero)&&raw.courierHero.length ? raw.courierHero : seedCourierHero();
+    heroSlides = mh.map(s=>Object.assign({tag:'merchant', tagLabel:{ar:'تطبيق التاجر',en:'Merchant App'}, grad:'linear-gradient(135deg,#0EA5E9,#22D3EE)'},s)).concat(ch.map(s=>Object.assign({tag:'courier', tagLabel:{ar:'تطبيق المندوب',en:'Courier App'}, grad:'linear-gradient(135deg,#7C3AED,#A78BFA)'},s)));
+  } else {
+    orders = seedOrders(); deliveries = seedDeliveries(); merchantTx = seedMerchantTx(); courierTx = seedCourierTx(); chats = seedChats(); users = seedUsers();
+    heroSlides = seedMerchantHero().map(s=>Object.assign({tag:'merchant', tagLabel:{ar:'تطبيق التاجر',en:'Merchant App'}, grad:'linear-gradient(135deg,#0EA5E9,#22D3EE)'},s)).concat(seedCourierHero().map(s=>Object.assign({tag:'courier', tagLabel:{ar:'تطبيق المندوب',en:'Courier App'}, grad:'linear-gradient(135deg,#7C3AED,#A78BFA)'},s)));
+  }
+  allOrders = orders.map(o=>Object.assign({src:'merchant'},o)).concat(deliveries.map(d=>Object.assign({src:'courier'},d)));
+  if(!Array.isArray(allOrders)) allOrders=[];
+  window.__dashChats = chats;
+  notifs = readJSON('masar_notifs');
+  if(!Array.isArray(notifs)) notifs = seedNotifs();
+  buildCourierRoster();
+  buildMerchants();
+}
+
+function buildCourierRoster(){
+  const map = {};
+  const init = (key, c)=>{ if(!map[key]) map[key] = Object.assign({name:nm(c.courier||c.courierName||'')||'مندوب', phone:c.phone||'', assigned:0, delivered:0, returned:0, inProgress:0, collected:0, active:false, vehicle:'', address:''}, c); };
+  allOrders.forEach(o=>{
+    if(o.src==='courier' && o.courier){
+      const key=(o.courier||'').toString().replace(/\s/g,'') || (o.courierPhone||'').replace(/\D/g,'');
+      init(key, o);
+      const s=map[key];
+      s.assigned++;
+      if(o.status==='delivered') s.delivered++;
+      if(o.status==='returned') s.returned++;
+      if(o.status==='courier'||o.status==='approved'){ s.inProgress++; s.active=true; }
+      if(o.status==='delivered') s.collected += o.price||0;
+    }
+  });
+  allOrders.forEach(o=>{
+    if(o.src==='merchant' && o.courier && typeof o.courier==='object'){
+      const key=(o.courier.phone||'').replace(/\D/g,'');
+      if(!map[key]) map[key]={name:nm(o.courier), phone:o.courier.phone||'', assigned:0, delivered:0, returned:0, inProgress:0, collected:0, active:false, vehicle:'', address:''};
+      const s=map[key];
+      s.assigned++;
+      if(o.status==='delivered') s.delivered++;
+      if(o.status==='returned') s.returned++;
+      if(o.status==='courier'||o.status==='approved'){ s.inProgress++; s.active=true; }
+      if(o.status==='delivered') s.collected += o.price||0;
+    }
+  });
+  users.forEach(u=>{
+    if(u.role!=='courier') return;
+    const key=(u.phone||'').replace(/\D/g,'') || (u.username||'');
+    if(!map[key]) map[key]={name:u.name||u.username, phone:u.phone||'', assigned:0, delivered:0, returned:0, inProgress:0, collected:0, active:false, vehicle:u.vehicle||'', address:u.address||''};
+    else { if(u.vehicle) map[key].vehicle=u.vehicle; if(u.address) map[key].address=u.address; if(!map[key].name||map[key].name==='مندوب') map[key].name=u.name; }
+  });
+  couriers = Object.keys(map).map(k=>map[k]);
+}
+
+function buildMerchants(){
+  const map = {};
+  const init = (key, c)=>{ if(!map[key]) map[key] = Object.assign({name:'', shop:'', phone:'', address:'', orders:0, delivered:0, returned:0, collected:0, active:false}, c); };
+  allOrders.forEach(o=>{
+    if(o.src!=='courier' || !o.merchant) return;
+    const m = o.merchant;
+    const key=(m.phone||'').replace(/\D/g,'') || nm(m);
+    if(!map[key]) map[key]={name:nm(m), shop:'', phone:m.phone||'', address:nm(m.address)||'', orders:0, delivered:0, returned:0, collected:0, active:false};
+    const s=map[key];
+    s.orders++;
+    if(o.status==='delivered') s.delivered++;
+    if(o.status==='returned') s.returned++;
+    if(o.status==='delivered') s.collected += o.price||0;
+    if(o.status==='pending'||o.status==='approved'||o.status==='courier') s.active=true;
+    if(!s.address && m.address) s.address=nm(m.address);
+  });
+  users.forEach(u=>{
+    if(u.role!=='merchant') return;
+    const key=(u.phone||'').replace(/\D/g,'') || (u.username||'');
+    if(!map[key]) map[key]={name:u.name||u.username, shop:u.shop||'', phone:u.phone||'', address:u.address||'', orders:0, delivered:0, returned:0, collected:0, active:false};
+    else {
+      if(u.shop) map[key].shop=u.shop;
+      if(u.address) map[key].address=u.address;
+      if(!map[key].name) map[key].name=u.name;
+    }
+  });
+  merchants = Object.keys(map).map(k=>map[k]);
+}
+
+function totals(){
+  const t={total:allOrders.length, pending:0, approved:0, courier:0, delivered:0, returned:0, value:0, deliveredValue:0, fees:0, collected:0, budget:0};
+  allOrders.forEach(o=>{
+    if(ST_LABELS[o.status]!==undefined) t[o.status]++;
+    t.value += o.price||0;
+    if(o.status==='delivered'){ t.deliveredValue += o.price||0; }
+    if(o.fee) t.fees += o.fee;
+    if(o.status==='delivered') t.collected += o.price||0;
+  });
+  t.budget = parseFloat(localStorage.getItem('masar_budget'))||0;
+  t.credit = parseFloat(localStorage.getItem('masar_credit'))||0;
+  t.merchantsCount = merchants.length;
+  t.couriersCount = couriers.length;
+  t.unreadNotifs = notifs.filter(n=>!n.read).length;
+  return t;
+}
+
+/* ================= RENDER HELPERS ================= */
+function statusChip(st){
+  const c = ST_COLORS[st]||['#94A3B8','rgba(148,163,184,.12)'];
+  const l = ST_LABELS[st]||{ar:st,en:st};
+  return `<span class="chip" style="background:${c[1]}; color:${c[0]};"><i style="background:${c[0]}"></i>${nm(l)}</span>`;
+}
+
+/* ================= NAV ================= */
+const NAV = [
+  {id:'home', label:'لوحة التحكم', icon:'<rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/>'},
+  {id:'orders', label:'الطلبات', icon:'<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>'},
+  {id:'merchants', label:'التجار', icon:'<path d="M3 9l1.5-5h15L21 9"/><path d="M3 9a2.4 2.4 0 0 0 4.6 1.1A2.4 2.4 0 0 0 12 9a2.4 2.4 0 0 0 4.4 1.1A2.4 2.4 0 0 0 21 9"/><path d="M5 9v10h14V9"/>'},
+  {id:'couriers', label:'المندوبون', icon:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'},
+  {id:'finance', label:'المالية', icon:'<circle cx="12" cy="12" r="9"/><path d="M12 7v10"/><path d="M16 10c0-1.5-1.8-2.5-4-2.5s-4 1-4 2.5 1.5 2.2 4 2.5 4 1 4 2.5-1.8 2.5-4 2.5-4-1-4-2.5"/>'},
+  {id:'notifs', label:'الاشعارات', icon:'<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>'},
+  {id:'chat', label:'الدردشة', icon:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
+  {id:'settings', label:'الإعدادات', icon:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>'},
+];
+function ic(inner, size){ return `<svg width="${size||16}" height="${size||16}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`; }
+
+const AV_COLORS=['#0EA5E9','#7C3AED','#F59E0B','#10B981','#EF4444','#6366F1','#EC4899','#14B8A6'];
+function avatar(name, size){
+  size=size||38;
+  const ch = esc((nm(name)||'؟').trim().charAt(0)||'؟');
+  const hue = (ch.charCodeAt(0)*7)%AV_COLORS.length;
+  const col = AV_COLORS[hue];
+  return `<div class="avatar" style="width:${size}px;height:${size}px;font-size:${Math.round(size*0.42)}px;background:${col}22;color:${col};">${ch}</div>`;
+}
+function vehicleLabel(v){
+  const map={bike:{ar:'دراجة',en:'Bike'}, sedan:{ar:'سيارة',en:'Sedan'}, pickup:{ar:'بيك أب',en:'Pickup'}};
+  const o = map[v]||{ar:v||'—',en:v||'—'};
+  return nm(o);
+}
+function heroSlider(){
+  return `
+    <div class="hero-slider" id="heroSlider">
+      ${heroSlides.map((s,i)=>`
+        <div class="hero-slide ${i===0?'active':''}" style="background:${s.grad};">
+          <div class="hero-inner">
+            <span class="hero-tag">${nm(s.tagLabel)}</span>
+            <div class="hero-title">${esc(nm(s.title))}</div>
+            <div class="hero-sub">${esc(nm(s.sub))}</div>
+          </div>
+        </div>`).join('')}
+      <button class="hero-arrow hero-prev" data-dir="-1">‹</button>
+      <button class="hero-arrow hero-next" data-dir="1">›</button>
+      <div class="hero-dots">${heroSlides.map((s,i)=>`<span class="hero-dot ${i===0?'active':''}" data-i="${i}"></span>`).join('')}</div>
+    </div>`;
+}
+function initHero(){
+  const el = document.getElementById('heroSlider');
+  if(!el) return;
+  const slides = el.querySelectorAll('.hero-slide');
+  const dots = el.querySelectorAll('.hero-dot');
+  let cur = 0;
+  const show = i=>{
+    cur = (i+slides.length)%slides.length;
+    slides.forEach((s,j)=>s.classList.toggle('active', j===cur));
+    dots.forEach((d,j)=>d.classList.toggle('active', j===cur));
+  };
+  const auto = setInterval(()=>{ if(document.visibilityState==='visible') show(cur+1); }, 5500);
+  el.addEventListener('click', e=>{
+    const prev = e.target.closest('[data-dir]');
+    const dot = e.target.closest('[data-i]');
+    if(prev) show(cur + parseInt(prev.dataset.dir,10));
+    else if(dot) show(parseInt(dot.dataset.i,10));
+  });
+  el._clear = ()=>clearInterval(auto);
+}
+
+function renderNav(){
+  const nav = document.getElementById('sideNav');
+  const chats = (readJSON(PLATFORM_KEY)||{}).chats || window.__dashChats||[];
+  const unreadTotal = chats.reduce((a,c)=>a+(c.unread||0),0);
+  const notifUnread = notifs.filter(n=>!n.read).length;
+  nav.innerHTML = NAV.map(n=>`
+    <div class="nav-item ${VIEW===n.id?'active':''}" data-view="${n.id}">
+      ${ic(n.icon,18)}
+      <span>${n.label}</span>
+      ${n.id==='chat'&&unreadTotal>0?`<span class="badge">${unreadTotal}</span>`:''}
+      ${n.id==='notifs'&&notifUnread>0?`<span class="badge">${notifUnread}</span>`:''}
+    </div>`).join('');
+  nav.querySelectorAll('[data-view]').forEach(b=> b.addEventListener('click', ()=>{ VIEW=b.dataset.view; if(VIEW!=='chat') activeChat=null; render(); }));
+}
+
+/* ================= VIEWS ================= */
+function renderSettings(){
+  const expVal = parseInt(localStorage.getItem('orderExpiryMinutes')||'30',10);
+  const raw = readJSON(PLATFORM_KEY);
+  const deliveries = (raw && Array.isArray(raw.deliveries)) ? raw.deliveries : [];
+  const hiddenOrders = deliveries.filter(o=>o.hidden && o.status==='pending');
+  return `
+    <div class="panel" style="max-width:600px;">
+      <div class="panel-head"><h3>إعدادات الطلبات</h3></div>
+      <div class="panel-body">
+        <div style="margin-bottom:20px;">
+          <label style="display:block; font-size:13px; font-weight:800; color:var(--ink); margin-bottom:6px;">مدة صلاحية الطلب (بالدقائق)</label>
+          <div style="font-size:11px; color:var(--ink-faint); margin-bottom:10px;">المدة الزمنية التي يكون فيها الطلب متاحاً للمندوب قبل انتهاء الصلاحية</div>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <input id="expiryInput" type="number" min="1" max="1440" value="${expVal}" style="width:100px; padding:10px 14px; border-radius:10px; border:1.5px solid var(--border); background:var(--surface); font-size:14px; font-weight:800; font-family:inherit; color:var(--ink); outline:none;">
+            <span style="font-size:12px; font-weight:700; color:var(--ink-soft);">دقيقة</span>
+            <button id="saveExpiryBtn" style="padding:10px 20px; border-radius:10px; background:var(--primary); color:#fff; border:none; font-size:12px; font-weight:800; cursor:pointer;">حفظ</button>
+          </div>
+          <div style="display:flex; gap:6px; margin-top:10px;">
+            ${[15,30,45,60,120].map(v=>`<button class="expiry-preset" data-v="${v}" style="padding:5px 12px; border-radius:8px; background:${expVal===v?'var(--primary)':'var(--surface-2)'}; color:${expVal===v?'#fff':'var(--ink)'}; border:none; font-size:11px; font-weight:700; cursor:pointer;">${v} دقيقة</button>`).join('')}
+          </div>
+        </div>
+        <div style="padding:12px; border-radius:10px; background:var(--surface-2); font-size:11px; color:var(--ink-faint); line-height:1.7;">
+          <b style="color:var(--ink);">ملاحظة:</b> هذا الإعداد يتحكم بمدة ظهور الطلبات الجديدة في تطبيق المندوب. بعد انتهاء المدة، يختفي الطلب تلقائياً من واجهة المندوب.
+        </div>
+      </div>
+    </div>
+    <div class="panel" style="max-width:600px; margin-top:16px;">
+      <div class="panel-head"><h3>إعداد وقت استلام الطلب من التاجر</h3></div>
+      <div class="panel-body">
+        <div style="margin-bottom:20px;">
+          <label style="display:block; font-size:13px; font-weight:800; color:var(--ink); margin-bottom:6px;">الوقت المتوقع لوصول المندوب إلى التاجر (بالدقائق)</label>
+          <div style="font-size:11px; color:var(--ink-faint); margin-bottom:10px;">بعد قبول المندوب للطلب، يبدأ عد تنازلي بهذا الوقت. إذا لم يصل المندوب خلاله، يمكن للتاجر تقديم شكوى.</div>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <input id="pickupInput" type="number" min="5" max="120" value="${parseInt(localStorage.getItem('pickupMinutes')||'30',10)}" style="width:100px; padding:10px 14px; border-radius:10px; border:1.5px solid var(--border); background:var(--surface); font-size:14px; font-weight:800; font-family:inherit; color:var(--ink); outline:none;">
+            <span style="font-size:12px; font-weight:700; color:var(--ink-soft);">دقيقة</span>
+            <button id="savePickupBtn" style="padding:10px 20px; border-radius:10px; background:var(--primary); color:#fff; border:none; font-size:12px; font-weight:800; cursor:pointer;">حفظ</button>
+          </div>
+          <div style="display:flex; gap:6px; margin-top:10px;">
+            ${[10,15,20,30,45,60].map(v=>`<button class="pickup-preset" data-v="${v}" style="padding:5px 12px; border-radius:8px; background:${parseInt(localStorage.getItem('pickupMinutes')||'30',10)===v?'var(--primary)':'var(--surface-2)'}; color:${parseInt(localStorage.getItem('pickupMinutes')||'30',10)===v?'#fff':'var(--ink)'}; border:none; font-size:11px; font-weight:700; cursor:pointer;">${v} دقيقة</button>`).join('')}
+          </div>
+        </div>
+        <div style="padding:12px; border-radius:10px; background:var(--surface-2); font-size:11px; color:var(--ink-faint); line-height:1.7;">
+          <b style="color:var(--ink);">ملاحظة:</b> هذا الإعداد يتحكم بالوقت المحدد للمندوب للوصول إلى التاجر بعد قبول الطلب. يظهر العد التنازلي للمندوب والتاجر معاً.
+        </div>
+      </div>
+    </div>
+    <div class="panel" style="max-width:600px; margin-top:16px;">
+      <div class="panel-head"><h3>الطلبات المنتهية (مخفيه)</h3><span class="src-tag">${hiddenOrders.length} طلب</span></div>
+      <div class="panel-body">
+        ${hiddenOrders.length ? hiddenOrders.map(o=>`
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-radius:10px; background:var(--surface-2); margin-bottom:8px;">
+            <div>
+              <div style="font-size:12px; font-weight:800;">${esc(nm(o.customer))}</div>
+              <div style="font-size:10px; color:var(--ink-faint);">${o.track} — ${fmt(o.price)} د.ع</div>
+            </div>
+            <button class="unhide-btn" data-track="${o.track}" style="padding:6px 14px; border-radius:8px; background:var(--primary); color:#fff; border:none; font-size:11px; font-weight:800; cursor:pointer;">إظهار للمندوب</button>
+          </div>
+        `).join('') : '<div style="text-align:center; padding:20px; font-size:12px; color:var(--ink-faint);">لا توجد طلبات مخفية حالياً</div>'}
+      </div>
+    </div>
+  `;
+}
+function render(){
+  loadData();
+  const titles={home:'لوحة التحكم', orders:'الطلبات', merchants:'التجار', couriers:'المندوبون', finance:'المالية', notifs:'الاشعارات', chat:'الدردشة', settings:'الإعدادات'};
+  document.getElementById('pageTitle').textContent = titles[VIEW]||'لوحة التحكم';
+  renderNav();
+  const c = document.getElementById('content');
+  if(VIEW==='home'){
+    if(window.__heroCleanup){ try{ window.__heroCleanup(); }catch(e){} window.__heroCleanup=null; }
+    c.innerHTML = renderHome();
+    initHero();
+    if(document.getElementById('heroSlider')) window.__heroCleanup = document.getElementById('heroSlider')._clear;
+    c.querySelectorAll('[data-goto]').forEach(b=> b.addEventListener('click', ()=>{ VIEW=b.dataset.goto; render(); }));
+  }
+  else if(VIEW==='orders') c.innerHTML = renderOrders();
+  else if(VIEW==='merchants') c.innerHTML = renderMerchants();
+  else if(VIEW==='couriers') c.innerHTML = renderCouriers();
+  else if(VIEW==='finance') c.innerHTML = renderFinance();
+  else if(VIEW==='notifs') c.innerHTML = renderNotifs();
+  else if(VIEW==='chat') renderChat(c);
+  else if(VIEW==='settings') c.innerHTML = renderSettings();
+}
+
+function renderHome(){
+  const t = totals();
+  const stCounts = ['pending','approved','courier','delivered','returned'].map(k=>({k, n:t[k]}));
+  const max = Math.max(1, ...stCounts.map(s=>s.n));
+  const recent = allOrders.slice().sort((a,b)=> (b.date||'').localeCompare(a.date||'')).slice(0,8);
+  const recentNotifs = notifs.slice().sort((a,b)=>String(b.time||'').localeCompare(String(a.time||''))).slice(0,4);
+  const topMerchants = merchants.slice().sort((a,b)=>b.orders-a.orders).slice(0,4);
+  return `
+    ${heroSlider()}
+    <div class="kpi-grid">
+      <div class="kpi"><div class="ki" style="background:rgba(34,211,238,.12); color:var(--primary);">${ic('<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/>',22)}</div><div><div class="kval">${fmt(t.total)}</div><div class="klab">إجمالي الطلبات</div></div></div>
+      <div class="kpi"><div class="ki" style="background:rgba(251,191,36,.12); color:var(--warning);">${ic('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',22)}</div><div><div class="kval">${fmt(t.pending)}</div><div class="klab">قيد الانتظار</div></div></div>
+      <div class="kpi"><div class="ki" style="background:rgba(167,139,250,.12); color:var(--st-courier);">${ic('<circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17l4-8h4l3 8"/><path d="M10 9h4"/>',22)}</div><div><div class="kval">${fmt(t.courier)}</div><div class="klab">قيد التوصيل</div></div></div>
+      <div class="kpi"><div class="ki" style="background:rgba(52,211,153,.12); color:var(--success);">${ic('<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',22)}</div><div><div class="kval">${fmt(t.delivered)}</div><div class="klab">تم التسليم</div></div></div>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-head"><h3>توزيع حالات الطلبات</h3></div>
+        <div class="panel-body">
+          ${stCounts.map(s=>`
+            <div class="dist-row">
+              <div class="dlab">${nm(ST_LABELS[s.k])}</div>
+              <div class="dtrack"><div class="dfill" style="width:${Math.round(s.n/max*100)}%; background:${ST_COLORS[s.k][0]}"></div></div>
+              <div class="dval">${s.n}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>المؤشرات المالية</h3></div>
+        <div class="panel-body">
+          <div class="dist-row"><div class="dlab">قيمة الطلبات</div><div class="dval" style="width:auto; margin-inline-start:auto;">${fmt(t.value)} د.ع</div></div>
+          <div class="dist-row"><div class="dlab">قيمة المسلّم</div><div class="dval" style="width:auto; margin-inline-start:auto; color:var(--success);">${fmt(t.deliveredValue)} د.ع</div></div>
+          <div class="dist-row"><div class="dlab">عمولات التوصيل</div><div class="dval" style="width:auto; margin-inline-start:auto;">${fmt(t.fees)} د.ع</div></div>
+          <div class="dist-row"><div class="dlab">رصيد التاجر</div><div class="dval" style="width:auto; margin-inline-start:auto;">${fmt(t.credit)} د.ع</div></div>
+          <div class="dist-row"><div class="dlab">ميزانية المندوب</div><div class="dval" style="width:auto; margin-inline-start:auto;">${fmt(t.budget)} د.ع</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-head"><h3>أعلى التجار نشاطاً</h3><button class="fbtn mini" data-goto="merchants">عرض الكل</button></div>
+        <table class="tbl">
+          <thead><tr><th>التاجر</th><th>الهاتف</th><th>الطلبات</th><th>التحصيل</th></tr></thead>
+          <tbody>
+            ${topMerchants.map(m=>`
+              <tr>
+                <td><div class="user-cell">${avatar(m.name,34)}<div><b>${esc(m.name)}</b><span class="muted" style="font-size:10.5px;">${esc(m.shop)||''}</span></div></div></td>
+                <td class="mono muted">${m.phone||'—'}</td>
+                <td class="mono" style="font-weight:800;">${fmt(m.orders)}</td>
+                <td class="mono" style="font-weight:800; color:var(--success);">${fmt(m.collected)}</td>
+              </tr>`).join('') || '<tr><td colspan="4"><div class="empty">لا يوجد تجار بعد</div></td></tr>'}
+          </tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>أحدث الاشعارات</h3><button class="fbtn mini" data-goto="notifs">عرض الكل</button></div>
+        <div class="notif-list">
+          ${recentNotifs.map(n=>`
+            <div class="notif-item ${n.read?'':'unread'}">
+              <div class="notif-ic" style="background:${(NOTIF_COLORS[n.icon]||'#38BDF8')}22; color:${NOTIF_COLORS[n.icon]||'#38BDF8'};">${ic(NOTIF_ICONS[n.icon]||NOTIF_ICONS.bell,16)}</div>
+              <div class="notif-body"><b>${esc(nm(n.title))}</b><span>${esc(nm(n.body))}</span></div>
+              <div class="notif-time">${esc(n.time||'')}</div>
+            </div>`).join('') || '<div class="empty">لا توجد اشعارات</div>'}
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>أحدث الطلبات</h3></div>
+      <table class="tbl">
+        <thead><tr><th>رقم التتبع</th><th>العميل</th><th>المصدر</th><th>القيمة</th><th>التاريخ</th><th>الحالة</th></tr></thead>
+        <tbody>
+          ${recent.map(o=>`
+            <tr>
+              <td class="mono" style="color:var(--primary); font-weight:800;">${o.track}</td>
+              <td><b>${esc(nm(o.customer))}</b><br><span class="muted">${o.phone||''}</span></td>
+              <td><span class="src-tag">${o.src==='merchant'?'طلبات التاجر':'توصيلات المندوب'}</span></td>
+              <td class="mono" style="font-weight:800;">${fmt(o.price)}</td>
+              <td class="mono muted">${o.date||''}</td>
+              <td>${statusChip(o.status)}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function orderFilterChips(){
+  const t=totals();
+  const counts={all:t.total, pending:t.pending, approved:t.approved, courier:t.courier, delivered:t.delivered, returned:t.returned};
+  const items=[['all','الكل'],['pending','قيد الانتظار'],['approved','مقبول'],['courier','قيد التوصيل'],['delivered','مُسلّم'],['returned','راجع']];
+  return items.map(([k,l])=>`<button class="fbtn ${ordersFilter===k?'active':''}" data-f="${k}">${l} <span class="cnt">(${counts[k]})</span></button>`).join('');
+}
+
+function renderOrders(){
+  let list = filteredOrders();
+  return `
+    <div class="filter-bar">
+      <button class="fbtn ${ordersSearch?'':'active'}" data-clear="1">عرض الكل</button>
+      ${orderFilterChips()}
+      <div class="search"><input id="ordersSearch" type="text" placeholder="بحث برقم التتبع أو اسم العميل أو الهاتف" value="${esc(ordersSearch)}"></div>
+    </div>
+    <div class="panel" id="ordersTable">${ordersTableHTML(list)}</div>
+  `;
+}
+function filteredOrders(){
+  let list = allOrders.filter(o=> ordersFilter==='all' || o.status===ordersFilter);
+  if(ordersSearch){
+    const q=ordersSearch.trim().toLowerCase();
+    list = list.filter(o=> (o.track||'').toLowerCase().includes(q) || nm(o.customer).toLowerCase().includes(q) || (o.phone||'').includes(q));
+  }
+  return list;
+}
+function ordersTableHTML(list){
+  return `
+    <table class="tbl">
+      <thead><tr><th>رقم التتبع</th><th>العميل</th><th>الهاتف</th><th>العنوان</th><th>القيمة</th><th>عمولة</th><th>المصدر</th><th>التاريخ</th><th>الحالة</th></tr></thead>
+      <tbody>
+        ${list.map(o=>`
+          <tr>
+            <td class="mono" style="color:var(--primary); font-weight:800;">${o.track}</td>
+            <td><b>${esc(nm(o.customer))}</b></td>
+            <td class="mono muted">${o.phone||''}</td>
+            <td class="muted">${esc(nm(o.address))||'—'}</td>
+            <td class="mono" style="font-weight:800;">${fmt(o.price)}</td>
+            <td class="mono">${o.fee?fmt(o.fee):'—'}</td>
+            <td><span class="src-tag">${o.src==='merchant'?'تاجر':'مندوب'}</span></td>
+            <td class="mono muted">${o.date||''}</td>
+            <td>${statusChip(o.status)}</td>
+          </tr>`).join('') || '<tr><td colspan="9"><div class="empty">لا توجد طلبات مطابقة</div></td></tr>'}
+      </tbody>
+    </table>`;
+}
+
+function renderCouriers(){
+  const t=totals();
+  const activeCount = couriers.filter(c=>c.active).length;
+  return `
+    <div class="kpi-grid">
+      <div class="kpi"><div class="ki" style="background:rgba(167,139,250,.12); color:var(--st-courier);">${ic('<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>',22)}</div><div><div class="kval">${fmt(couriers.length)}</div><div class="klab">عدد المندوبين</div></div></div>
+      <div class="kpi"><div class="ki" style="background:rgba(34,211,238,.12); color:var(--primary);">${ic('<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>',22)}</div><div><div class="kval">${fmt(activeCount)}</div><div class="klab">في حالة نشطة</div></div></div>
+      <div class="kpi"><div class="ki" style="background:rgba(52,211,153,.12); color:var(--success);">${ic('<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',22)}</div><div><div class="kval">${fmt(t.delivered)}</div><div class="klab">طلبات مسلّمة</div></div></div>
+      <div class="kpi"><div class="ki" style="background:rgba(248,113,113,.12); color:var(--danger);">${ic('<circle cx="12" cy="12" r="9"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',22)}</div><div><div class="kval">${fmt(t.returned)}</div><div class="klab">طلبات راجعة</div></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>فريق المندوبين</h3></div>
+      <table class="tbl">
+        <thead><tr><th>المندوب</th><th>الهاتف</th><th>طلبات مكلف بها</th><th>مسلّمة</th><th>راجعة</th><th>قيد التنفيذ</th><th>المحصلات</th><th>الحالة</th></tr></thead>
+        <tbody>
+          ${couriers.map(c=>`
+            <tr>
+              <td><b>${esc(c.name)}</b></td>
+              <td class="mono muted">${c.phone||'—'}</td>
+              <td class="mono">${fmt(c.assigned)}</td>
+              <td class="mono" style="color:var(--success); font-weight:800;">${fmt(c.delivered)}</td>
+              <td class="mono" style="color:var(--danger);">${fmt(c.returned)}</td>
+              <td class="mono" style="color:var(--st-courier);">${fmt(c.inProgress)}</td>
+              <td class="mono" style="font-weight:800;">${fmt(c.collected)}</td>
+              <td>${c.active?`<span class="chip" style="background:rgba(52,211,153,.12); color:var(--success);"><i style="background:var(--success)"></i>نشط</span>`:`<span class="chip" style="background:rgba(100,116,139,.15); color:var(--ink-faint);"><i style="background:var(--ink-faint)"></i>خامل</span>`}</td>
+            </tr>`).join('') || '<tr><td colspan="8"><div class="empty">لا يوجد مندوبون بعد</div></td></tr>'}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderCouriers(){
+  const t=totals();
+  const activeCount = couriers.filter(c=>c.active).length;
+  return `
+    <div class="kpi-grid">
+      <div class="kpi"><div class="ki" style="background:rgba(167,139,250,.12); color:var(--st-courier);">${ic('<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>',22)}</div><div><div class="kval">${fmt(couriers.length)}</div><div class="klab">عدد المندوبين</div></div></div>
+      <div class="kpi"><div class="ki" style="background:rgba(34,211,238,.12); color:var(--primary);">${ic('<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>',22)}</div><div><div class="kval">${fmt(activeCount)}</div><div class="klab">في حالة نشطة</div></div></div>
+      <div class="kpi"><div class="ki" style="background:rgba(52,211,153,.12); color:var(--success);">${ic('<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',22)}</div><div><div class="kval">${fmt(t.delivered)}</div><div class="klab">طلبات مسلّمة</div></div></div>
+      <div class="kpi"><div class="ki" style="background:rgba(248,113,113,.12); color:var(--danger);">${ic('<circle cx="12" cy="12" r="9"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',22)}</div><div><div class="kval">${fmt(t.returned)}</div><div class="klab">طلبات راجعة</div></div></div>
+    </div>
+    <div class="roster-grid">
+      ${couriers.map(c=>`
+        <div class="user-card">
+          <div class="uc-top">
+            ${avatar(c.name,44)}
+            <div class="uc-id"><b>${esc(c.name)}</b><span class="muted" style="font-size:11px;">${c.active?'متاح للتوصيل':'غير نشط حالياً'}</span></div>
+            <span class="vtag">${esc(vehicleLabel(c.vehicle))}</span>
+          </div>
+          <div class="uc-meta">
+            <div><span class="mono muted">${c.phone||'—'}</span><label>الهاتف</label></div>
+            <div><span>${esc(c.address)||'—'}</span><label>العنوان</label></div>
+          </div>
+          <div class="uc-stats">
+            <div class="uc-stat"><b style="color:var(--primary);">${fmt(c.assigned)}</b><span>طلبات مكلف</span></div>
+            <div class="uc-stat"><b style="color:var(--success);">${fmt(c.delivered)}</b><span>مسلّمة</span></div>
+            <div class="uc-stat"><b style="color:var(--danger);">${fmt(c.returned)}</b><span>راجعة</span></div>
+            <div class="uc-stat"><b>${fmt(c.collected)}</b><span>د.ع محصلة</span></div>
+          </div>
+          ${c.active?`<div class="uc-flag active">${ic('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',13)} نشط الآن</div>`:`<div class="uc-flag">${ic('<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>',13)} خامل</div>`}
+        </div>`).join('') || '<div class="empty">لا يوجد مندوبون بعد</div>'}
+    </div>
+  `;
+}
+
+function renderMerchants(){
+  const activeMerchants = merchants.filter(m=>m.active).length;
+  const totalCollected = merchants.reduce((a,m)=>a+m.collected,0);
+  return `
+    <div class="kpi-grid">
+      <div class="kpi"><div class="ki" style="background:rgba(34,211,238,.12); color:var(--primary);">${ic('<path d="M3 9l1.5-5h15L21 9"/><path d="M3 9a2.4 2.4 0 0 0 4.6 1.1A2.4 2.4 0 0 0 12 9a2.4 2.4 0 0 0 4.4 1.1A2.4 2.4 0 0 0 21 9"/><path d="M5 9v10h14V9"/>',22)}</div><div><div class="kval">${fmt(merchants.length)}</div><div class="klab">عدد التجار</div></div></div>
+      <div class="kpi"><div class="ki" style="background:rgba(52,211,153,.12); color:var(--success);">${ic('<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>',22)}</div><div><div class="kval">${fmt(activeMerchants)}</div><div class="klab">نشطون هذا الشهر</div></div></div>
+      <div class="kpi"><div class="ki" style="background:rgba(167,139,250,.12); color:var(--st-courier);">${ic('<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/>',22)}</div><div><div class="kval">${fmt(merchants.reduce((a,m)=>a+m.orders,0))}</div><div class="klab">إجمالي الطلبات</div></div></div>
+      <div class="kpi"><div class="ki" style="background:rgba(251,191,36,.12); color:var(--warning);">${ic('<circle cx="12" cy="12" r="9"/><path d="M12 7v10"/><path d="M16 10c0-1.5-1.8-2.5-4-2.5s-4 1-4 2.5 1.5 2.2 4 2.5 4 1 4 2.5-1.8 2.5-4 2.5-4-1-4-2.5"/>',22)}</div><div><div class="kval">${fmt(totalCollected)}</div><div class="klab">إجمالي التحصيل</div></div></div>
+    </div>
+    <div class="roster-grid">
+      ${merchants.map(m=>`
+        <div class="user-card">
+          <div class="uc-top">
+            ${avatar(m.name,44)}
+            <div class="uc-id"><b>${esc(m.name)}</b><span class="muted" style="font-size:11px;">${esc(m.shop)||'متجر'}</span></div>
+            ${m.active?`<span class="vtag" style="background:rgba(52,211,153,.12); color:var(--success);">نشط</span>`:`<span class="vtag">خامل</span>`}
+          </div>
+          <div class="uc-meta">
+            <div><span class="mono muted">${m.phone||'—'}</span><label>الهاتف</label></div>
+            <div><span>${esc(m.address)||'—'}</span><label>العنوان</label></div>
+          </div>
+          <div class="uc-stats">
+            <div class="uc-stat"><b style="color:var(--primary);">${fmt(m.orders)}</b><span>طلبات</span></div>
+            <div class="uc-stat"><b style="color:var(--success);">${fmt(m.delivered)}</b><span>مسلّمة</span></div>
+            <div class="uc-stat"><b style="color:var(--danger);">${fmt(m.returned)}</b><span>راجعة</span></div>
+            <div class="uc-stat"><b>${fmt(m.collected)}</b><span>د.ع محصلة</span></div>
+          </div>
+        </div>`).join('') || '<div class="empty">لا يوجد تجار بعد</div>'}
+    </div>
+  `;
+}
+
+function renderNotifs(){
+  const unread = notifs.filter(n=>!n.read).length;
+  const list = notifsFilter==='unread' ? notifs.filter(n=>!n.read) : notifs;
+  return `
+    <div class="filter-bar">
+      <button class="fbtn ${notifsFilter!=='unread'?'active':''}" data-nf="all">الكل <span class="cnt">(${notifs.length})</span></button>
+      <button class="fbtn ${notifsFilter==='unread'?'active':''}" data-nf="unread">غير المقروء <span class="cnt">(${unread})</span></button>
+      <div class="spacer"></div>
+      ${unread>0?`<button class="fbtn" id="markAllRead">تحديد الكل كمقروء</button>`:''}
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>الاشعارات</h3><span class="src-tag">${unread>0?unread+' غير مقروء':'لا جديد'}</span></div>
+      <div class="notif-list">
+        ${list.map((n,i)=>`
+          <div class="notif-item ${n.read?'':'unread'}" data-ridx="${i}">
+            <div class="notif-ic" style="background:${(NOTIF_COLORS[n.icon]||'#38BDF8')}22; color:${NOTIF_COLORS[n.icon]||'#38BDF8'};">${ic(NOTIF_ICONS[n.icon]||NOTIF_ICONS.bell,18)}</div>
+            <div class="notif-body"><b>${esc(nm(n.title))}</b><span>${esc(nm(n.body))}</span></div>
+            <div class="notif-time">${esc(n.time||'')}</div>
+          </div>`).join('') || '<div class="empty">لا توجد اشعارات</div>'}
+      </div>
+    </div>
+  `;
+}
+
+function txRow(x){
+  const col = x.dir>0 ? 'var(--success)' : 'var(--danger)';
+  const sign = x.dir>0 ? '+' : '−';
+  return `
+    <tr>
+      <td><b>${esc(nm(x.label))}</b><br><span class="mono muted" style="font-size:10.5px;">${x.ref||''}</span></td>
+      <td class="mono muted">${x.date||''}</td>
+      <td class="mono" style="font-weight:800; color:${col};" dir="ltr" align="left">${sign}${fmt(Math.abs(x.amount))}</td>
+    </tr>`;
+}
+
+function renderFinance(){
+  const t=totals();
+  const courierTx = readJSON(PLATFORM_KEY) ? (readJSON(PLATFORM_KEY).courierTx||seedCourierTx()) : seedCourierTx();
+  const merchantTx = readJSON(PLATFORM_KEY) ? (readJSON(PLATFORM_KEY).merchantTx||seedMerchantTx()) : seedMerchantTx();
+  const courierIn = (courierTx||[]).filter(x=>x.dir>0).reduce((a,x)=>a+x.amount,0);
+  const courierOut = (courierTx||[]).filter(x=>x.dir<0).reduce((a,x)=>a+x.amount,0);
+  const merchantIn = (merchantTx||[]).filter(x=>x.dir>0).reduce((a,x)=>a+x.amount,0);
+  return `
+    <div class="kpi-grid">
+      <div class="kpi"><div class="ki" style="background:rgba(34,211,238,.12); color:var(--primary);">${ic('<circle cx="12" cy="12" r="9"/><path d="M12 7v10"/><path d="M16 10c0-1.5-1.8-2.5-4-2.5s-4 1-4 2.5 1.5 2.2 4 2.5 4 1 4 2.5-1.8 2.5-4 2.5-4-1-4-2.5"/>',22)}</div><div><div class="kval">${fmt(t.credit)}</div><div class="klab">رصيد التاجر</div></div></div>
+      <div class="kpi"><div class="ki" style="background:rgba(52,211,153,.12); color:var(--success);">${ic('<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/>',22)}</div><div><div class="kval">${fmt(courierIn)}</div><div class="klab">تحصيلات المندوبين</div></div></div>
+      <div class="kpi"><div class="ki" style="background:rgba(167,139,250,.12); color:var(--st-courier);">${ic('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',22)}</div><div><div class="kval">${fmt(courierOut)}</div><div class="klab">مدفوعات المندوبين</div></div></div>
+      <div class="kpi"><div class="ki" style="background:rgba(251,191,36,.12); color:var(--warning);">${ic('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',22)}</div><div><div class="kval">${fmt(merchantIn)}</div><div class="klab">وارد التاجر</div></div></div>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-head"><h3>حركات المندوبين</h3><span class="src-tag">${courierTx.length} عملية</span></div>
+        <table class="tbl"><thead><tr><th>الوصف</th><th>التاريخ</th><th align="left">المبلغ</th></tr></thead><tbody>
+          ${courierTx.map(txRow).join('') || '<tr><td colspan="3"><div class="empty">لا توجد حركات</div></td></tr>'}
+        </tbody></table>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>حركات التاجر</h3><span class="src-tag">${merchantTx.length} عملية</span></div>
+        <table class="tbl"><thead><tr><th>الوصف</th><th>التاريخ</th><th align="left">المبلغ</th></tr></thead><tbody>
+          ${merchantTx.map(txRow).join('') || '<tr><td colspan="3"><div class="empty">لا توجد حركات</div></td></tr>'}
+        </tbody></table>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>ملخص مالي</h3></div>
+      <div class="panel-body" style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px;">
+        <div><div class="klab" style="font-size:11px; color:var(--ink-soft); font-weight:800;">إجمالي عمولات التوصيل</div><div class="kval" style="font-size:17px; font-weight:900; margin-top:4px;">${fmt(t.fees)} <span class="muted" style="font-size:11px;">د.ع</span></div></div>
+        <div><div class="klab" style="font-size:11px; color:var(--ink-soft); font-weight:800;">قيمة الطلبات المسلّمة</div><div class="kval" style="font-size:17px; font-weight:900; margin-top:4px; color:var(--success);">${fmt(t.deliveredValue)} <span class="muted" style="font-size:11px;">د.ع</span></div></div>
+        <div><div class="klab" style="font-size:11px; color:var(--ink-soft); font-weight:800;">ميزانية المندوبين</div><div class="kval" style="font-size:17px; font-weight:900; margin-top:4px;">${fmt(t.budget)} <span class="muted" style="font-size:11px;">د.ع</span></div></div>
+        <div><div class="klab" style="font-size:11px; color:var(--ink-soft); font-weight:800;">نسبة التسليم</div><div class="kval" style="font-size:17px; font-weight:900; margin-top:4px;">${t.delivered+t.returned>0?Math.round(t.delivered/(t.delivered+t.returned)*100):0}%</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>طلبات شحن الرصيد (QI)</h3></div>
+      <table class="tbl"><thead><tr><th>التاجر / المندوب</th><th>المبلغ</th><th>رقم العملية QI</th><th>التاريخ</th><th>الحالة</th><th></th></tr></thead><tbody>
+        ${(() => { const reqs = ((readJSON(PLATFORM_KEY)||{}).rechargeRequests||[]); const pendings = reqs.filter(r=>r.status==='pending'); const others = reqs.filter(r=>r.status!=='pending').slice(0,10); const all = [...pendings,...others]; return all.length ? all.map(r => {
+          const st = r.status==='pending'?'<span style="color:var(--warning);font-weight:800;">معلّق</span>':r.status==='approved'?'<span style="color:var(--success);font-weight:800;">مقبول</span>':'<span style="color:var(--danger);font-weight:800;">مرفوض</span>';
+          const d = r.date ? new Date(r.date).toLocaleDateString('ar-IQ',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+          return '<tr><td>'+esc(r.username||'—')+'</td><td><b class="mono">'+fmt(r.amount)+'</b></td><td><span class="mono" style="font-size:12px;">'+esc(r.txId||'')+'</span></td><td>'+d+'</td><td>'+st+'</td><td>'+
+            (r.status==='pending'?'<button onclick="handleRecharge(\''+r.id+'\',\'approved\')" style="padding:4px 10px; border-radius:6px; background:var(--success); color:#fff; border:none; font-size:10px; font-weight:800; cursor:pointer; margin-right:4px;">قبول</button><button onclick="handleRecharge(\''+r.id+'\',\'rejected\')" style="padding:4px 10px; border-radius:6px; background:var(--danger); color:#fff; border:none; font-size:10px; font-weight:800; cursor:pointer;">رفض</button>':'')+
+            '</td></tr>';
+        }).join('') : '<tr><td colspan="6"><div class="empty">لا توجد طلبات شحن</div></td></tr>'; })()}
+      </tbody></table>
+    </div>
+  `;
+}
+
+function handleRecharge(id, action){
+  const raw = readJSON(PLATFORM_KEY) || {};
+  if(!Array.isArray(raw.rechargeRequests)) return;
+  const req = raw.rechargeRequests.find(r => String(r.id)===String(id));
+  if(!req) return;
+  if(action==='approved'){
+    req.status = 'approved';
+    const merchants = raw.merchants || [];
+    const m = merchants.find(x => String(x.id) === String(req.userId));
+    if(m){ m.credit = (m.credit||0) + req.amount; }
+    const couriers = raw.couriers || [];
+    const c = couriers.find(x => String(x.id) === String(req.userId));
+    if(c){ c.credit = (c.credit||0) + req.amount; }
+  } else {
+    req.status = 'rejected';
+  }
+  localStorage.setItem(PLATFORM_KEY, JSON.stringify(raw));
+  render();
+}
+
+function renderChat(c){
+  const chats = (readJSON(PLATFORM_KEY)||{}).chats || window.__dashChats||[];
+  const unreadTotal = chats.reduce((a,x)=>a+(x.unread||0),0);
+  c.innerHTML = `
+    <div class="chat-layout">
+      <div class="chat-list" id="chatList">
+        ${chats.map(ch=>{
+          const type = ch.participants && ch.participants.includes('merchant') && ch.participants.includes('courier') ? 'تاجر ↔ مندوب' : ch.src==='merchant'?'تاجر':'مندوب';
+          return `<div class="chat-item ${activeChat===ch.id?'active':''}" data-chat="${ch.id}">
+            <div class="avatar">${esc(nm(ch.name).charAt(0))}</div>
+            <div class="chat-mid"><b>${esc(nm(ch.name))}</b><span>${esc(nm(ch.last))}</span></div>
+            <div class="chat-end"><time>${esc(ch.time||'')}</time><span class="src-tag" style="display:block; margin-top:4px;">${type}</span>${ch.unread>0?`<span class="ubadge">${ch.unread}</span>`:''}</div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="chat-thread" id="chatThread">
+        <div class="chat-empty">اختر محادثة لعرضها</div>
+      </div>
+    </div>`;
+  const list = document.getElementById('chatList');
+  list.querySelectorAll('[data-chat]').forEach(row=> row.addEventListener('click', ()=>{
+    activeChat = row.dataset.chat;
+    renderChat(c);
+    renderNav();
+  }));
+  if(activeChat){
+    const chat = chats.find(x=>x.id===activeChat);
+    if(chat){
+      const th = document.getElementById('chatThread');
+      const senderLabel = (from) => from==='admin'?'الإدارة':from==='merchant'?'التاجر':from==='courier'?'المندوب':from==='me'?'أنا':'';
+      th.innerHTML = `
+        <div class="thread-head">
+          <div class="avatar" style="width:36px; height:36px; font-size:13px;">${esc(nm(chat.name).charAt(0))}</div>
+          <b>${esc(nm(chat.name))}</b>
+          <span class="src-tag">${esc(chat.id)}</span>
+          <div class="spacer"></div>
+          <span class="muted">${esc(chat.time||'')}</span>
+        </div>
+        <div class="thread-body">
+          ${(chat.messages||[]).map(m=>`
+            <div class="bubble ${m.from==='admin'?'bubble-me':'bubble-them'}">
+              <div style="font-size:9px; font-weight:700; color:var(--primary); margin-bottom:2px;">${senderLabel(m.from)}</div>
+              ${esc(nm(m.text))}
+              <time>${esc(m.time||'')}</time>
+            </div>`).join('')}
+        </div>
+        <div class="thread-input" style="display:flex; gap:8px; padding:12px; border-top:1px solid var(--border); background:var(--surface);">
+          <input type="text" id="dashChatInput" placeholder="اكتب رسالتك..." style="flex:1; padding:10px 14px; border:1px solid var(--border); border-radius:10px; font-size:13px; background:var(--surface-2); color:var(--ink); outline:none;">
+          <button onclick="sendDashChat('${chat.id}')" style="padding:10px 16px; border-radius:10px; background:var(--primary); color:#fff; border:none; font-weight:800; cursor:pointer; font-size:13px;">إرسال</button>
+        </div>`;
+    }
+  }
+}
+
+function sendDashChat(chatId){
+  const input = document.getElementById('dashChatInput');
+  if(!input || !input.value.trim()) return;
+  const text = input.value.trim();
+  const raw = readJSON(PLATFORM_KEY) || {};
+  if(!Array.isArray(raw.chats)) raw.chats = [];
+  const chat = raw.chats.find(x=>x.id===chatId);
+  if(chat){
+    const now = new Date();
+    const time = now.toLocaleTimeString('ar-IQ',{hour:'2-digit',minute:'2-digit'});
+    chat.messages.push({from:'admin', text:{ar:text,ku:text,en:text}, time});
+    chat.last = {ar:text,ku:text,en:text};
+    chat.time = time;
+    localStorage.setItem(PLATFORM_KEY, JSON.stringify(raw));
+    activeChat = chatId;
+    render();
+  }
+}
+
+/* ================= AUTH ================= */
+function showLogin(){ document.getElementById('loginScreen').classList.add('active'); document.getElementById('app').classList.remove('active'); }
+function showApp(){
+  document.getElementById('loginScreen').classList.remove('active');
+  document.getElementById('app').classList.add('active');
+  render();
+}
+function tryLogin(){
+  const u = document.getElementById('dashUser').value.trim();
+  const p = document.getElementById('dashPass').value;
+  const err = document.getElementById('loginErr');
+  if(u===DASH_USER && p===DASH_PASS){
+    localStorage.setItem(AUTH_KEY,'1');
+    err.classList.remove('show');
+    showApp();
+  } else {
+    err.classList.add('show');
+  }
+}
+
+document.getElementById('dashLoginBtn').addEventListener('click', tryLogin);
+document.getElementById('dashPass').addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
+document.getElementById('dashUser').addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
+document.getElementById('dashLogoutBtn').addEventListener('click', ()=>{
+  localStorage.removeItem(AUTH_KEY);
+  activeChat=null;
+  showLogin();
+});
+
+function saveNotifs(){
+  try{ localStorage.setItem('masar_notifs', JSON.stringify(notifs)); }catch(e){}
+}
+/* ================= INIT ================= */
+document.getElementById('content').addEventListener('click', (e)=>{
+  const f = e.target.closest('[data-f]');
+  if(f){ ordersFilter = f.dataset.f; render(); return; }
+  const cl = e.target.closest('[data-clear]');
+  if(cl){ ordersFilter='all'; ordersSearch=''; render(); }
+  const nf = e.target.closest('[data-nf]');
+  if(nf){ notifsFilter = nf.dataset.nf; render(); return; }
+  const markAll = e.target.closest('#markAllRead');
+  if(markAll){ notifs.forEach(n=>n.read=true); saveNotifs(); render(); return; }
+  const rIdx = e.target.closest('[data-ridx]');
+  if(rIdx){ const n=notifs[parseInt(rIdx.dataset.ridx,10)]; if(n && !n.read){ n.read=true; saveNotifs(); render(); } }
+  const saveBtn = e.target.closest('#saveExpiryBtn');
+  if(saveBtn){
+    const v = parseInt(document.getElementById('expiryInput').value,10);
+    if(v && v>=1 && v<=1440){
+      localStorage.setItem('orderExpiryMinutes', v);
+      alert('تم حفظ الإعداد: '+v+' دقيقة');
+      render();
+    }
+    return;
+  }
+  const preset = e.target.closest('.expiry-preset');
+  if(preset){
+    const v = parseInt(preset.dataset.v,10);
+    localStorage.setItem('orderExpiryMinutes', v);
+    render();
+    return;
+  }
+  const savePickupBtn = e.target.closest('#savePickupBtn');
+  if(savePickupBtn){
+    const v = parseInt(document.getElementById('pickupInput').value,10);
+    if(v && v>=5 && v<=120){
+      localStorage.setItem('pickupMinutes', v);
+      alert('تم حفظ الإعداد: '+v+' دقيقة');
+      render();
+    }
+    return;
+  }
+  const pickupPreset = e.target.closest('.pickup-preset');
+  if(pickupPreset){
+    const v = parseInt(pickupPreset.dataset.v,10);
+    localStorage.setItem('pickupMinutes', v);
+    render();
+    return;
+  }
+  const unhide = e.target.closest('.unhide-btn');
+  if(unhide){
+    const track = unhide.dataset.track;
+    const raw = readJSON(PLATFORM_KEY);
+    if(raw && Array.isArray(raw.deliveries)){
+      const d = raw.deliveries.find(x=>x.track===track);
+      if(d){ d.hidden = false; localStorage.setItem(PLATFORM_KEY, JSON.stringify(raw)); }
+    }
+    render();
+    return;
+  }
+});
+document.getElementById('content').addEventListener('input', (e)=>{
+  if(e.target && e.target.id==='ordersSearch'){
+    ordersSearch = e.target.value;
+    const t = document.getElementById('ordersTable');
+    if(t) t.innerHTML = ordersTableHTML(filteredOrders());
+  }
+});
+if(localStorage.getItem(AUTH_KEY)==='1'){
+  showApp();
+} else {
+  showLogin();
+}
+setInterval(()=>{ if(document.getElementById('app').classList.contains('active')) render(); }, 3000);
+</script>
+</body>
+</html>
