@@ -391,7 +391,7 @@ svg{display:block; flex-shrink:0;}
 .overlay.open{display:flex;}
 .sheet-modal{background:var(--surface); width:100%; border-radius:22px 22px 0 0; padding:20px; max-height:82%; overflow-y:auto; animation:sheetup .2s ease;}
 @keyframes sheetup{from{transform:translateY(30px); opacity:.6;} to{transform:none; opacity:1;}}
-.sheet-handle{width:38px; height:4px; border-radius:20px; background:var(--border); margin:0 auto 16px;}
+.sheet-handle{width:38px; height:4px; border-radius:20px; background:var(--border);}
 
 .text-muted{color:var(--ink-faint); font-weight:600; font-size:11.5px;}
 .mono{font-variant-numeric:tabular-nums;}
@@ -943,6 +943,7 @@ svg{display:block; flex-shrink:0;}
               <span class="vt-chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
             </button>
             <div class="vehicle-dropdown" id="regCVehicleDropdown">
+              <button type="button" onclick="document.getElementById('regCVehicleDropdown').classList.remove('open')" style="grid-column:1/-1; padding:6px; border-radius:8px; background:rgba(255,255,255,.15); border:none; color:#fff; font-size:11px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px;">${ic('x',12)} إغلاق</button>
               <button type="button" class="vehicle-card" data-vehicle="sedan">
                 <span class="vc-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
                 <div class="vc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 14l1.9-4.6A2 2 0 0 1 8.8 8.2h6.4a2 2 0 0 1 1.9 1.2L19 14"/><path d="M3.5 14h17A1.5 1.5 0 0 1 22 15.5V17h-2"/><path d="M2 16.5h1V17a1 1 0 0 0 1 1h.8"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/><path d="M12 8.5v1.5"/></svg></div>
@@ -2825,12 +2826,9 @@ function openCourierDetailSheet(d){
 
 function openReturnSheet(track){
   openSheet(`
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <div style="width:28px; height:28px; border-radius:8px; background:var(--danger-tint); color:var(--danger); display:flex; align-items:center; justify-content:center;">${ic('x2',14)}</div>
-        <div style="font-weight:800; font-size:14px;">${l('إرجاع الطلب','Vegerîna daxwazê','Return Order')}</div>
-      </div>
-      <button onclick="closeSheet()" style="width:28px; height:28px; border-radius:8px; background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">${ic('x',14)}</button>
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:18px;">
+      <div style="width:28px; height:28px; border-radius:8px; background:var(--danger-tint); color:var(--danger); display:flex; align-items:center; justify-content:center;">${ic('x2',14)}</div>
+      <div style="font-weight:800; font-size:14px;">${l('إرجاع الطلب','Vegerîna daxwazê','Return Order')}</div>
     </div>
     <div style="font-size:12px; color:var(--ink-soft); margin-bottom:14px; line-height:1.6;">
       ${l('هل تريد إضافة أجرة توصيل لهذه الطلبية؟ إذا وضعت مبلغاً سيتم استقطاعه من رصيدك.','Dixwazî bihayê şandina vê daxwazê zêde bikî? Heke remanê bivalî, dê ji başayiyê te were derxistin.','Do you want to add a delivery fee for this order? If you enter an amount, it will be deducted from your balance.')}
@@ -3584,13 +3582,8 @@ function renderProfile(){
 function openVerifySheet(){
   const user = currentUser || {};
   openSheet(`
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
-      <div style="font-weight:800; font-size:14.5px;">${LANG==='ar'?'توثيق الحساب':'Account Verification'}</div>
-      <button onclick="closeSheet()" style="width:30px; height:30px; border-radius:50%; background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-soft);">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="field"><label>${LANG==='ar'?'الاسم الكامل':'Full Name'}</label><input id="vName" type="text" value="${user.name||''}" placeholder="${LANG==='ar'?'الاسم الكامل как في البطاقة':'As on ID'}"></div>
+    <div style="font-weight:800; font-size:14.5px; margin-bottom:14px;">${LANG==='ar'?'توثيق الحساب':'Account Verification'}</div>
+    <div class="field"><label>${LANG==='ar'?'الاسم الكامل':'Full Name'}</label><input id="vName" type="text" value="${user.name||''}" placeholder="${LANG==='ar'?'الاسم الكامل كما في البطاقة':'As on ID'}"></div>
     <div class="field"><label>${LANG==='ar'?'العنوان':'Address'}</label><input id="vAddress" type="text" value="${user.address||''}" placeholder="${LANG==='ar'?'المدينة — المنطقة':'City — Area'}"></div>
     <div class="field"><label>${LANG==='ar'?'رقم الهاتف':'Phone Number'}</label><input id="vPhone" type="tel" value="${user.phone||''}" placeholder="07xx xxx xxxx" dir="ltr"></div>
     <div class="field"><label>${LANG==='ar'?'رقم البطاقة الوطنية':'National ID Number'}</label><input id="vNatId" type="text" placeholder="${LANG==='ar'?'رقم البطاقة':'ID Number'}"></div>
@@ -3675,7 +3668,11 @@ function submitVerification(){
 }
 
 function openSheet(html){
-  document.getElementById('sheetContent').innerHTML = `<div class="sheet-handle"></div>` + html;
+  document.getElementById('sheetContent').innerHTML = `
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:4px 0 12px; border-bottom:1px solid var(--border); margin-bottom:14px;">
+      <div class="sheet-handle" style="flex:1;"></div>
+      <button onclick="closeSheet()" style="width:32px; height:32px; border-radius:10px; background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none; margin-left:8px;">${ic('x',16)}</button>
+    </div>` + html;
   document.getElementById('sheetOverlay').classList.add('open');
 }
 function closeSheet(){ document.getElementById('sheetOverlay').classList.remove('open'); }
@@ -3790,12 +3787,7 @@ function openEditOrderSheet(track){
   const oType = typeof o.orderType==='object'?o.orderType[LANG]:o.orderType;
   const notes = typeof o.notes==='object'?o.notes[LANG]:o.notes;
   openSheet(`
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
-      <div style="font-weight:800; font-size:14.5px;">${LANG==='ar'?'تعديل الطلب':'Edit Order'}</div>
-      <button onclick="closeSheet()" style="width:30px; height:30px; border-radius:50%; background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-soft);">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
+    <div style="font-weight:800; font-size:14.5px; margin-bottom:14px;">${LANG==='ar'?'تعديل الطلب':'Edit Order'}</div>
     <div class="field"><label>${LANG==='ar'?'اسم الزبون':'Customer Name'}</label><input id="eCustomer" type="text" value="${nm(o.customer)}"></div>
     <div class="field"><label>${LANG==='ar'?'رقم الهاتف':'Phone Number'}</label><input id="ePhone" type="tel" value="${o.phone||''}" dir="ltr"></div>
     <div class="field"><label>${LANG==='ar'?'رقم هاتف ثاني (اختياري)':'Second Phone (optional)'}</label><input id="ePhone2" type="tel" value="${o.phone2||''}" dir="ltr"></div>
@@ -3832,12 +3824,7 @@ function submitEditOrder(track){
 function openOrderSheet(){
   const newTrack = 'IQ-' + Math.floor(100000+Math.random()*900000);
   openSheet(`
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
-      <div style="font-weight:800; font-size:14.5px;">${t('newOrder')}</div>
-      <button onclick="closeSheet()" style="width:30px; height:30px; border-radius:50%; background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-soft);">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
+    <div style="font-weight:800; font-size:14.5px; margin-bottom:14px;">${t('newOrder')}</div>
     <div style="display:flex; align-items:center; gap:8px; padding:10px 14px; border-radius:11px; background:var(--primary-tint); margin-bottom:14px;">
       <div style="width:28px; height:28px; border-radius:8px; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center;">${ic('box',14)}</div>
       <div>
@@ -3877,12 +3864,7 @@ function submitNewOrder(track){
 
 function openAddCashSheet(){
   openSheet(`
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
-      <div style="font-weight:800; font-size:14.5px;">${LANG==='ar'?'إضافة نقدي':'Add Cash'}</div>
-      <button onclick="closeSheet()" style="width:30px; height:30px; border-radius:50%; background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-soft);">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
+    <div style="font-weight:800; font-size:14.5px; margin-bottom:14px;">${LANG==='ar'?'إضافة نقدي':'Add Cash'}</div>
     <div style="padding:16px; border-radius:14px; background:var(--st-delivered-tint); text-align:center; margin-bottom:14px;">
       <div style="font-size:11px; color:var(--st-delivered); margin-bottom:4px;">${LANG==='ar'?'النقديه بحوزتي':'Cash on Hand'}</div>
       <div style="font-size:24px; font-weight:900; color:var(--st-delivered);" class="mono">${fmt(COURIER_TX.filter(t=>t.dir>0 && t.icon==='check').reduce((a,t)=>a+t.amount,0))} ${t('dueLabel')}</div>
