@@ -84,7 +84,7 @@ svg{display:block; flex-shrink:0;}
 }
 
 /* ============ SCREENS ============ */
-.screen{position:absolute; inset:0; display:none; flex-direction:column; background:var(--bg);}
+.screen{position:absolute; inset:0; display:none; flex-direction:column; background:var(--bg); overflow:hidden;}
 .screen.active{display:flex;}
 
 /* ---- Start / role picker ---- */
@@ -194,7 +194,7 @@ svg{display:block; flex-shrink:0;}
 #screenApp{flex-direction:column;}
 .app-topbar{
   display:flex; align-items:center; gap:10px; padding:16px 16px 12px;
-  border-bottom:1px solid var(--border); background:var(--surface); flex:none;
+  border-bottom:1px solid var(--border); background:var(--surface); flex:none; position:sticky; top:0; z-index:10;
 }
 .tb-icon-btn{width:34px; height:34px; border-radius:10px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; color:var(--ink-soft); flex:none;}
 .notif-badge{position:absolute; top:-4px; inset-inline-end:-4px; min-width:16px; height:16px; border-radius:20px; background:var(--st-returned); color:#fff; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0 4px; border:1.5px solid var(--surface); box-sizing:border-box;}
@@ -209,7 +209,7 @@ svg{display:block; flex-shrink:0;}
 .app-content::-webkit-scrollbar{display:none;}
 
 .bottom-tabs{
-  position:absolute; bottom:0; inset-inline:0; height:70px;
+  position:fixed; bottom:0; inset-inline:0; height:70px;
   background:color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter:blur(10px);
   border-top:1px solid var(--border); display:flex; align-items:center; z-index:90;
   padding-bottom:env(safe-area-inset-bottom, 0);
@@ -387,7 +387,7 @@ svg{display:block; flex-shrink:0;}
 .btn-primary{background:var(--primary); color:#fff;}
 .btn-ghost{background:var(--surface-2); color:var(--ink); border:1px solid var(--border);}
 
-.overlay{position:absolute; inset:0; bottom:70px; background:rgba(10,18,17,.5); z-index:80; display:none; align-items:flex-end;}
+.overlay{position:fixed; inset:0; bottom:70px; background:rgba(10,18,17,.5); z-index:80; display:none; align-items:flex-end;}
 .overlay.open{display:flex;}
 .sheet-modal{background:var(--surface); width:100%; border-radius:22px 22px 0 0; padding:20px; max-height:82%; display:flex; flex-direction:column; animation:sheetup .2s ease; scrollbar-width:none; -ms-overflow-style:none;}
 .sheet-modal::-webkit-scrollbar{display:none;}
@@ -1207,23 +1207,48 @@ const ALT_STATUSES = [
 const ALT_ORDER_STATUSES = ['pending','approved','courier','delivered','returned'];
 
 const MERCHANT_ORDERS = [
-  {track:'IQ-204871', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, phone:'07701234567', phone2:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:42000, notes:{ar:'الباب الخلفي',en:'Back door'}, status:'pending', date:'2026-08-10', time:'09:15', courier:null},
-  {track:'IQ-204879', customer:{ar:'كرم عادل',en:'Karam Adel'}, phone:'07705551234', phone2:'', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}, orderType:{ar:'طلب سريع',en:'Express Order'}, price:28000, notes:'', status:'approved', date:'2026-08-11', time:'10:30', courier:{ar:'محمد علي',en:'Mohammed Ali', phone:'07701112233'}},
-  {track:'IQ-204880', customer:{ar:'هدى نعيم',en:'Huda Naeem'}, phone:'07708889999', phone2:'07701112233', address:{ar:'البصرة — الحزام الأخضر',en:'Basra — Green Belt'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, price:21000, notes:{ar:'يتصل قبل الوصول',en:'Call before arrival'}, status:'courier', date:'2026-08-08', time:'11:00', courier:{ar:'أحمد كريم',en:'Ahmed Kareem', phone:'07704445566'}},
-  {track:'IQ-204881', customer:{ar:'باسم غالب',en:'Bassem Ghalib'}, phone:'07704445566', phone2:'', address:{ar:'أربيل — شارع 60 متر',en:'Erbil — 60m Street'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:50000, notes:'', status:'returned', date:'2026-08-05', time:'14:20', courier:{ar:'عمر حسن',en:'Omar Hassan', phone:'07707778899'}},
-  {track:'IQ-204862', customer:{ar:'ميساء طه',en:'Maysaa Taha'}, phone:'07707778899', phone2:'07703334455', address:{ar:'النجف — الحيدرية',en:'Najaf — Al-Haydariya'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:33000, notes:{ar:'عميل VIP',en:'VIP customer'}, status:'delivered', date:'2026-08-12', time:'08:45', courier:{ar:'سعيد محمود',en:'Saeed Mahmoud', phone:'07702223344'}},
-  {track:'IQ-204890', customer:{ar:'نور حسين',en:'Noor Hussein'}, phone:'07702223344', phone2:'', address:{ar:'كربلاء — الحسينية',en:'Karbala — Husseiniya'}, orderType:{ar:'طلب سريع',en:'Express'}, price:15000, notes:'', status:'courier', date:'2026-08-09', time:'13:10', courier:{ar:'خالد ياسر',en:'Khalid Yasser', phone:'07705551234'}},
-  {track:'IQ-204891', customer:{ar:'عمر فاطمة',en:'Omar Fatima'}, phone:'07706667788', phone2:'07709990011', address:{ar:'الموصل — التحرير',en:'Mosul — Al-Tahrir'}, orderType:{ar:'طلب عادي',en:'Normal'}, price:37000, notes:'', status:'delivered', date:'2026-08-01', time:'09:00', courier:{ar:'حسين جلال',en:'Hussein Jalal', phone:'07708889999'}},
-  {track:'IQ-204892', customer:{ar:'سارة أحمد',en:'Sara Ahmed'}, phone:'07704445566', phone2:'', address:{ar:'البصرة — العشار',en:'Basra — Al-Ashar'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, price:48000, notes:{ar:'يوجد خصم',en:'Discount applied'}, status:'pending', date:'2026-07-28', time:'15:30', courier:null},
+  {track:'IQ-204871', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, phone:'07701234567', phone2:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:42000, notes:{ar:'الباب الخلفي',en:'Back door'}, status:'pending', date:'2026-08-19', time:'09:15', courier:null},
+  {track:'IQ-204892', customer:{ar:'سارة أحمد',en:'Sara Ahmed'}, phone:'07704445566', phone2:'', address:{ar:'البصرة — العشار',en:'Basra — Al-Ashar'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, price:48000, notes:{ar:'يوجد خصم',en:'Discount applied'}, status:'pending', date:'2026-08-19', time:'15:30', courier:null},
+  {track:'IQ-204900', customer:{ar:'ليلى حسن',en:'Layla Hassan'}, phone:'07703331122', phone2:'', address:{ar:'أربيل — شارع 60 متر',en:'Erbil — 60m Street'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:35000, notes:'', status:'pending', date:'2026-08-19', time:'10:00', courier:null},
+  {track:'IQ-204901', customer:{ar:'عمر יוסף',en:'Omar Youssef'}, phone:'07706667788', phone2:'07709991122', address:{ar:'النجف — الحيدرية',en:'Najaf — Al-Haydariya'}, orderType:{ar:'طلب سريع',en:'Express Order'}, price:27000, notes:{ar:'يتصل قبل الوصول',en:'Call before arrival'}, status:'pending', date:'2026-08-19', time:'11:30', courier:null},
+  {track:'IQ-204902', customer:{ar:'فاطمة علي',en:'Fatima Ali'}, phone:'07708889900', phone2:'', address:{ar:'كربلاء — الحسينية',en:'Karbala — Husseiniya'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:19500, notes:'', status:'pending', date:'2026-08-19', time:'14:00', courier:null},
+
+  {track:'IQ-204879', customer:{ar:'كرم عادل',en:'Karam Adel'}, phone:'07705551234', phone2:'', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}, orderType:{ar:'طلب سريع',en:'Express Order'}, price:28000, notes:'', status:'approved', date:'2026-08-19', time:'10:30', courier:{ar:'محمد علي',en:'Mohammed Ali', phone:'07701112233'}},
+  {track:'IQ-204903', customer:{ar:'حنان محمود',en:'Hanan Mahmoud'}, phone:'07702223344', phone2:'', address:{ar:'الموصل — التحرير',en:'Mosul — Al-Tahrir'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:55000, notes:{ar:'عميل VIP',en:'VIP customer'}, status:'approved', date:'2026-08-19', time:'09:45', courier:{ar:'خالد ياسر',en:'Khalid Yasser', phone:'07705551234'}},
+  {track:'IQ-204904', customer:{ar:'أحمد سعيد',en:'Ahmed Saeed'}, phone:'07704445566', phone2:'07701112233', address:{ar:'البصرة — الحزام الأخضر',en:'Basra — Green Belt'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, price:31000, notes:'', status:'approved', date:'2026-08-19', time:'12:00', courier:{ar:'عمر حسن',en:'Omar Hassan', phone:'07707778899'}},
+  {track:'IQ-204905', customer:{ar:'مريم خالد',en:'Maryam Khalid'}, phone:'07706667788', phone2:'', address:{ar:'الكرادة — شارع 40',en:'Karrada — 40m Street'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:44000, notes:{ar:'هاتفين',en:'Two phones'}, status:'approved', date:'2026-08-19', time:'13:15', courier:{ar:'سعيد محمود',en:'Saeed Mahmoud', phone:'07702223344'}},
+  {track:'IQ-204906', customer:{ar:'ياسر حسين',en:'Yasser Hussein'}, phone:'07708889900', phone2:'', address:{ar:'كربلاء — شارع الحسين',en:'Karbala — Hussain St'}, orderType:{ar:'طلب سريع',en:'Express'}, price:22000, notes:'', status:'approved', date:'2026-08-19', time:'14:30', courier:{ar:'حسين جلال',en:'Hussein Jalal', phone:'07708889999'}},
+
+  {track:'IQ-204880', customer:{ar:'هدى نعيم',en:'Huda Naeem'}, phone:'07708889999', phone2:'07701112233', address:{ar:'البصرة — الحزام الأخضر',en:'Basra — Green Belt'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, price:21000, notes:{ar:'يتصل قبل الوصول',en:'Call before arrival'}, status:'courier', date:'2026-08-19', time:'11:00', courier:{ar:'أحمد كريم',en:'Ahmed Kareem', phone:'07704445566'}},
+  {track:'IQ-204890', customer:{ar:'نور حسين',en:'Noor Hussein'}, phone:'07702223344', phone2:'', address:{ar:'كربلاء — الحسينية',en:'Karbala — Husseiniya'}, orderType:{ar:'طلب سريع',en:'Express'}, price:15000, notes:'', status:'courier', date:'2026-08-19', time:'13:10', courier:{ar:'خالد ياسر',en:'Khalid Yasser', phone:'07705551234'}},
+  {track:'IQ-204907', customer:{ar:'سليمان باسل',en:'Suleiman Basil'}, phone:'07703331122', phone2:'', address:{ar:'أربيل — شارع 100 متر',en:'Erbil — 100m Street'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:38000, notes:{ar:'المبنى الثاني',en:'Second building'}, status:'courier', date:'2026-08-19', time:'10:45', courier:{ar:'محمد علي',en:'Mohammed Ali', phone:'07701112233'}},
+  {track:'IQ-204908', customer:{ar:'ناديا عباس',en:'Nadia Abbas'}, phone:'07706667788', phone2:'07709991122', address:{ar:'الموصل — العلم',en:'Mosul — Al-Alam'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:26500, notes:'', status:'courier', date:'2026-08-19', time:'12:30', courier:{ar:'عمر حسن',en:'Omar Hassan', phone:'07707778899'}},
+  {track:'IQ-204909', customer:{ar:'رائد كريم',en:'Raid Kareem'}, phone:'07704445566', phone2:'', address:{ar:'النجف — شارع الحoultry',en:'Najaf — Al-Houltery St'}, orderType:{ar:'طلب سريع',en:'Express'}, price:33000, notes:{ar:'-speed-',en:'speedy'}, status:'courier', date:'2026-08-19', time:'14:00', courier:{ar:'سعيد محمود',en:'Saeed Mahmoud', phone:'07702223344'}},
+
+  {track:'IQ-204862', customer:{ar:'ميساء طه',en:'Maysaa Taha'}, phone:'07707778899', phone2:'07703334455', address:{ar:'النجف — الحيدرية',en:'Najaf — Al-Haydariya'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:33000, notes:{ar:'عميل VIP',en:'VIP customer'}, status:'delivered', date:'2026-08-18', time:'08:45', courier:{ar:'سعيد محمود',en:'Saeed Mahmoud', phone:'07702223344'}},
+  {track:'IQ-204891', customer:{ar:'عمر فاطمة',en:'Omar Fatima'}, phone:'07706667788', phone2:'07709990011', address:{ar:'الموصل — التحرير',en:'Mosul — Al-Tahrir'}, orderType:{ar:'طلب عادي',en:'Normal'}, price:37000, notes:'', status:'delivered', date:'2026-08-18', time:'09:00', courier:{ar:'حسين جلال',en:'Hussein Jalal', phone:'07708889999'}},
+  {track:'IQ-204910', customer:{ar:'ياسمين حسين',en:'Yasmin Hussein'}, phone:'07701112233', phone2:'', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:45000, notes:{ar:'توصيل سريع',en:'Fast delivery'}, status:'delivered', date:'2026-08-18', time:'10:30', courier:{ar:'محمد علي',en:'Mohammed Ali', phone:'07701112233'}},
+  {track:'IQ-204911', customer:{ar:'حارث ناصر',en:'Harith Nasser'}, phone:'07705551234', phone2:'', address:{ar:'البصرة — العشار',en:'Basra — Al-Ashar'}, orderType:{ar:'طلب سريع',en:'Express'}, price:29000, notes:'', status:'delivered', date:'2026-08-17', time:'11:15', courier:{ar:'خالد ياسر',en:'Khalid Yasser', phone:'07705551234'}},
+  {track:'IQ-204912', customer:{ar:'سلمى بدر',en:'Salma Badr'}, phone:'07708889900', phone2:'07703331122', address:{ar:'كربلاء — شارع Independence',en:'Karbala — Independence St'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, price:51000, notes:{ar:'(illegal)',en:'leave at door'}, status:'delivered', date:'2026-08-17', time:'14:45', courier:{ar:'عمر حسن',en:'Omar Hassan', phone:'07707778899'}},
+
+  {track:'IQ-204881', customer:{ar:'باسم غالب',en:'Bassem Ghalib'}, phone:'07704445566', phone2:'', address:{ar:'أربيل — شارع 60 متر',en:'Erbil — 60m Street'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:50000, notes:'', status:'returned', date:'2026-08-17', time:'14:20', courier:{ar:'عمر حسن',en:'Omar Hassan', phone:'07707778899'}},
+  {track:'IQ-204913', customer:{ar:'سامر جلال',en:'Samer Jalal'}, phone:'07702223344', phone2:'', address:{ar:'الموصل — الحدباء',en:'Mosul — Hadbaa'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:24000, notes:{ar:'العميل غير موجود',en:'Customer not found'}, status:'returned', date:'2026-08-16', time:'16:00', courier:{ar:'حسين جلال',en:'Hussein Jalal', phone:'07708889999'}},
+  {track:'IQ-204914', customer:{ar:'دعاء صالح',en:'Doaa Saleh'}, phone:'07706667788', phone2:'07709991122', address:{ar:'الكرادة — شارع 60',en:'Karrada — 60m St'}, orderType:{ar:'طلب سريع',en:'Express'}, price:36000, notes:{ar:'رفض الاستلام',en:'Refused delivery'}, status:'returned', date:'2026-08-16', time:'13:30', courier:{ar:'سعيد محمود',en:'Saeed Mahmoud', phone:'07702223344'}},
+  {track:'IQ-204915', customer:{ar:'ماجد فاروق',en:'Majid Farouk'}, phone:'07704445566', phone2:'', address:{ar:'النجف — الكوفة',en:'Najaf — Kufa'}, orderType:{ar:'طلب عادي',en:'Normal Order'}, price:41000, notes:'', status:'returned', date:'2026-08-15', time:'10:45', courier:{ar:'محمد علي',en:'Mohammed Ali', phone:'07701112233'}},
+  {track:'IQ-204916', customer:{ar:'هدى مهدي',en:'Huda Mahdi'}, phone:'07708889900', phone2:'', address:{ar:'بغداد —زيونة',en:'Baghdad — Zayouna'}, orderType:{ar:'الدفع عند الاستلام',en:'COD'}, price:18500, notes:{ar:'العنوان خاطئ',en:'Wrong address'}, status:'returned', date:'2026-08-15', time:'15:20', courier:{ar:'خالد ياسر',en:'Khalid Yasser', phone:'07705551234'}},
 ];
 
 const COURIER_DELIVERIES = [
-  {track:'IQ-204873', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, phone:'07701234567', address:{ar:'الكرادة — شارع 60',en:'Karrada — 60m Street'}, price:64000, fee:2500, status:'pending', date:'2026-08-19', time:'13:05', createdAt: new Date(Date.now()-4*60000).toISOString(), pickupDeadline: new Date(Date.now()+18*60000).toISOString(), merchant:{ar:'متجر النور',en:'Al-Noor Store', phone:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}}},
-  {track:'IQ-204877', customer:{ar:'مروان طارق',en:'Marwan Tariq'}, phone:'07705551234', address:{ar:'الجادرية —شارع 40',en:'Jadriya — 40m Street'}, price:29800, fee:2200, status:'approved', date:'2026-08-19', time:'10:30', createdAt:'2026-08-19T10:30:00', pickupDeadline:new Date(Date.now()+25*60000).toISOString(), merchant:{ar:'عالم الإلكترونيات',en:'Electronics World', phone:'07703334455', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}}},
-  {track:'IQ-204882', customer:{ar:'رنا فؤاد',en:'Rana Fouad'}, phone:'07708889999', address:{ar:'المنصور — zona 609',en:'Mansour — Zone 609'}, price:41500, fee:2300, status:'courier', date:'2026-08-19', time:'11:15', createdAt:'2026-08-19T11:15:00', merchant:{ar:'سوق الجملة',en:'Wholesale Market', phone:'07701112233', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}}},
-  {track:'IQ-204885', customer:{ar:'سيف كامل',en:'Saif Kamel'}, phone:'07704445566', address:{ar:'زيونة —شارع الحسين',en:'Zayouna — Hussain Street'}, price:18000, fee:2000, status:'delivered', date:'2026-08-19', time:'14:00', createdAt:'2026-08-19T14:00:00', pickupDeadline:null, merchant:{ar:'متجر النور',en:'Al-Noor Store', phone:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}}},
-  {track:'IQ-204890', customer:{ar:'نور حسين',en:'Noor Hussein'}, phone:'07702223344', address:{ar:'الكرادة — فيلا 12',en:'Karrada — Villa 12'}, price:52000, fee:2500, status:'returned', date:'2026-08-19', time:'08:20', createdAt:'2026-08-19T08:20:00', pickupDeadline:null, merchant:{ar:'عالم الإلكترونيات',en:'Electronics World', phone:'07703334455', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}}},
-  {track:'IQ-204895', customer:{ar:'عمار حسين',en:'Ammar Hussein'}, phone:'07707778899', address:{ar:'الكاظمية —شارع?',en:'Kadhimiya — Main St'}, price:35000, fee:2200, status:'pending', date:'2026-08-19', time:'12:45', createdAt: new Date(Date.now()-12*60000).toISOString(), pickupDeadline: new Date(Date.now()+22*60000).toISOString(), merchant:{ar:'سوق الجملة',en:'Wholesale Market', phone:'07701112233', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}}},
+  {track:'IQ-204871', customer:{ar:'زينب صالح',en:'Zainab Saleh'}, phone:'07701234567', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}, price:42000, fee:2500, status:'pending', date:'2026-08-19', time:'13:05', createdAt: new Date(Date.now()-4*60000).toISOString(), merchant:{ar:'متجر النور',en:'Al-Noor Store', phone:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}}},
+  {track:'IQ-204877', customer:{ar:'مروان طارق',en:'Marwan Tariq'}, phone:'07705551234', address:{ar:'الجادرية —شارع 40',en:'Jadriya — 40m Street'}, price:29800, fee:2200, status:'pending', date:'2026-08-19', time:'10:30', createdAt: new Date(Date.now()-8*60000).toISOString(), pickupDeadline: new Date(Date.now()+22*60000).toISOString(), merchant:{ar:'عالم الإلكترونيات',en:'Electronics World', phone:'07703334455', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}}},
+  {track:'IQ-204882', customer:{ar:'رنا فؤاد',en:'Rana Fouad'}, phone:'07708889999', address:{ar:'المنصور — zona 609',en:'Mansour — Zone 609'}, price:41500, fee:2300, status:'pending', date:'2026-08-19', time:'11:15', createdAt: new Date(Date.now()-15*60000).toISOString(), pickupDeadline: new Date(Date.now()+15*60000).toISOString(), merchant:{ar:'سوق الجملة',en:'Wholesale Market', phone:'07701112233', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}}},
+  {track:'IQ-204895', customer:{ar:'عمار حسين',en:'Ammar Hussein'}, phone:'07707778899', address:{ar:'الكاظمية —شارع?',en:'Kadhimiya — Main St'}, price:35000, fee:2200, status:'pending', date:'2026-08-19', time:'12:45', createdAt: new Date(Date.now()-20*60000).toISOString(), pickupDeadline: new Date(Date.now()+10*60000).toISOString(), merchant:{ar:'سوق الجملة',en:'Wholesale Market', phone:'07701112233', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}}},
+  {track:'IQ-204920', customer:{ar:'لينا أحمد',en:'Lina Ahmed'}, phone:'07703331122', address:{ar:'زيونة —شارع الحسين',en:'Zayouna — Hussain Street'}, price:27500, fee:2000, status:'pending', date:'2026-08-19', time:'09:30', createdAt: new Date(Date.now()-25*60000).toISOString(), pickupDeadline: new Date(Date.now()+5*60000).toISOString(), merchant:{ar:'متجر النور',en:'Al-Noor Store', phone:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}}},
+  {track:'IQ-204921', customer:{ar:'بلال مهدي',en:'Bilal Mahdi'}, phone:'07706667788', address:{ar:'بغداد — الحيدرية',en:'Baghdad — Al-Haydariya'}, price:52000, fee:2500, status:'pending', date:'2026-08-19', time:'14:00', createdAt: new Date(Date.now()-3*60000).toISOString(), pickupDeadline: new Date(Date.now()+27*60000).toISOString(), merchant:{ar:'عالم الإلكترونيات',en:'Electronics World', phone:'07703334455', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}}},
+  {track:'IQ-204922', customer:{ar:'وفاء jclass',en:'Wafaa Jassem'}, phone:'07708889900', address:{ar:'البصرة — العشار',en:'Basra — Al-Ashar'}, price:38000, fee:2300, status:'pending', date:'2026-08-19', time:'11:00', createdAt: new Date(Date.now()-10*60000).toISOString(), pickupDeadline: new Date(Date.now()+20*60000).toISOString(), merchant:{ar:'سوق الجملة',en:'Wholesale Market', phone:'07701112233', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}}},
+  {track:'IQ-204923', customer:{ar:'ريم عادل',en:'Reem Adel'}, phone:'07704445566', address:{ar:'الكرادة — فيلا 5',en:'Karrada — Villa 5'}, price:45000, fee:2400, status:'pending', date:'2026-08-19', time:'10:15', createdAt: new Date(Date.now()-18*60000).toISOString(), pickupDeadline: new Date(Date.now()+12*60000).toISOString(), merchant:{ar:'متجر النور',en:'Al-Noor Store', phone:'07709876543', address:{ar:'بغداد — الكرادة',en:'Baghdad — Karrada'}}},
+  {track:'IQ-204924', customer:{ar:'ثامر نوفل',en:'Thamer Nofal'}, phone:'07702223344', address:{ar:'الجادرية —شارع 40',en:'Jadriya — 40m Street'}, price:31000, fee:2100, status:'pending', date:'2026-08-19', time:'15:30', createdAt: new Date(Date.now()-6*60000).toISOString(), pickupDeadline: new Date(Date.now()+24*60000).toISOString(), merchant:{ar:'عالم الإلكترونيات',en:'Electronics World', phone:'07703334455', address:{ar:'بغداد — المنصور',en:'Baghdad — Mansour'}}},
+  {track:'IQ-204925', customer:{ar:'مها سعيد',en:'Maha Saeed'}, phone:'07706667788', address:{ar:'كربلاء — الحسينية',en:'Karbala — Husseiniya'}, price:22500, fee:2000, status:'pending', date:'2026-08-19', time:'13:45', createdAt: new Date(Date.now()-14*60000).toISOString(), pickupDeadline: new Date(Date.now()+16*60000).toISOString(), merchant:{ar:'سوق الجملة',en:'Wholesale Market', phone:'07701112233', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}}},
 ];
 
 const MERCHANT_PROVINCES = [
@@ -1820,6 +1845,20 @@ function getPickupDeadlineMs(){ return (parseInt(localStorage.getItem('pickupMin
 function ensurePickupDeadline(d){
   if(d.status==='approved' && !d.pickupDeadline) d.pickupDeadline = Date.now() + getPickupDeadlineMs();
 }
+function startPickupCountdown(d){
+  if(!d) return;
+  d.pickupAcceptedAt = Date.now();
+  d.pickupDeadline = d.pickupAcceptedAt + getPickupDeadlineMs();
+}
+function syncMerchantOrderStatus(d){
+  const merchantOrder = MERCHANT_ORDERS.find(order=>order.track===d.track);
+  if(!merchantOrder) return;
+  merchantOrder.status = d.status;
+  if(d.status==='approved'){
+    merchantOrder.pickupAcceptedAt = d.pickupAcceptedAt;
+    merchantOrder.pickupDeadline = d.pickupDeadline;
+  }
+}
 function pickupTimerCard(d){
   if(d.status!=='approved') return '';
   ensurePickupDeadline(d);
@@ -1827,7 +1866,7 @@ function pickupTimerCard(d){
     <div style="margin-top:12px; padding:14px; border-radius:14px; background:var(--warning-tint); border:1.5px solid color-mix(in srgb, var(--warning) 30%, transparent);">
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
         ${ic('clock',15)}
-        <div style="font-size:12px; font-weight:800; color:var(--ink);">${l('الوقت المحدد للوصول إلى التاجر','کاتی گەیشتن بۆ کەربەران','Time to reach the merchant')}</div>
+        <div style="font-size:12px; font-weight:800; color:var(--ink);">${l('الوقت المتبقي لوصول المندوب إلى التاجر','کاتی ماوە بۆ گەیشتنی کوریەر بۆ کەربەران','Courier arrival time remaining')}</div>
       </div>
       <div class="pickup-timer mono" data-deadline="${d.pickupDeadline}" style="font-size:24px; font-weight:900; color:var(--warning); letter-spacing:1px; text-align:center; line-height:1.2;"></div>
     </div>`;
@@ -1835,7 +1874,7 @@ function pickupTimerCard(d){
 function pickupTimerLine(d){
   if(d.status!=='approved') return '';
   ensurePickupDeadline(d);
-  return `<div style="display:flex; align-items:center; gap:5px; font-size:10.5px; font-weight:800; color:var(--warning); margin-top:6px;">${ic('clock',11)} ${l('الوقت المتبقي','کاتی ماوە','Time left')}: <b class="pickup-timer mono" data-deadline="${d.pickupDeadline}" style="font-size:11px;"></b></div>`;
+  return `<div style="display:flex; align-items:center; gap:5px; font-size:10.5px; font-weight:800; color:var(--warning); margin-top:6px;">${ic('clock',11)} ${l('المتبقي لوصول المندوب','کاتی ماوە بۆ گەیشتنی کوریەر','Courier arrival remaining')}: <b class="pickup-timer mono" data-deadline="${d.pickupDeadline}" style="font-size:11px;"></b></div>`;
 }
 let courierTickerStarted = false;
 function startCourierTimerTicker(){
@@ -2674,7 +2713,8 @@ function approveCourierOrder(track){
   if(d && d.status==='pending'){
     if(!canAcceptCourierOrder(d)){ openBudgetInsufficientSheet(d); return; }
     d.status = 'approved';
-    ensurePickupDeadline(d);
+    startPickupCountdown(d);
+    syncMerchantOrderStatus(d);
     if(!d.deducted){ d.deducted = true; creditCourierBudget(-d.price); }
   }
   renderCourierHome();
@@ -2687,7 +2727,7 @@ function setCourierStatus(track, status){
   let budgetDeducted = 0;
   if(status==='approved' && prev==='pending'){
     if(!canAcceptCourierOrder(d)){ openBudgetInsufficientSheet(d); return; }
-    ensurePickupDeadline(d);
+    startPickupCountdown(d);
     if(!d.deducted){ d.deducted = true; creditCourierBudget(-d.price); budgetDeducted = d.price; }
   }
   if((status==='pending' || status==='delivered' || status==='returned') && d.deducted){
@@ -2708,6 +2748,7 @@ function setCourierStatus(track, status){
     }
   }
   d.status = status;
+  syncMerchantOrderStatus(d);
   const notifMap = {
     approved:{icon:'shield', title:{ar:`تم قبول طلبك ${d.track}`, en:`Your order ${d.track} was accepted`}, body:{ar:'قام المندوب بقبول طلبك وسيقوم باستلامه من متجرك.', en:'The courier accepted your order and will pick it up from your store.'}},
     courier:{icon:'bike', title:{ar:`تم استلام طلبك ${d.track}`, en:`Your order ${d.track} was picked up`}, body:{ar:'استلم المندوب الطلب من متجرك وهو الآن في الطريق للتوصيل.', en:'The courier picked up your order and is now delivering it.'}},
@@ -2718,6 +2759,10 @@ function setCourierStatus(track, status){
   if(nt) pushNotif('merchant', nt.icon, nt.title, nt.body);
   if(status==='approved') pushNotif('courier', 'shield', {ar:`تم أخذ الطلب ${d.track}`, en:`Order ${d.track} taken`}, {ar:`تم خصم ${fmt(d.price)} ${t('dueLabel')} من الميزانية. الرصيد المتبقي: ${fmt(courierBudget)} ${t('dueLabel')}.`, en:`${fmt(d.price)} ${t('dueLabel')} deducted from the budget. Remaining: ${fmt(courierBudget)} ${t('dueLabel')}.`});
   if(status==='delivered') pushNotif('courier', 'check', {ar:`تم تسليم الطلب ${d.track}`, en:`Order ${d.track} delivered`}, {ar:`تم إعادة مبلغ الطلب إلى الميزانية. الرصيد المتبقي: ${fmt(courierBudget)} ${t('dueLabel')}.`, en:`The order amount was returned to the budget. Remaining: ${fmt(courierBudget)} ${t('dueLabel')}.`});
+  if(status==='delivered'){
+    const pts = parseInt(localStorage.getItem('courierPoints')||'0') + 10;
+    localStorage.setItem('courierPoints', pts);
+  }
   if(status==='returned') pushNotif('courier', 'x2', {ar:`تم إرجاع الطلب ${d.track}`, en:`Order ${d.track} returned`}, {ar:`تم إعادة مبلغ الطلب إلى الميزانية. الرصيد المتبقي: ${fmt(courierBudget)} ${t('dueLabel')}.`, en:`The order amount was returned to the budget. Remaining: ${fmt(courierBudget)} ${t('dueLabel')}.`});
   closeSheet();
   if(budgetDeducted){
@@ -3135,6 +3180,26 @@ function renderCourierWallet(){
       </div>
     </div>
 
+    <div style="display:flex; gap:10px; margin-bottom:14px;">
+      <div style="flex:1; padding:16px; border-radius:16px; background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; position:relative; overflow:hidden;">
+        <div style="position:absolute; top:-15px; right:-15px; width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,.15);"></div>
+        <div style="position:relative; z-index:1;">
+          <div style="font-size:10px; font-weight:700; opacity:.85; margin-bottom:6px;">${l('النقاط المكتسبة','خاڵەکانی بەدەستهاتوو','Earned Points')}</div>
+          <div style="display:flex; align-items:baseline; gap:4px;">
+            <span class="mono" style="font-size:24px; font-weight:900;">${localStorage.getItem('courierPoints')||0}</span>
+            <span style="font-size:10px; opacity:.75; font-weight:700;">${l('نقطة','خاڵ','pts')}</span>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1; padding:16px; border-radius:16px; background:var(--surface); border:1px solid var(--border); position:relative; overflow:hidden;">
+        <div style="font-size:10px; font-weight:700; color:var(--ink-soft); margin-bottom:6px;">${l('عدد التوصيلات','ژمارەی گواستنەوە','Deliveries')}</div>
+        <div style="display:flex; align-items:baseline; gap:4px;">
+          <span class="mono" style="font-size:24px; font-weight:900; color:var(--ink);">${COURIER_DELIVERIES.filter(d=>d.status==='delivered').length}</span>
+          <span style="font-size:10px; color:var(--ink-faint); font-weight:700;">${l('مرة','جار','times')}</span>
+        </div>
+      </div>
+    </div>
+
     <div style="padding:22px 20px; border-radius:22px; background:linear-gradient(135deg, var(--primary-strong), var(--primary)); color:#fff; margin-bottom:16px; position:relative; overflow:hidden;">
       <div style="position:absolute; top:-30px; left:-30px; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,.07);"></div>
       <div style="position:absolute; bottom:-40px; right:-20px; width:140px; height:140px; border-radius:50%; background:rgba(255,255,255,.07);"></div>
@@ -3199,43 +3264,42 @@ let RECHARGE_QI_NUMBER = '07801234567';
 
 function openRechargeSheet(){
   openSheet(`
-    <div style="font-weight:800; font-size:14.5px; margin-bottom:4px;">${l('شحن الرصيد عبر QI','گواستنەوە بۆ QI','Recharge via QI')}</div>
-    <div style="font-size:11px; color:var(--ink-faint); font-weight:600; margin-bottom:16px;">${l('الرصيد الحالي','باڵانسی ئێستا','Current balance')}: <b class="mono" style="color:var(--primary);">${fmt(walletCredit)} ${t('dueLabel')}</b></div>
+    <div style="text-align:center; margin-bottom:18px;">
+      <div style="width:56px; height:56px; border-radius:16px; background:linear-gradient(135deg, #1a73e8, #0d47a1); color:#fff; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; box-shadow:0 4px 14px rgba(26,115,232,.35);">${ic('wallet',26)}</div>
+      <div style="font-weight:900; font-size:16px; margin-bottom:2px;">${l('شحن الرصيد عبر QI','گواستنەوە بۆ QI','Recharge via QI')}</div>
+      <div style="font-size:11px; color:var(--ink-faint); font-weight:600;">${l('الرصيد الحالي','باڵانسی ئێستا','Current balance')}: <b class="mono" style="color:var(--primary);">${fmt(walletCredit)} ${t('dueLabel')}</b></div>
+    </div>
 
-    <div style="background:linear-gradient(135deg, var(--primary-tint), rgba(11,110,104,.06)); border:1.5px solid color-mix(in srgb, var(--primary) 30%, transparent); border-radius:14px; padding:14px; margin-bottom:14px;">
-      <div style="font-size:11px; font-weight:800; color:var(--primary); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-        ${ic('info',14)}
-        ${l('خطوات الشحن','گاڤەکانی گواستنەوە','Recharge Steps')}
+    <div style="background:var(--surface-2); border-radius:14px; padding:14px; margin-bottom:16px;">
+      <div style="font-size:10.5px; font-weight:700; color:var(--ink-faint); margin-bottom:8px;">${l('-step 1- :','گاڤ ١:','Step 1:')} ${l('انقل المبلغ إلى رقم QI','بڕەکە بۆ ژمارەی QI بنێرە','Transfer to QI number')}</div>
+      <div style="display:flex; align-items:center; gap:10px; background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:12px 14px;">
+        <div style="width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg, #1a73e8, #0d47a1); color:#fff; display:flex; align-items:center; justify-content:center; flex:none;">${ic('wallet',17)}</div>
+        <div style="flex:1;">
+          <div style="font-size:10px; font-weight:700; color:var(--ink-faint); margin-bottom:2px;">QI</div>
+          <div style="font-size:16px; font-weight:900; color:var(--ink); font-family:monospace; letter-spacing:1.5px; direction:ltr; text-align:center;" id="qiNumDisplay">${RECHARGE_QI_NUMBER}</div>
+        </div>
+        <button onclick="copyQiNumber()" style="padding:8px 12px; border-radius:8px; background:var(--primary-tint); color:var(--primary); border:none; font-size:10px; font-weight:800; cursor:pointer; flex:none;">${l('نسخ','کۆپی','Copy')}</button>
       </div>
-      <ol style="margin:0; padding:0 0 0 16px; font-size:11.5px; color:var(--ink-soft); line-height:2; font-weight:600;">
-        <li>${l('انقل المبلغ إلى رقم الQI التالي','بڕەکە بۆ ژمارەی QI بنێرە','Transfer amount to the QI number below')}</li>
-        <li>${l('أدخل رقم العملية (المعاملة) من تطبيق QI','ژمارەی بۆنەی QI بنووسە','Enter the QI transaction number')}</li>
-        <li>${l('اضغط إرسال — سيتم مراجعة الطلب من الإدارة','بنێرە','Submit — admin will review')}</li>
-      </ol>
     </div>
 
-    <div style="background:var(--surface-2); border-radius:12px; padding:12px 14px; margin-bottom:14px; display:flex; align-items:center; gap:10px;">
-      <div style="width:40px; height:40px; border-radius:10px; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; flex:none;">
-        ${ic('wallet',18)}
+    <div style="background:var(--surface-2); border-radius:14px; padding:14px; margin-bottom:16px;">
+      <div style="font-size:10.5px; font-weight:700; color:var(--ink-faint); margin-bottom:8px;">${l('-step 2- :','گاڤ ٢:','Step 2:')} ${l('أدخل المبلغ المحول','بڕی ناردوو بنووسە','Enter transferred amount')}</div>
+      <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+        <button onclick="document.getElementById('rechargeAmount').value=5000" style="padding:7px 14px; border-radius:8px; background:var(--surface); border:1.5px solid var(--border); color:var(--ink); font-size:11px; font-weight:800; cursor:pointer;">5,000</button>
+        <button onclick="document.getElementById('rechargeAmount').value=10000" style="padding:7px 14px; border-radius:8px; background:var(--surface); border:1.5px solid var(--border); color:var(--ink); font-size:11px; font-weight:800; cursor:pointer;">10,000</button>
+        <button onclick="document.getElementById('rechargeAmount').value=20000" style="padding:7px 14px; border-radius:8px; background:var(--surface); border:1.5px solid var(--border); color:var(--ink); font-size:11px; font-weight:800; cursor:pointer;">20,000</button>
+        <button onclick="document.getElementById('rechargeAmount').value=50000" style="padding:7px 14px; border-radius:8px; background:var(--surface); border:1.5px solid var(--border); color:var(--ink); font-size:11px; font-weight:800; cursor:pointer;">50,000</button>
       </div>
-      <div style="flex:1;">
-        <div style="font-size:10px; font-weight:700; color:var(--ink-faint); margin-bottom:2px;">${l('رقم الQI للتحويل','ژمارەی QI','QI Number')}</div>
-        <div style="font-size:17px; font-weight:900; color:var(--ink); font-family:monospace; letter-spacing:1px; direction:ltr; text-align:center;" id="qiNumDisplay">${RECHARGE_QI_NUMBER}</div>
-      </div>
-      <button onclick="copyQiNumber()" style="padding:6px 10px; border-radius:8px; background:var(--primary-tint); color:var(--primary); border:none; font-size:10px; font-weight:800; cursor:pointer; flex:none;">${l('نسخ','کۆپی بکە','Copy')}</button>
+      <input id="rechargeAmount" type="number" placeholder="0 ${t('dueLabel')}" style="width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px; background:var(--surface); color:var(--ink); font-size:16px; font-weight:800; font-family:inherit; outline:none; box-sizing:border-box;">
     </div>
 
-    <div class="field">
-      <label>${l('المبلغ المحوّل (د.ع)','بڕ','Amount')}</label>
-      <input id="rechargeAmount" type="number" placeholder="0 ${t('dueLabel')}" style="font-size:16px; font-weight:800;">
-    </div>
-    <div class="field">
-      <label>${l('رقم عملية QI (المعاملة)','ژمارەی بۆنەی QI','QI Transaction Number')}</label>
-      <input id="rechargeTxId" type="text" placeholder="${l('مثال: 123456789','نمونە: 123456789','e.g. 123456789')}" style="font-family:monospace; letter-spacing:1px;">
+    <div style="background:var(--surface-2); border-radius:14px; padding:14px; margin-bottom:16px;">
+      <div style="font-size:10.5px; font-weight:700; color:var(--ink-faint); margin-bottom:8px;">${l('-step 3- :','گاڤ ٣:','Step 3:')} ${l('أدخل رقم العملية من تطبيق QI','ژمارەی بۆنەکە بنووسە','Enter QI transaction ID')}</div>
+      <input id="rechargeTxId" type="text" placeholder="${l('مثال: 123456789','نمونە: 123456789','e.g. 123456789')}" style="width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px; background:var(--surface); color:var(--ink); font-size:14px; font-weight:700; font-family:monospace; letter-spacing:1px; outline:none; box-sizing:border-box;">
     </div>
 
-    <button class="btn btn-primary" style="width:100%; margin-top:8px;" onclick="submitRecharge()">${l('إرسال طلب الشحن','اخوازەکە بنێرە','Submit Request')}</button>
-    <div style="text-align:center; margin-top:12px; font-size:11px; color:var(--ink-faint); font-weight:700;">${l('مشكلة في الشحن؟','کێشەیەک لە گواستنەوەدایە؟','Problem recharging?')} <a style="color:var(--primary); font-weight:800; cursor:pointer;" onclick="contactSupportRecharge()">${l('تواصل مع الدعم','پەیوەندی یارمەتی بکە','Contact Support')}</a></div>
+    <button class="btn btn-primary" style="width:100%; padding:14px; font-size:14px; font-weight:900; border-radius:14px;" onclick="submitRecharge()">${l('إرسال طلب الشحن','اخوازەکە بنێرە','Submit Recharge Request')}</button>
+    <div style="text-align:center; margin-top:12px; font-size:11px; color:var(--ink-faint); font-weight:700;">${l('مشكلة في الشحن؟','کێشەیەک لە گواستنەوەدایە؟')} <a style="color:var(--primary); font-weight:800; cursor:pointer;" onclick="contactSupportRecharge()">${l('تواصل مع الدعم','پەیوەندی یارمەتی بکە')}</a></div>
   `);
 }
 
@@ -3600,7 +3664,7 @@ function renderProfile(){
   const rowBudget = document.getElementById('rowBudget');
   if(rowBudget) rowBudget.addEventListener('click', openBudgetSheet);
   const rowRecharge = document.getElementById('rowRecharge');
-  if(rowRecharge) rowRecharge.addEventListener('click', openRechargeSheet);
+  if(rowRecharge) rowRecharge.addEventListener('click', ()=> openToast(l('سيتم ربط بوابة QI قريباً','تکاندنی دەروازەی QI لەمەودوە دەکرێت','QI gateway coming soon')));
   document.getElementById('segLight').addEventListener('click', ()=>{ setTheme('light'); renderProfile(); });
   document.getElementById('segDark').addEventListener('click', ()=>{ setTheme('dark'); renderProfile(); });
   document.getElementById('rowSupport').addEventListener('click', ()=>{ TAB='chat'; activeChat = ROLE==='merchant'?'admin_merchant':'admin_courier'; renderTabs(); renderTab(); });
