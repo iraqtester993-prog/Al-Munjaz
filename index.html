@@ -2830,23 +2830,37 @@ function openReturnSheet(track){
       <div style="width:28px; height:28px; border-radius:8px; background:var(--danger-tint); color:var(--danger); display:flex; align-items:center; justify-content:center;">${ic('x2',14)}</div>
       <div style="font-weight:800; font-size:14px;">${l('إرجاع الطلب','Vegerîna daxwazê','Return Order')}</div>
     </div>
-    <div style="font-size:12px; color:var(--ink-soft); margin-bottom:14px; line-height:1.6;">
-      ${l('هل تريد إضافة أجرة توصيل لهذه الطلبية؟ إذا وضعت مبلغاً سيتم استقطاعه من رصيدك.','Dixwazî bihayê şandina vê daxwazê zêde bikî? Heke remanê bivalî, dê ji başayiyê te were derxistin.','Do you want to add a delivery fee for this order? If you enter an amount, it will be deducted from your balance.')}
-    </div>
-    <div style="margin-bottom:14px;">
-      <label style="display:block; font-size:12px; font-weight:800; color:var(--ink); margin-bottom:6px;">${l('أجرة التوصيل (اختياري)','Biha şandina (hişyarî)','Delivery Fee (optional)')}</label>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <input id="returnFeeInput" type="number" min="0" max="50000" placeholder="0" style="flex:1; padding:10px 14px; border-radius:10px; border:1.5px solid var(--border); background:var(--surface); font-size:14px; font-weight:800; font-family:inherit; color:var(--ink); outline:none;">
-        <span style="font-size:12px; font-weight:700; color:var(--ink-soft);">${t('dueLabel')}</span>
+    <div id="returnOptionDefault">
+      <div style="font-size:12px; color:var(--ink-soft); margin-bottom:16px; line-height:1.6;">
+        ${l('هل تريد إضافة أجرة توصيل لهذه الطلبية؟','Dixwazî bihayê şandina vê daxwazê zêde bikî?','Do you want to add a delivery fee for this order?')}
       </div>
-      <div style="display:flex; gap:6px; margin-top:8px;">
-        ${[0,1000,2000,3000,5000].map(v=>`<button class="return-fee-preset" data-v="${v}" style="padding:5px 10px; border-radius:8px; background:var(--surface-2); color:var(--ink); border:none; font-size:11px; font-weight:700; cursor:pointer;">${v===0?l('بدون','Bê','None'):fmt(v)}</button>`).join('')}
-      </div>
+      <button class="btn btn-ghost" style="width:100%; margin-bottom:10px; border-color:var(--danger); color:var(--danger);" onclick="confirmReturn('${track}', 0)">
+        ${l('بدون أجرة توصيل','Bê biha şandina','Without Delivery Fee')}
+      </button>
+      <button class="btn btn-primary" style="width:100%; margin-bottom:10px;" onclick="showReturnFeeInput()">
+        ${l('بأجرة توصيل','Bi biha şandina','With Delivery Fee')}
+      </button>
+      <button class="btn btn-ghost" style="width:100%;" onclick="closeSheet()">${t('close')}</button>
     </div>
-    <button class="btn btn-ghost" style="width:100%; margin-bottom:8px; color:var(--danger); border-color:var(--danger);" onclick="confirmReturn('${track}')">
-      ${l('تأكيد الإرجاع','Ewlekirina vegerînê','Confirm Return')}
-    </button>
-    <button class="btn btn-ghost" style="width:100%;" onclick="closeSheet()">${t('close')}</button>
+    <div id="returnOptionFee" style="display:none;">
+      <div style="margin-bottom:14px;">
+        <label style="display:block; font-size:12px; font-weight:800; color:var(--ink); margin-bottom:6px;">${l('أجرة التوصيل','Biha şandina','Delivery Fee')}</label>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <input id="returnFeeInput" type="number" min="1" max="50000" placeholder="0" style="flex:1; padding:10px 14px; border-radius:10px; border:1.5px solid var(--border); background:var(--surface); font-size:14px; font-weight:800; font-family:inherit; color:var(--ink); outline:none;">
+          <span style="font-size:12px; font-weight:700; color:var(--ink-soft);">${t('dueLabel')}</span>
+        </div>
+        <div style="display:flex; gap:6px; margin-top:8px;">
+          ${[1000,2000,3000,5000].map(v=>`<button class="return-fee-preset" data-v="${v}" style="padding:5px 10px; border-radius:8px; background:var(--surface-2); color:var(--ink); border:none; font-size:11px; font-weight:700; cursor:pointer;">${fmt(v)}</button>`).join('')}
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%; margin-bottom:10px;" onclick="confirmReturnWithFee('${track}')">
+        ${l('تأكيد مع أجرة','Ewlekirin bi biha','Confirm with Fee')}
+      </button>
+      <button class="btn btn-ghost" style="width:100%; margin-bottom:10px;" onclick="document.getElementById('returnOptionDefault').style.display='block'; document.getElementById('returnOptionFee').style.display='none';">
+        ${l('رجوع','Vegere','Go Back')}
+      </button>
+      <button class="btn btn-ghost" style="width:100%;" onclick="closeSheet()">${t('close')}</button>
+    </div>
   `);
   setTimeout(()=>{
     document.querySelectorAll('.return-fee-preset').forEach(btn=>{
@@ -2856,18 +2870,21 @@ function openReturnSheet(track){
     });
   },50);
 }
-function confirmReturn(track){
+function showReturnFeeInput(){
+  document.getElementById('returnOptionDefault').style.display='none';
+  document.getElementById('returnOptionFee').style.display='block';
+}
+function confirmReturnWithFee(track){
   const fee = parseInt(document.getElementById('returnFeeInput').value||'0',10);
-  if(fee>0){
-    walletCredit -= fee;
-    saveCredit();
-    COURIER_TX.unshift({
-      icon:'upload', color:'warning',
-      label:{ar:`أجرة توصيل (راجع) — ${track}`, en:`Delivery fee (returned) — ${track}`},
-      ref:track, date:new Date().toISOString().slice(0,10),
-      amount:fee, dir:-1
-    });
-  }
+  if(!fee || fee<=0){ alert(l('الرجاء إدخال مبلغ الأجرة','Ji kerema xwe biha binivîse','Please enter a fee amount')); return; }
+  walletCredit -= fee;
+  saveCredit();
+  COURIER_TX.unshift({
+    icon:'upload', color:'warning',
+    label:{ar:`أجرة توصيل (راجع) — ${track}`, en:`Delivery fee (returned) — ${track}`},
+    ref:track, date:new Date().toISOString().slice(0,10),
+    amount:fee, dir:-1
+  });
   setCourierStatus(track,'returned');
 }
 
