@@ -211,7 +211,7 @@ svg{display:block; flex-shrink:0;}
 .bottom-tabs{
   position:absolute; bottom:0; inset-inline:0; height:70px;
   background:color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter:blur(10px);
-  border-top:1px solid var(--border); display:flex; align-items:center; z-index:40;
+  border-top:1px solid var(--border); display:flex; align-items:center; z-index:90;
   padding-bottom:env(safe-area-inset-bottom, 0);
 }
 .tab-btn{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--ink-faint); position:relative;}
@@ -387,9 +387,13 @@ svg{display:block; flex-shrink:0;}
 .btn-primary{background:var(--primary); color:#fff;}
 .btn-ghost{background:var(--surface-2); color:var(--ink); border:1px solid var(--border);}
 
-.overlay{position:absolute; inset:0; background:rgba(10,18,17,.5); z-index:80; display:none; align-items:flex-end;}
+.overlay{position:absolute; inset:0; bottom:70px; background:rgba(10,18,17,.5); z-index:80; display:none; align-items:flex-end;}
 .overlay.open{display:flex;}
-.sheet-modal{background:var(--surface); width:100%; border-radius:22px 22px 0 0; padding:20px; max-height:82%; overflow-y:auto; animation:sheetup .2s ease;}
+.sheet-modal{background:var(--surface); width:100%; border-radius:22px 22px 0 0; padding:20px; max-height:82%; display:flex; flex-direction:column; animation:sheetup .2s ease; scrollbar-width:none; -ms-overflow-style:none;}
+.sheet-modal::-webkit-scrollbar{display:none;}
+.sheet-header{display:flex; align-items:center; justify-content:space-between; padding:4px 0 12px; border-bottom:1px solid var(--border); margin-bottom:14px; flex:none;}
+.sheet-body{flex:1; overflow-y:auto; scrollbar-width:none; -ms-overflow-style:none;}
+.sheet-body::-webkit-scrollbar{display:none;}
 @keyframes sheetup{from{transform:translateY(30px); opacity:.6;} to{transform:none; opacity:1;}}
 .sheet-handle{width:38px; height:4px; border-radius:20px; background:var(--border);}
 
@@ -3397,6 +3401,8 @@ let reportsView = 'main';
 let reportFrom = '';
 let reportTo = '';
 let reportStatus = '';
+let archiveTab = 'all';
+let archiveStatusFilter = '';
 
 function getFilteredOrders(){
   let list = MERCHANT_ORDERS;
@@ -3406,8 +3412,8 @@ function getFilteredOrders(){
 }
 
 function renderReportsPage(){
-  if(subPage!=='reports') reportsView='main';
-  setTopbar(t('reportsTitle'), '', subPage==='reports', ()=>{ subPage=null; reportsView='main'; renderTab(); });
+  if(subPage!=='reports' && reportsView==='main') {} 
+  setTopbar(t('reportsTitle'), '', reportsView==='detail'||subPage==='reports', ()=>{ subPage=null; reportsView='main'; archiveTab='all'; renderTab(); });
   const el = document.getElementById('appContent');
 
   if(reportsView==='detail'){
@@ -3415,76 +3421,85 @@ function renderReportsPage(){
     return;
   }
 
-  const filtered = getFilteredOrders();
-  const statuses = [
-    {key:'delivered', label:l('تم التسليم','سپردرا','Delivered'), color:'var(--st-delivered)', tint:'var(--st-delivered-tint)', icon:'check'},
-    {key:'returned', label:l('راجع','گەڕێنرایەوە','Returned'), color:'var(--st-returned)', tint:'var(--st-returned-tint)', icon:'x2'},
-  ];
+  const today = new Date().toISOString().slice(0,10);
+  let allOrders = MERCHANT_ORDERS;
+  if(archiveTab==='today'){
+    allOrders = allOrders.filter(o=> o.date === today);
+  }
+  if(reportFrom){ allOrders = allOrders.filter(o=> o.date >= reportFrom); }
+  if(reportTo){ allOrders = allOrders.filter(o=> o.date <= reportTo); }
 
-  const groups = statuses.map(s=>{
-    const items = filtered.filter(o=>o.status===s.key);
-    const total = items.reduce((a,o)=>a+o.price,0);
-    return {...s, items, total};
-  });
-
-  const grandTotal = groups.reduce((a,g)=>a+g.total,0);
-  const archivedCount = groups.reduce((a,g)=>a+g.items.length,0);
+  const allTotal = allOrders.reduce((a,o)=>a+o.price,0);
+  const allCount = allOrders.length;
+  const deliveredCount = allOrders.filter(o=>o.status==='delivered').length;
+  const returnedCount = allOrders.filter(o=>o.status==='returned').length;
+  const deliveredTotal = allOrders.filter(o=>o.status==='delivered').reduce((a,o)=>a+o.price,0);
+  const returnedTotal = allOrders.filter(o=>o.status==='returned').reduce((a,o)=>a+o.price,0);
 
   el.innerHTML = `
-    <div class="list-card" style="margin-bottom:14px; padding:14px;">
-      <div style="font-size:12.5px; font-weight:800; margin-bottom:12px; color:var(--ink);">${l('فلترة حسب التاريخ','پۆلێن بەپێی بەروار','Filter by Date')}</div>
-      <div style="display:flex; gap:10px;">
-        <div style="flex:1;">
-          <div style="font-size:10.5px; font-weight:700; color:var(--ink-soft); margin-bottom:5px;">${l('من تاريخ','لە بەروارەوە','From Date')}</div>
-          <input id="rptFrom" type="date" value="${reportFrom}" style="width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px; background:var(--surface-2); color:var(--ink); font-size:12px; font-family:inherit;">
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:10.5px; font-weight:700; color:var(--ink-soft); margin-bottom:5px;">${l('إلى تاريخ','بۆ بەروارەوە','To Date')}</div>
-          <input id="rptTo" type="date" value="${reportTo}" style="width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px; background:var(--surface-2); color:var(--ink); font-size:12px; font-family:inherit;">
-        </div>
-      </div>
+    <div style="display:flex; gap:8px; margin-bottom:14px;">
+      <button id="archTabAll" style="flex:1; padding:10px; border-radius:12px; border:1.5px solid ${archiveTab==='all'?'var(--primary)':'var(--border)'}; background:${archiveTab==='all'?'var(--primary)':'var(--surface)'}; color:${archiveTab==='all'?'#fff':'var(--ink)'}; font-size:12px; font-weight:800; cursor:pointer;">${l('كل الطلبات','هەموو داخوازەکان','All Orders')}</button>
+      <button id="archTabToday" style="flex:1; padding:10px; border-radius:12px; border:1.5px solid ${archiveTab==='today'?'var(--primary)':'var(--border)'}; background:${archiveTab==='today'?'var(--primary)':'var(--surface)'}; color:${archiveTab==='today'?'#fff':'var(--ink)'}; font-size:12px; font-weight:800; cursor:pointer;">${l('طلبات اليوم','داخوازەکانی ئەمڕۆ','Today')}</button>
     </div>
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding:14px 16px; border-radius:14px; background:var(--primary); color:#fff;">
       <div>
         <div style="font-size:11px; opacity:.8; margin-bottom:2px;">${t('archiveTotal')}</div>
-        <div style="font-size:22px; font-weight:900; line-height:1;" class="mono">${fmt(grandTotal)} <span style="font-size:12px; opacity:.8;">${t('dueLabel')}</span></div>
+        <div class="mono" style="font-size:22px; font-weight:900; line-height:1;">${fmt(allTotal)} <span style="font-size:12px; opacity:.8;">${t('dueLabel')}</span></div>
       </div>
       <div style="text-align:end;">
         <div style="font-size:11px; opacity:.8; margin-bottom:2px;">${t('archiveOrders')}</div>
-        <div style="font-size:22px; font-weight:900; line-height:1;">${archivedCount}</div>
+        <div style="font-size:22px; font-weight:900; line-height:1;">${allCount}</div>
       </div>
     </div>
-    <div id="rptStatusCards"></div>
+    <div style="margin-bottom:10px; padding:14px; border-radius:14px; background:var(--surface); border:1px solid var(--border); cursor:pointer;" onclick="archiveStatusFilter='delivered'; reportsView='detail'; renderReportsPage();">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:42px; height:42px; border-radius:12px; background:var(--st-delivered-tint); color:var(--st-delivered); display:flex; align-items:center; justify-content:center; flex:none;">${ic('check',20)}</div>
+        <div style="flex:1;">
+          <div style="font-size:13px; font-weight:800;">${l('تم التسليم','سپردرا','Delivered')}</div>
+          <div style="font-size:10.5px; color:var(--ink-faint);">${deliveredCount} ${l('طلبات','داخوازەکان','orders')}</div>
+        </div>
+        <div style="text-align:end;">
+          <div class="mono" style="font-size:14px; font-weight:900; color:var(--st-delivered);">${fmt(deliveredTotal)}</div>
+          <div style="font-size:9.5px; color:var(--ink-faint);">${t('dueLabel')}</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:10px; padding:14px; border-radius:14px; background:var(--surface); border:1px solid var(--border); cursor:pointer;" onclick="archiveStatusFilter='returned'; reportsView='detail'; renderReportsPage();">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:42px; height:42px; border-radius:12px; background:var(--st-returned-tint); color:var(--st-returned); display:flex; align-items:center; justify-content:center; flex:none;">${ic('x2',20)}</div>
+        <div style="flex:1;">
+          <div style="font-size:13px; font-weight:800;">${l('راجع','گەڕێنرایەوە','Returned')}</div>
+          <div style="font-size:10.5px; color:var(--ink-faint);">${returnedCount} ${l('طلبات','داخوازەکان','orders')}</div>
+        </div>
+        <div style="text-align:end;">
+          <div class="mono" style="font-size:14px; font-weight:900; color:var(--st-returned);">${fmt(returnedTotal)}</div>
+          <div style="font-size:9.5px; color:var(--ink-faint);">${t('dueLabel')}</div>
+        </div>
+      </div>
+    </div>
   `;
 
-  document.getElementById('rptFrom').addEventListener('change', (e)=>{ reportFrom=e.target.value; renderReportsPage(); });
-  document.getElementById('rptTo').addEventListener('change', (e)=>{ reportTo=e.target.value; renderReportsPage(); });
-
-  const cardsEl = document.getElementById('rptStatusCards');
-  cardsEl.innerHTML = groups.map(g=>`
-    <div class="list-card" onclick="reportsView='detail'; reportStatus='${g.key}'; renderReportsPage();" style="margin-bottom:10px; cursor:pointer; display:flex; align-items:center; gap:12px; padding:14px;">
-      <div style="width:42px; height:42px; border-radius:12px; background:${g.tint}; color:${g.color}; display:flex; align-items:center; justify-content:center; flex:none;">${ic(g.icon,20)}</div>
-      <div style="flex:1;">
-        <div style="font-size:13px; font-weight:800;">${g.label}</div>
-        <div style="font-size:10.5px; color:var(--ink-faint);">${g.items.length} ${l('طلبات','داخوازەکان','orders')}</div>
-      </div>
-      <div style="text-align:end;">
-        <div class="mono" style="font-size:14px; font-weight:900; color:${g.color};">${fmt(g.total)}</div>
-        <div style="font-size:9.5px; color:var(--ink-faint);">${t('dueLabel')}</div>
-      </div>
-    </div>
-  `).join('');
+  document.getElementById('archTabAll').addEventListener('click', ()=>{ archiveTab='all'; renderReportsPage(); });
+  document.getElementById('archTabToday').addEventListener('click', ()=>{ archiveTab='today'; renderReportsPage(); });
 }
 
 function renderReportsDetail(el){
-  const filtered = getFilteredOrders().filter(o=>o.status===reportStatus);
+  const today = new Date().toISOString().slice(0,10);
+  let allOrders = MERCHANT_ORDERS;
+  if(archiveTab==='today'){
+    allOrders = allOrders.filter(o=> o.date === today);
+  }
+  if(reportFrom){ allOrders = allOrders.filter(o=> o.date >= reportFrom); }
+  if(reportTo){ allOrders = allOrders.filter(o=> o.date <= reportTo); }
+  const filtered = allOrders.filter(o=>o.status===archiveStatusFilter);
+
   const statusDef = [
     {key:'pending', label:l('قيد الانتظار','لە چاوەڕوانیدا','Pending'), color:'var(--st-pending)', tint:'var(--st-pending-tint)', icon:'clock'},
     {key:'approved', label:l('تم قبول الطلب','داخوازەکە قبوڵ کرا','Accepted'), color:'var(--st-approved)', tint:'var(--st-approved-tint)', icon:'shield'},
     {key:'courier', label:l('بحوزة المندوب','لە دەستی کوریەرەوە','With Courier'), color:'var(--st-courier)', tint:'var(--st-courier-tint)', icon:'bike'},
     {key:'delivered', label:l('تم التسليم','سپردرا','Delivered'), color:'var(--st-delivered)', tint:'var(--st-delivered-tint)', icon:'check'},
     {key:'returned', label:l('راجع','گەڕێنرایەوە','Returned'), color:'var(--st-returned)', tint:'var(--st-returned-tint)', icon:'x2'},
-  ].find(s=>s.key===reportStatus);
+  ].find(s=>s.key===archiveStatusFilter);
 
   const total = filtered.reduce((a,o)=>a+o.price,0);
 
@@ -3687,10 +3702,11 @@ function submitVerification(){
 
 function openSheet(html){
   document.getElementById('sheetContent').innerHTML = `
-    <div style="display:flex; align-items:center; justify-content:space-between; padding:4px 0 12px; border-bottom:1px solid var(--border); margin-bottom:14px;">
+    <div class="sheet-header">
       <div class="sheet-handle" style="flex:1;"></div>
-      <button onclick="closeSheet()" style="width:32px; height:32px; border-radius:10px; background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none; margin-left:8px;">${ic('x',16)}</button>
-    </div>` + html;
+      <button onclick="closeSheet()" style="width:38px; height:38px; border-radius:12px; background:var(--danger); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none; margin-left:8px; box-shadow:0 2px 8px rgba(239,68,68,.3);">${ic('x2',18)}</button>
+    </div>
+    <div class="sheet-body">${html}</div>`;
   document.getElementById('sheetOverlay').classList.add('open');
 }
 function closeSheet(){ document.getElementById('sheetOverlay').classList.remove('open'); }
