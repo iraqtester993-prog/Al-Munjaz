@@ -1611,7 +1611,7 @@ const TABS = {
   merchant:[
     {id:'home', ic:'home', label:'tabHome'},
     {id:'orders', ic:'box', label:'tabOrders'},
-    {id:'wallet', ic:'wallet', label:'tabWallet'},
+    {id:'archive', ic:'layers', label:'reportsTitle'},
     {id:'chat', ic:'chat', label:'tabChat', badge:true},
     {id:'profile', ic:'user', label:'tabProfile'},
   ],
@@ -2134,7 +2134,8 @@ function renderTab(){
   if(TAB==='home') return ROLE==='merchant' ? renderMerchantHome() : renderCourierHome();
   if(TAB==='orders') return renderMerchantOrders();
   if(TAB==='deliveries') return renderCourierDeliveries();
-  if(TAB==='wallet') return ROLE==='merchant' ? renderMerchantWallet() : renderCourierWallet();
+  if(TAB==='archive') return renderReportsPage();
+  if(TAB==='wallet') return renderCourierWallet();
   if(TAB==='chat') return activeChat ? renderChatThread(activeChat) : renderChatList();
   if(TAB==='profile') return renderProfile();
 }
@@ -3405,7 +3406,8 @@ function getFilteredOrders(){
 }
 
 function renderReportsPage(){
-  setTopbar(t('reportsTitle'), '', true, ()=>{ subPage=null; reportsView='main'; renderTab(); });
+  if(subPage!=='reports') reportsView='main';
+  setTopbar(t('reportsTitle'), '', subPage==='reports', ()=>{ subPage=null; reportsView='main'; renderTab(); });
   const el = document.getElementById('appContent');
 
   if(reportsView==='detail'){
@@ -3572,7 +3574,6 @@ function renderProfile(){
     <div class="list-card" style="margin-bottom:14px;">
       <div class="settings-row"><div class="sri">${ic('bell',15)}</div><div class="srt">${t('settingsNotif')}</div><div class="srv">${ic('check',13)}</div></div>
       ${ROLE==='merchant' ? `<div class="settings-row" id="rowVerify"><div class="sri">${ic('shield',15)}</div><div class="srt">${l('توثيق الحساب','پشتپڕواندنی هەژمار','Account Verification')}</div><div class="srv">›</div></div>` : ''}
-      ${ROLE==='merchant' ? `<div class="settings-row" id="rowReports"><div class="sri">${ic('layers',15)}</div><div class="srt">${t('reportsTitle')}</div><div class="srv">›</div></div>` : ''}
       <div class="settings-row" id="rowSupport"><div class="sri">${ic('chat',15)}</div><div class="srt">${t('settingsSupport')}</div><div class="srv">›</div></div>
       <div class="settings-row"><div class="sri">${ic('shield',15)}</div><div class="srt">${t('settingsAbout')}</div><div class="srv">v1.0</div></div>
     </div>
