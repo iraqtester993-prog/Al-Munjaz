@@ -1251,6 +1251,16 @@ const COURIER_DELIVERIES = [
   {track:'IQ-204925', customer:{ar:'مها سعيد',en:'Maha Saeed'}, phone:'07706667788', address:{ar:'كربلاء — الحسينية',en:'Karbala — Husseiniya'}, price:22500, fee:2000, status:'pending', date:'2026-08-19', time:'13:45', createdAt: new Date(Date.now()-14*60000).toISOString(), pickupDeadline: new Date(Date.now()+16*60000).toISOString(), merchant:{ar:'سوق الجملة',en:'Wholesale Market', phone:'07701112233', address:{ar:'بغداد — الحسينية',en:'Baghdad — Husseiniya'}}},
 ];
 
+// وسائل النقل للطلبات المعروضة مسبقاً في واجهة المندوب.
+const COURIER_DELIVERY_VEHICLES = {
+  'IQ-204871':'sedan', 'IQ-204877':'bike', 'IQ-204882':'suv', 'IQ-204895':'truck',
+  'IQ-204920':'sedan', 'IQ-204921':'truck', 'IQ-204922':'bike', 'IQ-204923':'suv',
+  'IQ-204924':'sedan', 'IQ-204925':'bike',
+};
+COURIER_DELIVERIES.forEach(delivery=>{
+  delivery.vehicle = COURIER_DELIVERY_VEHICLES[delivery.track] || 'sedan';
+});
+
 const MERCHANT_PROVINCES = [
   {ar:'بغداد', en:'Baghdad', orders:186, amount:7160000},
   {ar:'البصرة', en:'Basra', orders:54, amount:2050000},
