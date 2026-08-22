@@ -1635,6 +1635,20 @@ function t(k){ return T[LANG][k] || k; }
 function nm(o){ return o[LANG] || o.ar; }
 function l(ar,ku,en){ return LANG==='ku'?(ku||ar):LANG==='en'?en:ar; }
 function fmt(n){ return Math.abs(n).toLocaleString('en-US'); }
+function deliveryVehicleInfo(vehicle){
+  const vehicles = {
+    sedan:{icon:'car', label:l('سيارة صالون','ئۆتۆمبێلی بچووک','Sedan')},
+    suv:{icon:'suv', label:l('سيارة كبيرة','ئۆتۆمبێلی گەورە','SUV')},
+    truck:{icon:'truck', label:l('سيارة نقل','ئۆتۆمبێلی بار','Truck')},
+    bike:{icon:'bike', label:l('دراجة نارية','ماتۆڕ','Motorbike')},
+  };
+  return vehicles[vehicle] || {icon:'box', label:l('غير محددة','دیاری نەکراوە','Not specified')};
+}
+function deliveryVehicleBadge(vehicle){
+  if(!vehicle) return '';
+  const info = deliveryVehicleInfo(vehicle);
+  return `<span style="display:inline-flex; align-items:center; gap:4px; margin-top:5px; padding:4px 7px; border-radius:7px; background:var(--primary-tint); color:var(--primary-strong); font-size:10px; font-weight:800;">${ic(info.icon,13)} ${info.label}</span>`;
+}
 
 const TABS = {
   merchant:[
@@ -2570,6 +2584,7 @@ function renderCourierHome(){
           <div style="flex:1; min-width:0;">
             <div style="font-size:12.5px; font-weight:800;">${nm(d.customer)}</div>
             <div style="font-size:10.5px; color:var(--ink-faint);">${d.track} · ${nm(d.address)}</div>
+            ${deliveryVehicleBadge(d.vehicle)}
             ${d.status==='pending' && d.price > courierBudget ? `<div style="font-size:9.5px; font-weight:800; color:var(--danger); margin-top:3px;">${l('لا يمكن أخذ الطلب — الميزانية أقل','نەتوانرێت داخواز بسپێریت — بودجە کەمترە','Cannot take — budget less than order')}</div>` : ''}
             ${pickupTimerLine(d)}
           </div>
@@ -2640,6 +2655,7 @@ function renderCourierHome(){
               '<div style="font-size:13px; font-weight:800; color:var(--ink); margin-bottom:2px;">'+nm(d.customer)+'</div>'+
               '<div style="font-size:10.5px; color:var(--ink-faint); margin-bottom:2px;">'+d.track+'</div>'+
               '<div style="font-size:10.5px; color:var(--ink-faint);">'+nm(d.address)+'</div>'+
+              deliveryVehicleBadge(d.vehicle)+
             '</div>'+
             '<div style="text-align:end; flex:none;">'+
               '<div class="mono" style="font-size:16px; font-weight:900; color:var(--ink);">'+fmt(d.price)+'</div>'+
@@ -2859,6 +2875,7 @@ function openCourierDetailSheet(d){
       <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${l('الزبون','کڕیار','Customer')}</span><span>${nm(d.customer)}</span></div>
       <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${l('الهاتف','مۆبایل','Phone')}</span><span class="mono">${d.phone}</span></div>
       <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${l('العنوان','ناونیشان','Address')}</span><span>${nm(d.address)}</span></div>
+      ${d.vehicle ? `<div style="display:flex; justify-content:space-between; align-items:center; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${l('وسيلة التوصيل المطلوبة','ئامرازى گواستنەوەی داواکراو','Requested Vehicle')}</span>${deliveryVehicleBadge(d.vehicle)}</div>` : ''}
       <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:8px;"><span class="text-muted">${l('سعر الطلب','نرخ','Price')}</span><span class="mono" style="font-weight:900; color:var(--primary);">${fmt(d.price)} ${t('dueLabel')}</span></div>
     </div>
     ${customerActions}
@@ -3049,6 +3066,7 @@ function renderCourierDeliveries(){
           <div style="flex:1; min-width:0;">
             <div style="font-size:12.5px; font-weight:800;">${nm(d.customer)}</div>
             <div style="font-size:10.5px; color:var(--ink-faint);">${d.track} · ${nm(d.address)}</div>
+            ${deliveryVehicleBadge(d.vehicle)}
             ${pickupTimerLine(d)}
           </div>
           <div style="text-align:end;">
@@ -3944,6 +3962,7 @@ function openOrderSheet(){
     <div class="field"><label>${l('رقم هاتف ثاني (اختياري)','تەلەفونی دووەم (ئارەزوومەندانە)','Second Phone (optional)')}</label><input id="fPhone2" type="tel" placeholder="07xx xxx xxxx" dir="ltr"></div>
     <div class="field"><label>${l('العنوان','ناونیشان','Address')}</label><input id="fAddress" type="text" placeholder="${l('المدينة — المنطقة — أقرب نقطة دالة','شار — ناوچە — شوێنی ناونیشان','City — Area — Landmark')}"></div>
     <div class="field"><label>${l('نوع الطلب','جۆری داخواز','Order Type')}</label><input id="fOrderType" type="text" placeholder="${l('مثال: طلب عادي، سريع، الدفع عند الاستلام','نموونە: ئاسایی، خێرا، پارەدان لە کاتی وەرگرتنەوە','e.g. Normal, Express, COD')}"></div>
+    <div class="field"><label>${l('وسيلة التوصيل المطلوبة','ئامرازى گواستنەوەی داواکراو','Requested Vehicle')}</label><select id="fVehicle"><option value="sedan">${l('سيارة صالون','ئۆتۆمبێلی بچووک','Sedan')}</option><option value="suv">${l('سيارة كبيرة','ئۆتۆمبێلی گەورە','SUV')}</option><option value="truck">${l('سيارة نقل','ئۆتۆمبێلی بار','Truck')}</option><option value="bike">${l('دراجة نارية','ماتۆڕ','Motorbike')}</option></select></div>
     <div class="field"><label>${l('سعر الطلب','نرخی داخواز','Order Price')}</label><input id="fPrice" type="number" placeholder="0 ${t('dueLabel')}"></div>
     <div class="field"><label>${l('ملاحظات (اختياري)','تێبینییەکان (ئارەزوومەندانە)','Notes (optional)')}</label><textarea id="fNotes" rows="3" placeholder="${l('أي ملاحظات إضافية...','هەر تێبینییەکی زیاتر...','Any additional notes...')}" style="width:100%; padding:11px 13px; border:1px solid var(--border); border-radius:11px; background:var(--surface-2); color:var(--ink); font-size:13px; outline:none; resize:none; font-family:inherit;"></textarea></div>
     <button class="btn btn-primary" style="width:100%;" onclick="submitNewOrder('${newTrack}')">${t('submitRequest')}</button>
@@ -3956,14 +3975,21 @@ function submitNewOrder(track){
   const phone2 = document.getElementById('fPhone2').value.trim();
   const address = document.getElementById('fAddress').value.trim();
   const orderType = document.getElementById('fOrderType').value.trim();
+  const vehicle = document.getElementById('fVehicle').value;
   const price = parseFloat(document.getElementById('fPrice').value)||0;
   const notes = document.getElementById('fNotes').value.trim();
   if(!customer){return;}
   MERCHANT_ORDERS.unshift({
     track, customer:{ar:customer,en:customer}, phone, phone2,
     address:{ar:address,en:address}, orderType:{ar:orderType,en:orderType},
-    price, notes:{ar:notes,en:notes}, status:'pending',
+    price, notes:{ar:notes,en:notes}, vehicle, status:'pending',
     date: new Date().toISOString().slice(0,10), courier:null
+  });
+  COURIER_DELIVERIES.unshift({
+    track, customer:{ar:customer,en:customer}, phone, address:{ar:address,en:address},
+    price, fee:2500, vehicle, status:'pending', date:new Date().toISOString().slice(0,10),
+    time:new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), createdAt:new Date().toISOString(),
+    merchant:{ar:(currentUser && (currentUser.shop || currentUser.name)) || l('تاجر','کەربەران','Merchant'), en:(currentUser && (currentUser.shop || currentUser.name)) || 'Merchant', phone:(currentUser && currentUser.phone) || '', address:{ar:(currentUser && currentUser.address) || '', en:(currentUser && currentUser.address) || ''}}
   });
   closeSheet();
   renderMerchantHome();
