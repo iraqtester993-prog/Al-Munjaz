@@ -2703,21 +2703,18 @@ function renderCourierHome(){
       const timeStr = d.time || '';
       return '<div class="list-card expiry-card courier-new-order-card" style="margin-bottom:14px; padding:0; overflow:hidden; cursor:pointer;" data-track="'+d.track+'" onclick="openCourierDetailSheet(COURIER_DELIVERIES.find(x=>x.track===\''+d.track+'\'))">'+
         '<div style="padding:14px 14px 12px;">'+
-          '<div class="new-order-chip">'+ic('clock',12)+' '+(LANG==='ar'?'طلب جديد متاح':LANG==='ku'?'داواکارییەکی نوێ بەردەستە':'New order available')+'</div>'+
-          '<div style="display:flex; align-items:flex-start; gap:12px;">'+
-            '<div style="width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg, '+ec.bg+', transparent); color:'+ec.color+'; display:flex; align-items:center; justify-content:center; flex:none; position:relative;">'+
-              ic('clock',20)+
-            '</div>'+
+          '<div class="new-order-chip">'+(LANG==='ar'?'طلب جديد متاح':LANG==='ku'?'داواکارییەکی نوێ بەردەستە':'New order available')+'</div>'+
+          '<div style="display:flex; align-items:flex-start; text-align:start;">'+
             '<div style="flex:1; min-width:0;">'+
               '<div class="new-order-customer">'+nm(d.customer)+'</div>'+
               '<div style="font-size:10.5px; color:var(--ink-faint); margin-bottom:2px;">'+d.track+'</div>'+
               '<div style="font-size:10.5px; color:var(--ink-faint);">'+nm(d.address)+'</div>'+
               deliveryVehicleBadge(d.vehicle)+
               vehicleRequestNote(d.vehicleNote)+
-            '</div>'+
-            '<div style="text-align:end; flex:none;">'+
-              '<div class="mono new-order-price">'+fmt(d.price)+'</div>'+
-              '<div style="font-size:9.5px; color:var(--ink-faint); font-weight:700;">'+t('dueLabel')+'</div>'+
+              '<div style="margin-top:10px; display:flex; align-items:baseline; gap:5px;">'+
+                '<div class="mono new-order-price">'+fmt(d.price)+'</div>'+
+                '<div style="font-size:10px; color:var(--ink-faint); font-weight:800;">'+t('dueLabel')+'</div>'+
+              '</div>'+
             '</div>'+
           '</div>'+
           (!canTake ? '<div style="margin-top:8px; padding:6px 10px; border-radius:8px; background:rgba(248,113,113,.1); font-size:10px; font-weight:800; color:var(--danger);">'+l('لا يمكن أخذ الطلب — الميزانية أقل','نەتوانرێت داخواز بسپێریت — بودجە کەمترە','Cannot take — budget less than order')+'</div>' : '')+
