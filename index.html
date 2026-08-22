@@ -1647,7 +1647,7 @@ function deliveryVehicleInfo(vehicle){
 function deliveryVehicleBadge(vehicle){
   if(!vehicle) return '';
   const info = deliveryVehicleInfo(vehicle);
-  return `<span style="display:inline-flex; align-items:center; gap:4px; margin-top:5px; padding:4px 7px; border-radius:7px; background:var(--primary-tint); color:var(--primary-strong); font-size:10px; font-weight:800;">${ic(info.icon,13)} ${info.label}</span>`;
+  return `<span style="display:inline-flex; align-items:center; gap:6px; margin-top:7px; padding:6px 10px; border-radius:9px; background:var(--primary-tint); border:1px solid color-mix(in srgb, var(--primary) 20%, transparent); color:var(--primary-strong); font-size:12px; font-weight:800; line-height:1; letter-spacing:.05px;">${ic(info.icon,15)} ${info.label}</span>`;
 }
 
 const TABS = {
