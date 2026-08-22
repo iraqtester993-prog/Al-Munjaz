@@ -383,6 +383,22 @@ svg{display:block; flex-shrink:0;}
 .field{margin-bottom:14px;}
 .field label{display:block; font-size:11.5px; font-weight:700; color:var(--ink-soft); margin-bottom:6px;}
 .field input, .field select{width:100%; padding:11px 13px; border:1px solid var(--border); border-radius:11px; background:var(--surface-2); color:var(--ink); font-size:13px; outline:none;}
+.delivery-vehicle-picker{position:relative;}
+.delivery-vehicle-trigger{width:100%; display:flex; align-items:center; gap:11px; padding:12px; border:1.5px solid var(--primary); border-radius:13px; background:var(--primary-tint); color:var(--ink); font:inherit; text-align:start; cursor:pointer; transition:.18s ease;}
+.delivery-vehicle-trigger.open{background:var(--surface); box-shadow:0 5px 16px rgba(11,110,104,.14);}
+.delivery-vehicle-trigger .vehicle-choice-icon{width:38px; height:38px; border-radius:11px; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; flex:none;}
+.delivery-vehicle-trigger .vehicle-choice-copy{flex:1; min-width:0;}
+.delivery-vehicle-trigger small{display:block; margin-bottom:3px; color:var(--ink-soft); font-size:10px; font-weight:700;}
+.delivery-vehicle-trigger strong{display:block; color:var(--primary-strong); font-size:15px; font-weight:900;}
+.delivery-vehicle-trigger .vehicle-choice-chev{color:var(--primary-strong); display:flex; transition:transform .18s;}
+.delivery-vehicle-trigger.open .vehicle-choice-chev{transform:rotate(180deg);}
+.delivery-vehicle-menu{display:grid; grid-template-columns:1fr 1fr; gap:8px; max-height:0; opacity:0; overflow:hidden; margin-top:0; transition:max-height .25s ease, opacity .18s ease, margin-top .25s ease;}
+.delivery-vehicle-menu.open{max-height:220px; opacity:1; margin-top:9px;}
+.delivery-vehicle-option{display:flex; align-items:center; gap:8px; padding:10px; border:1px solid var(--border); border-radius:11px; background:var(--surface); color:var(--ink); font:inherit; text-align:start; cursor:pointer; transition:.15s ease;}
+.delivery-vehicle-option:hover, .delivery-vehicle-option.selected{border-color:var(--primary); background:var(--primary-tint); box-shadow:0 3px 10px rgba(11,110,104,.1);}
+.delivery-vehicle-option .option-icon{width:29px; height:29px; border-radius:9px; background:var(--surface-2); color:var(--primary-strong); display:flex; align-items:center; justify-content:center; flex:none;}
+.delivery-vehicle-option.selected .option-icon{background:var(--primary); color:#fff;}
+.delivery-vehicle-option span:last-child{font-size:13px; font-weight:800;}
 .btn{display:flex; align-items:center; justify-content:center; gap:8px; padding:12px 16px; border-radius:12px; font-weight:800; font-size:13px;}
 .btn-primary{background:var(--primary); color:#fff;}
 .btn-ghost{background:var(--surface-2); color:var(--ink); border:1px solid var(--border);}
@@ -2023,10 +2039,16 @@ document.addEventListener('pointerdown', (e)=>{
   if(!e.target.closest('#regCVehicleTrigger, #regCVehicleDropdown')){
     toggleVehicleDropdown(false);
   }
+  if(!e.target.closest('#orderVehicleTrigger, #orderVehicleDropdown')){
+    toggleOrderVehicleDropdown(false);
+  }
 });
 
 document.addEventListener('keydown', (e)=>{
-  if(e.key === 'Escape') toggleVehicleDropdown(false);
+  if(e.key === 'Escape'){
+    toggleVehicleDropdown(false);
+    toggleOrderVehicleDropdown(false);
+  }
 });
 
 function handleRegisterCourier(){
@@ -3972,11 +3994,42 @@ function openOrderSheet(){
     <div class="field"><label>${l('رقم هاتف ثاني (اختياري)','تەلەفونی دووەم (ئارەزوومەندانە)','Second Phone (optional)')}</label><input id="fPhone2" type="tel" placeholder="07xx xxx xxxx" dir="ltr"></div>
     <div class="field"><label>${l('العنوان','ناونیشان','Address')}</label><input id="fAddress" type="text" placeholder="${l('المدينة — المنطقة — أقرب نقطة دالة','شار — ناوچە — شوێنی ناونیشان','City — Area — Landmark')}"></div>
     <div class="field"><label>${l('نوع الطلب','جۆری داخواز','Order Type')}</label><input id="fOrderType" type="text" placeholder="${l('مثال: طلب عادي، سريع، الدفع عند الاستلام','نموونە: ئاسایی، خێرا، پارەدان لە کاتی وەرگرتنەوە','e.g. Normal, Express, COD')}"></div>
-    <div class="field"><label>${l('وسيلة التوصيل المطلوبة','ئامرازى گواستنەوەی داواکراو','Requested Vehicle')}</label><select id="fVehicle"><option value="sedan">${l('سيارة صالون','ئۆتۆمبێلی بچووک','Sedan')}</option><option value="suv">${l('سيارة كبيرة','ئۆتۆمبێلی گەورە','SUV')}</option><option value="truck">${l('سيارة نقل','ئۆتۆمبێلی بار','Truck')}</option><option value="bike">${l('دراجة نارية','ماتۆڕ','Motorbike')}</option></select></div>
+    <div class="field"><label>${l('وسيلة التوصيل المطلوبة','ئامرازى گواستنەوەی داواکراو','Requested Vehicle')}</label><div class="delivery-vehicle-picker"><input type="hidden" id="fVehicle" value="sedan"><button type="button" class="delivery-vehicle-trigger" id="orderVehicleTrigger"><span class="vehicle-choice-icon" id="orderVehicleIcon">${ic('car',20)}</span><span class="vehicle-choice-copy"><small>${l('اختر المركبة المناسبة','ئامرازى گونجاو هەڵبژێرە','Choose the suitable vehicle')}</small><strong id="orderVehicleLabel">${l('سيارة صالون','ئۆتۆمبێلی بچووک','Sedan')}</strong></span><span class="vehicle-choice-chev"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></button><div class="delivery-vehicle-menu" id="orderVehicleDropdown"><button type="button" class="delivery-vehicle-option selected" data-vehicle="sedan"><span class="option-icon">${ic('car',16)}</span><span>${l('سيارة صالون','ئۆتۆمبێلی بچووک','Sedan')}</span></button><button type="button" class="delivery-vehicle-option" data-vehicle="suv"><span class="option-icon">${ic('suv',16)}</span><span>${l('سيارة كبيرة','ئۆتۆمبێلی گەورە','SUV')}</span></button><button type="button" class="delivery-vehicle-option" data-vehicle="truck"><span class="option-icon">${ic('truck',16)}</span><span>${l('سيارة نقل','ئۆتۆمبێلی بار','Truck')}</span></button><button type="button" class="delivery-vehicle-option" data-vehicle="bike"><span class="option-icon">${ic('bike',16)}</span><span>${l('دراجة نارية','ماتۆڕ','Motorbike')}</span></button></div></div></div>
     <div class="field"><label>${l('سعر الطلب','نرخی داخواز','Order Price')}</label><input id="fPrice" type="number" placeholder="0 ${t('dueLabel')}"></div>
     <div class="field"><label>${l('ملاحظات (اختياري)','تێبینییەکان (ئارەزوومەندانە)','Notes (optional)')}</label><textarea id="fNotes" rows="3" placeholder="${l('أي ملاحظات إضافية...','هەر تێبینییەکی زیاتر...','Any additional notes...')}" style="width:100%; padding:11px 13px; border:1px solid var(--border); border-radius:11px; background:var(--surface-2); color:var(--ink); font-size:13px; outline:none; resize:none; font-family:inherit;"></textarea></div>
     <button class="btn btn-primary" style="width:100%;" onclick="submitNewOrder('${newTrack}')">${t('submitRequest')}</button>
   `);
+  initOrderVehiclePicker();
+}
+
+let orderVehicleValue = 'sedan';
+function toggleOrderVehicleDropdown(force){
+  const trigger = document.getElementById('orderVehicleTrigger');
+  const dropdown = document.getElementById('orderVehicleDropdown');
+  if(!trigger || !dropdown) return;
+  const open = force !== undefined ? force : !trigger.classList.contains('open');
+  trigger.classList.toggle('open', open);
+  dropdown.classList.toggle('open', open);
+}
+function selectOrderVehicle(vehicle){
+  const field = document.getElementById('fVehicle');
+  const label = document.getElementById('orderVehicleLabel');
+  const icon = document.getElementById('orderVehicleIcon');
+  if(!field || !label || !icon) return;
+  const info = deliveryVehicleInfo(vehicle);
+  orderVehicleValue = vehicle;
+  field.value = vehicle;
+  label.textContent = info.label;
+  icon.innerHTML = ic(info.icon,20);
+  document.querySelectorAll('#orderVehicleDropdown .delivery-vehicle-option').forEach(option=> option.classList.toggle('selected', option.dataset.vehicle===vehicle));
+  toggleOrderVehicleDropdown(false);
+}
+function initOrderVehiclePicker(){
+  orderVehicleValue = 'sedan';
+  document.getElementById('orderVehicleTrigger').addEventListener('click', ()=> toggleOrderVehicleDropdown());
+  document.querySelectorAll('#orderVehicleDropdown .delivery-vehicle-option').forEach(option=>{
+    option.addEventListener('click', ()=> selectOrderVehicle(option.dataset.vehicle));
+  });
 }
 
 function submitNewOrder(track){
