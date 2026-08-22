@@ -1278,8 +1278,21 @@ const COURIER_DELIVERY_VEHICLES = {
   'IQ-204920':'normal', 'IQ-204921':'normal', 'IQ-204922':'normal', 'IQ-204923':'normal',
   'IQ-204924':'normal', 'IQ-204925':'normal',
 };
+const COURIER_DELIVERY_NOTES = {
+  'IQ-204871':'يرجى المحافظة على الكراتين بوضعٍ مستقيم.',
+  'IQ-204877':'الاتصال بالزبون قبل الوصول.',
+  'IQ-204882':'الطلب يحتوي على قطع قابلة للكسر.',
+  'IQ-204895':'يحتاج مساحة إضافية للصناديق.',
+  'IQ-204920':'التسليم عند الباب الخلفي.',
+  'IQ-204921':'يرجى التعامل بحذر مع الطرد.',
+  'IQ-204922':'التواصل مع الزبون عند الاقتراب.',
+  'IQ-204923':'التسليم خلال الفترة المحددة.',
+  'IQ-204924':'تأكد من مطابقة اسم المستلم.',
+  'IQ-204925':'يرجى عدم وضع أي شيء فوق الطلب.',
+};
 COURIER_DELIVERIES.forEach(delivery=>{
   delivery.vehicle = COURIER_DELIVERY_VEHICLES[delivery.track] || 'normal';
+  delivery.vehicleNote = COURIER_DELIVERY_NOTES[delivery.track] || '';
 });
 
 const MERCHANT_PROVINCES = [
