@@ -1274,12 +1274,12 @@ const COURIER_DELIVERIES = [
 
 // وسائل النقل للطلبات المعروضة مسبقاً في واجهة المندوب.
 const COURIER_DELIVERY_VEHICLES = {
-  'IQ-204871':'sedan', 'IQ-204877':'bike', 'IQ-204882':'suv', 'IQ-204895':'truck',
-  'IQ-204920':'sedan', 'IQ-204921':'truck', 'IQ-204922':'bike', 'IQ-204923':'suv',
-  'IQ-204924':'sedan', 'IQ-204925':'bike',
+  'IQ-204871':'normal', 'IQ-204877':'normal', 'IQ-204882':'normal', 'IQ-204895':'normal',
+  'IQ-204920':'normal', 'IQ-204921':'normal', 'IQ-204922':'normal', 'IQ-204923':'normal',
+  'IQ-204924':'normal', 'IQ-204925':'normal',
 };
 COURIER_DELIVERIES.forEach(delivery=>{
-  delivery.vehicle = COURIER_DELIVERY_VEHICLES[delivery.track] || 'sedan';
+  delivery.vehicle = COURIER_DELIVERY_VEHICLES[delivery.track] || 'normal';
 });
 
 const MERCHANT_PROVINCES = [
@@ -1683,7 +1683,7 @@ function deliveryVehicleBadge(vehicle){
 }
 function vehicleRequestNote(note){
   if(!note) return '';
-  return `<div style="margin-top:7px; padding:7px 9px; border-radius:8px; background:var(--surface-2); color:var(--ink-soft); font-size:11px; font-weight:700; line-height:1.5;"><span style="color:var(--primary-strong);">${l('ملاحظة وسيلة النقل:','تێبینی ئامرازی گواستنەوە:','Vehicle note:')}</span> ${note}</div>`;
+  return `<div style="margin-top:7px; padding:7px 9px; border-radius:8px; background:var(--surface-2); color:var(--ink-soft); font-size:11px; font-weight:700; line-height:1.5;"><span style="color:var(--primary-strong);">${l('ملاحظة الطلب:','تێبینی داواکاری:','Order note:')}</span> ${note}</div>`;
 }
 
 const TABS = {
