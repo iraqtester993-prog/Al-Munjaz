@@ -404,6 +404,8 @@ svg{display:block; flex-shrink:0;}
 .courier-new-order-card .new-order-customer{font-size:14px; font-weight:900; color:var(--ink); margin:7px 0 3px;}
 .courier-new-order-card .new-order-price{font-size:18px; font-weight:900; color:var(--primary-strong); line-height:1.1;}
 .courier-new-order-card .new-order-details{padding:9px 17px; border-radius:10px; background:var(--primary); color:#fff; border:none; font:inherit; font-size:11px; font-weight:900; cursor:pointer; box-shadow:0 4px 10px rgba(11,110,104,.22);}
+.new-order-pulse{animation:new-order-pulse 1.35s ease-in-out infinite;}
+@keyframes new-order-pulse{0%,100%{transform:scale(1); opacity:1;}50%{transform:scale(1.75); opacity:.45;}}
 .btn{display:flex; align-items:center; justify-content:center; gap:8px; padding:12px 16px; border-radius:12px; font-weight:800; font-size:13px;}
 .btn-primary{background:var(--primary); color:#fff;}
 .btn-ghost{background:var(--surface-2); color:var(--ink); border:1px solid var(--border);}
@@ -2721,7 +2723,7 @@ function renderCourierHome(){
         '</div>'+
         '<div style="display:flex; align-items:center; justify-content:space-between; padding:8px 14px; background:var(--surface-2); border-top:1px solid var(--border);">'+
           '<div style="display:flex; align-items:center; gap:6px;">'+
-            '<div style="width:8px; height:8px; border-radius:50%; background:'+ec.color+'; box-shadow:0 0 6px '+ec.color+';"></div>'+
+            '<div class="new-order-pulse" style="width:8px; height:8px; border-radius:50%; background:'+ec.color+'; box-shadow:0 0 6px '+ec.color+';"></div>'+
             '<div style="font-size:11px; font-weight:800; color:'+ec.color+';" class="countdown-text" data-track="'+d.track+'">'+(LANG==='ar'?'الوقت المتاح للاستلام':LANG==='ku'?'کاتی گەیشتن بۆ وەرگرتن':'Time to accept')+': <span style="font-family:monospace;">'+(LANG==='ar'?remFmt.ar:LANG==='ku'?remFmt.ku||remFmt.ar:remFmt.en)+'</span></div>'+
           '</div>'+
           '<div style="display:flex; align-items:center; gap:6px;">'+
